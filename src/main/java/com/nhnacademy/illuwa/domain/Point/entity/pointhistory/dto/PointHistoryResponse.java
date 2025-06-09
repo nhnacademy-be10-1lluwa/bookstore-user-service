@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PointHistoryResponse {
-    private int pointHistoryId;
     private int amount;
     private String reason;
     private PointHistoryType type;
