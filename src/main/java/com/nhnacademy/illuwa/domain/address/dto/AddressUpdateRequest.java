@@ -14,4 +14,5 @@ public class AddressUpdateRequest {
     private String recipient;
     private String recipientPhone;
     private String addressDetail;
+    private boolean isDefault;
 }

@@ -5,15 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressCreateRequest {
+public class AddressListResponse {
+    private int addressId;
     private String addressName;
     private String recipient;
-    private String recipientPhone;
     private String addressDetail;
     private boolean isDefault;
 }
-
