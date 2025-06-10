@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,4 +45,15 @@ public class Member {
 
     private LocalDateTime lastLoginAt = LocalDateTime.now();
 
+    public Member(String name, LocalDate birth, String email, String password, Role role, String phoneNumber, Grade grade, BigDecimal point, Status status) {
+        this.name = name;
+        this.birth = birth;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.phoneNumber = phoneNumber;
+        this.grade = grade;
+        this.point = point;
+        this.status = status;
+    }
 }
