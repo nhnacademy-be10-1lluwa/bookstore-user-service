@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:mysql://s4.java21.net:13306/be10-team1
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: project_be10_team1
+    password: N(zwIEW9ge2O3yXO
+  jpa:
+    hibernate:
+      ddl-auto: validate
