@@ -47,4 +47,5 @@ public class Member {
     private Status status = Status.ACTIVE;
 
     private LocalDateTime lastLoginAt = LocalDateTime.now();
+
 }
