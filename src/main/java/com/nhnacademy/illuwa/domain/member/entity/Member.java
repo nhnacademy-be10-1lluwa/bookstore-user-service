@@ -38,22 +38,13 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Grade grade = Grade.일반;
 
+    @Column(name = "net_order_amount")
+    private BigDecimal netOrderAmount = new BigDecimal("0");
+
     private BigDecimal point = new BigDecimal("0");
 
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
     private LocalDateTime lastLoginAt = LocalDateTime.now();
-
-    public Member(String name, LocalDate birth, String email, String password, Role role, String phoneNumber, Grade grade, BigDecimal point, Status status) {
-        this.name = name;
-        this.birth = birth;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.phoneNumber = phoneNumber;
-        this.grade = grade;
-        this.point = point;
-        this.status = status;
-    }
 }
