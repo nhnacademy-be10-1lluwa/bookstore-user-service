@@ -17,7 +17,7 @@ public class PointHistory {
     @Id
     @GeneratedValue
     @Column(name = "point_history_id")
-    private int pointHistoryId;
+    private long pointHistoryId;
 
     @Column(nullable = false)
     private int amount;
