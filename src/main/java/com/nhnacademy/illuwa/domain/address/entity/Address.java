@@ -16,7 +16,7 @@ public class Address {
     @Id
     @GeneratedValue
     @Column(name = "address_id")
-    private int addressId;
+    private long addressId;
 
     @Column(name = "address_name", nullable = true)
     private String addressName = "기본 배송지";
