@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressDetailResponse {
-    private int addressId;
+    private long addressId;
     private int memberId;
     private String addressName;
     private String recipient;
