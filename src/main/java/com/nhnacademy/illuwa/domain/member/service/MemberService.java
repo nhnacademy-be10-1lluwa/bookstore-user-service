@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.member.service;
 
+import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import jakarta.transaction.Transactional;
 
@@ -9,7 +10,7 @@ public interface MemberService {
     Member register(Member member);
 
     @Transactional
-    Member login(String email, String password);
+    Member login(MemberLoginRequest request);
 
     Member getMemberById(long memberId);
 

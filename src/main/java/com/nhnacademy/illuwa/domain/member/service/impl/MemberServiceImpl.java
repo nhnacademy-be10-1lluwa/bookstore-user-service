@@ -1,8 +1,12 @@
 package com.nhnacademy.illuwa.domain.member.service.impl;
 
+import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
+import com.nhnacademy.illuwa.domain.member.exception.MemberAuthenticationFailedException;
+import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
+import com.nhnacademy.illuwa.domain.member.exception.MemberRegistrationException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
@@ -24,17 +28,17 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Member register(Member member) {
         if(member == null){
-            throw new IllegalArgumentException("회원가입에 실패했습니다.");
+            throw new MemberRegistrationException("가입정보가 제대로 입력되지 않았습니다.");
         }
         return memberRepository.save(member);
     }
 
     @Transactional
     @Override
-    public Member login(String email, String password) {
-        Member loginMember = memberRepository.getMemberByEmailAndPassword(email, password);
+    public Member login(MemberLoginRequest request) {
+        Member loginMember = memberRepository.getMemberByEmailAndPassword(request.getEmail(), request.getPassword());
         if(loginMember == null){
-            throw new NoSuchElementException("로그인에 실패했습니다.");
+            throw new MemberAuthenticationFailedException();
         }
         loginMember.setLastLoginAt(LocalDateTime.now());
         return loginMember;
