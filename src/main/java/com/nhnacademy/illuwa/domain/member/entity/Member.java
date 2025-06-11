@@ -8,7 +8,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
+import java.util.Objects;
 
 @Table(name = "members")
 @Data
@@ -48,4 +48,10 @@ public class Member {
 
     private LocalDateTime lastLoginAt = LocalDateTime.now();
 
+    public void setGrade(Grade newGrade) {
+        if (!Objects.equals(this.grade, newGrade)) {
+            //등급변경 발생
+            this.grade = newGrade;
+        }
+    }
 }
