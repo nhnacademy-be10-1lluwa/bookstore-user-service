@@ -17,7 +17,6 @@ public class MemberRegisterRequest {
     private LocalDate birth;
     private String email;
     private String password;
-    private Role role;
     private String phoneNumber;
 }
 
