@@ -11,19 +11,21 @@ import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
 
-@RequiredArgsConstructor
 @Service
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final MemberMapper memberMapper;
+
+    public MemberServiceImpl(MemberRepository memberRepository, MemberMapper memberMapper) {
+        this.memberRepository = memberRepository;
+        this.memberMapper = memberMapper;
+    }
 
     @Override
     public Member register(Member member) {
@@ -77,7 +79,7 @@ public class MemberServiceImpl implements MemberService {
         LocalDateTime threeMonthsAgo  = LocalDateTime.now().minusMonths(3);
         if(member.getLastLoginAt().isBefore(threeMonthsAgo)){
             member.setStatus(Status.INACTIVE);
-            //Todo 휴면해제를 위한 인증절차(두레이 메시지 Sender)
+            //Todo 휴면해제를 위한 인증절차(두레이 메시지 Service)
         }
 
     }

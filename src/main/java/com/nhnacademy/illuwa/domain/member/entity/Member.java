@@ -5,13 +5,14 @@ import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Table(name = "members")
 @Data
+@Table(name = "members")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -54,4 +55,5 @@ public class Member {
             this.grade = newGrade;
         }
     }
+
 }
