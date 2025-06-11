@@ -40,6 +40,7 @@ public class MemberServiceImpl implements MemberService {
         if(loginMember == null){
             throw new MemberAuthenticationFailedException();
         }
+        updateMemberStatus(loginMember.getMemberId());
         loginMember.setLastLoginAt(LocalDateTime.now());
         return loginMember;
     }
@@ -47,7 +48,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Member getMemberById(long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NoSuchElementException("해당 아이디를 가진 회원이 존재하지 않습니다.") );
+                .orElseThrow(() -> new MemberNotFoundException(memberId) );
     }
 
     @Transactional
@@ -56,7 +57,7 @@ public class MemberServiceImpl implements MemberService {
         // 아이디값은 세션에서 받아올 예정
         // 로그인된 상태에서 사용자가 자기 정보를 수정하는게 확실하다고 가정
         Member orgMember = memberRepository.findById(member.getMemberId())
-                .orElseThrow(() -> new NoSuchElementException("해당 회원이 존재하지 않아서 정보수정에 실패했습니다."));
+                .orElseThrow(() -> new MemberNotFoundException(member.getMemberId()));
         memberMapper.updateMember(orgMember, member);
     }
 
@@ -64,7 +65,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void updateNetOrderAmountAndChangeGrade(long memberId, BigDecimal netOrderAmount) {
         Member orgMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NoSuchElementException("해당 회원이 존재하지 않아서 등급 업데이트에 실패했습니다."));
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
         Grade newGrade = Grade.calculateByAmount(netOrderAmount);
             orgMember.setGrade(newGrade);
     }
@@ -72,7 +73,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void updateMemberStatus(long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NoSuchElementException("해당 회원이 존재하지 않아서 상태 업데이트에 실패했습니다."));
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
         LocalDateTime threeMonthsAgo  = LocalDateTime.now().minusMonths(3);
         if(member.getLastLoginAt().isBefore(threeMonthsAgo)){
             member.setStatus(Status.INACTIVE);
@@ -84,10 +85,9 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void removeMember(long memberId) {
         if(!memberRepository.existsById(memberId)){
-            throw new NoSuchElementException("해당 회원이 존재하지 않아서 탈퇴에 실패했습니다.");
+            throw new MemberNotFoundException(memberId);
         }
         memberRepository.deleteById(memberId);
     }
-
 
 }
