@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Table(name = "address")
+@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,15 +22,23 @@ public class Address {
     @Column(name = "address_name", nullable = true)
     private String addressName = "기본 배송지";
 
+    @Column(name = "recipient")
     private String recipient;
 
-    private String recipientPhone;
+    @Column(name = "contact")
+    private String contact;
 
     @Column(name = "address_detail")
     private String addressDetail;
 
+    @Column(name = "is_default", nullable = false)
+    private boolean isDefault = true;
+
     @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = true)
     private Member member;
 
+/*    @OneToOne
+    @JoinColumn(name = "guest_id", nullable = true)
+    private Guest guest;*/
 }
