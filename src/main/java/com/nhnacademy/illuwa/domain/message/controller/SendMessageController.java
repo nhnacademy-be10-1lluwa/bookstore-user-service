@@ -1,8 +1,9 @@
 package com.nhnacademy.illuwa.domain.message.controller;
 
+import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
+import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.message.dto.InactiveRestoreResponse;
 import com.nhnacademy.illuwa.domain.message.dto.InactiveVerificationRequest;
-import com.nhnacademy.illuwa.domain.message.dto.SendMessageRequest;
 import com.nhnacademy.illuwa.domain.message.service.SendMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,16 +15,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SendMessageController {
 
+    private final MemberService memberService;
     private final SendMessageService sendMessageService;
 
     @Autowired
-    public SendMessageController(SendMessageService sendMessageService){
+    public SendMessageController(MemberService memberService, SendMessageService sendMessageService){
+        this.memberService = memberService;
         this.sendMessageService = sendMessageService;
     }
 
     @PostMapping("/members/{memberId}/inactive/verification-code")
     public ResponseEntity<InactiveRestoreResponse> sendVerificationCode(@PathVariable long memberId, @RequestBody InactiveVerificationRequest request){
-        request.setMemberId(memberId);
+        String memberEmail;
+        try{
+            memberEmail = memberService.getMemberById(memberId).getEmail();
+        } catch (RuntimeException e){
+            throw new MemberNotFoundException(memberId);
+        }
+        request.setEmail(memberEmail);
         sendMessageService.sendVerificationNumber(request);
 
         InactiveRestoreResponse response = new InactiveRestoreResponse(

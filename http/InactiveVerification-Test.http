@@ -2,6 +2,19 @@
 GET https://examples.http-client.intellij.net/get
     ?generated-in=IntelliJ IDEA
 
+### 회원가입
+POST http://localhost:8080/members
+Content-Type: application/json
+
+{
+  "name": "홍길동",
+  "birth": "1995-08-15",
+  "email": "honggildong@example.com",
+  "password": "securePassword123!",
+  "contact": "010-1234-5678"
+}
+
+
 ### 인증번호 전송
 POST http://localhost:8080/members/1/inactive/verification-code
 Content-Type: application/json

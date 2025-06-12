@@ -6,6 +6,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InactiveVerificationRequest {
-    Long memberId;
+    String email;
     String content;
 }

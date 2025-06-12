@@ -7,3 +7,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+
+  dooray:
+    webhook:
+      url: https://nhnacademy.dooray.com/services/3204376758577275363/4071284119244117501/RibHlHtpSlCOQ1Kesn_0KQ
