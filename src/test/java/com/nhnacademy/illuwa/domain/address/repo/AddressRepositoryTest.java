@@ -2,7 +2,7 @@ package com.nhnacademy.illuwa.domain.address.repo;
 
 import com.nhnacademy.illuwa.domain.address.entity.Address;
 import com.nhnacademy.illuwa.domain.guest.entity.Guest;
-import com.nhnacademy.illuwa.domain.guest.repository.GuestRepository;
+import com.nhnacademy.illuwa.domain.guest.repo.GuestRepository;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import org.junit.jupiter.api.DisplayName;

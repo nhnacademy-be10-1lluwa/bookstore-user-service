@@ -1,6 +1,7 @@
 package com.nhnacademy.illuwa.domain.address.entity;
 
 import com.nhnacademy.illuwa.domain.member.entity.Member;
+import com.nhnacademy.illuwa.domain.guest.entity.Guest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,7 +39,7 @@ public class Address {
     @JoinColumn(name = "member_id", nullable = true)
     private Member member;
 
-/*    @OneToOne
+    @OneToOne
     @JoinColumn(name = "guest_id", nullable = true)
-    private Guest guest;*/
+    private Guest guest;
 }
