@@ -6,6 +6,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VerifyCodeRequest {
-    Long memberId;
     String code;
 }

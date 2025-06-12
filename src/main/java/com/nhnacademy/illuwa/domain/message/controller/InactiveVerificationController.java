@@ -47,7 +47,6 @@ public class InactiveVerificationController {
     public ResponseEntity<VerifyCodeResponse> receiveVerificationCode(@PathVariable long memberId,
                                                                       @RequestBody VerifyCodeRequest request) {
         String email = getMemberEmailOrThrow(memberId);
-        request.setMemberId(memberId);
 
         if (verificationService.verifyCode(email, request.getCode())) {
             memberService.reactivateMember(memberId);
