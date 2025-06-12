@@ -21,6 +21,7 @@ import java.util.Objects;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
     private long memberId;
 
     private String name;
@@ -52,7 +53,6 @@ public class Member {
 
     public void setGrade(Grade newGrade) {
         if (!Objects.equals(this.grade, newGrade)) {
-            //등급변경 발생
             this.grade = newGrade;
         }
     }
