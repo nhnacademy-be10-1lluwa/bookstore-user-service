@@ -29,21 +29,30 @@ public class InactiveVerificationController {
     }
 
     @PostMapping
-    public ResponseEntity<SendVerificationCodeResponse> sendVerificationCode(@PathVariable long memberId, @RequestBody SendVerificationCodeRequest request) {
+    public ResponseEntity<SendVerificationCodeResponse> sendVerificationCode(@PathVariable long memberId) {
         String memberEmail;
         try {
             memberEmail = memberService.getMemberById(memberId).getEmail();
         } catch (RuntimeException e) {
             throw new MemberNotFoundException(memberId);
         }
+        SendVerificationCodeRequest request= new SendVerificationCodeRequest();
         request.setEmail(memberEmail);
-        sendMessageService.sendVerificationNumber(request);
+
+        boolean result = true;
+        String message = "인증번호 메시지가 성공적으로 전송됐어요";
+        try {
+            sendMessageService.sendVerificationNumber(request);
+        } catch (RuntimeException e){
+            result = false;
+            message = "인증번호 전송에 실패했어요";
+        }
 
         SendVerificationCodeResponse response = new SendVerificationCodeResponse(
-                true,
+                result,
                 memberId,
                 memberEmail,
-                "인증번호 메시지가 성공적으로 전송됐어요"
+                message
         );
 
         return ResponseEntity.ok(response);
