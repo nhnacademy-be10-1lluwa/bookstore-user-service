@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VerifyCodeResponse {
-    boolean success;
     Long memberId;
     String email;
     String message;
