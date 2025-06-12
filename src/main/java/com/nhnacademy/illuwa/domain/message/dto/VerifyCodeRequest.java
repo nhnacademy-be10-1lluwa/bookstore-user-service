@@ -5,7 +5,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class InactiveVerificationRequest {
-    String email;
-    String content;
+public class VerifyCodeRequest {
+    Long memberId;
+    String code;
 }

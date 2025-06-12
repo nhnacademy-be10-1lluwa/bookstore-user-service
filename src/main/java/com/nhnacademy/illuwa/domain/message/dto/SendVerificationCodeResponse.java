@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class InactiveRestoreResponse {
+public class SendVerificationCodeResponse {
     boolean success;
     long memberId;
+    String email;
     String message;
 }

@@ -9,7 +9,8 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SendMessageRequest {
+public class SendVerificationCodeRequest {
+    String email;
     String text;
     Map.Entry<String, Object> attachContent;
 }
