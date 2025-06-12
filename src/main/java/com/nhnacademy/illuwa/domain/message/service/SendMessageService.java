@@ -1,7 +1,6 @@
 package com.nhnacademy.illuwa.domain.message.service;
 
-import com.nhnacademy.illuwa.domain.message.dto.InactiveVerificationRequest;
-import com.nhnacademy.illuwa.domain.message.dto.SendMessageRequest;
+import com.nhnacademy.illuwa.domain.message.dto.SendVerificationCodeRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,11 +23,8 @@ public class SendMessageService {
     @Value("${spring.dooray.webhook.url}")
     private String doorayWebhookUrl;
 
-    public void sendMessage(SendMessageRequest request) {
-        sendToDooray("알림봇", request);
-    }
 
-    public void sendVerificationNumber(InactiveVerificationRequest request) {
+    public void sendVerificationNumber(SendVerificationCodeRequest request) {
         String code = generateVerificationCode();
         String key = "verify:" + request.getEmail();
 
@@ -36,11 +32,12 @@ public class SendMessageService {
         redisTemplate.opsForValue().set(key, code, 3, TimeUnit.MINUTES);
         String text = request.getEmail() + "님 🙌\n" +
                 "휴면해제를 위해 화면에 인증번호를 입력해주세요.";
-        SendMessageRequest messageRequest = new SendMessageRequest(text, new AbstractMap.SimpleEntry<>("🔑인증번호", code));
-        sendToDooray("1lluwa", messageRequest);
+        request.setText(text);
+        request.setAttachContent(new AbstractMap.SimpleEntry<>("🔑인증번호", code));
+        sendToDooray("1lluwa", request);
     }
 
-    private void sendToDooray(String botName, SendMessageRequest request) {
+    private void sendToDooray(String botName, SendVerificationCodeRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
