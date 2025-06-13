@@ -2,10 +2,36 @@
 GET https://examples.http-client.intellij.net/get
     ?generated-in=IntelliJ IDEA
 
+<<<<<<< feature/13-InactiveVerification-service
+### 회원가입
+POST http://localhost:8080/members
+Content-Type: application/json
+
+{
+  "name": "홍길동",
+  "birth": "1995-08-15",
+  "email": "honggildong@example.com",
+  "password": "securePassword123!",
+  "contact": "010-1234-5678"
+}
+
+
+=======
+>>>>>>> develop
 ### 인증번호 전송
 POST http://localhost:8080/members/1/inactive/verification-code
 Content-Type: application/json
 
+<<<<<<< feature/13-InactiveVerification-service
+### 인증번호 검증
+POST http://localhost:8080/members/1/inactive/verification-code/verify
+Content-Type: application/json
+
+{
+  "code": ""
+}
+=======
 {
   "content": "3분 안에 화면에 인증번호를 입력해주세요."
 }
+>>>>>>> develop
