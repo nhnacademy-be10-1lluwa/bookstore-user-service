@@ -12,7 +12,7 @@ public interface MemberService {
 
     Member getMemberById(long memberId);
 
-    void updateMember(Member member);
+    void updateMember(long memberId, Member newMember);
 
     void updateNetOrderAmountAndChangeGrade(long memberId, BigDecimal netOrderAmount);
 

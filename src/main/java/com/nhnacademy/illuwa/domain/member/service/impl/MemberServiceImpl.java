@@ -43,7 +43,6 @@ public class MemberServiceImpl implements MemberService {
         if (memberRepository.existsByEmail(member.getEmail())) {
             throw new DuplicateMemberException("중복된 이메일입니다: " + member.getEmail());
         }
-
         return memberRepository.save(member);
     }
 
@@ -69,12 +68,10 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void updateMember(Member member) {
-        // 아이디값은 세션에서 받아올 예정
-        // 로그인된 상태에서 사용자가 자기 정보를 수정하는게 확실하다고 가정
-        Member orgMember = memberRepository.findById(member.getMemberId())
-                .orElseThrow(() -> new MemberNotFoundException(member.getMemberId()));
-        memberMapper.updateMember(orgMember, member);
+    public void updateMember(long memberId, Member newMember) {
+        Member orgMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        memberMapper.updateMember(orgMember, newMember);
     }
 
     @Transactional
