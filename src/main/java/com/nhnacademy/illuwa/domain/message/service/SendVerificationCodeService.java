@@ -21,7 +21,7 @@ public class SendVerificationCodeService {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Value("${spring.dooray.webhook.url}")
-    private String doorayWebhookUrl;
+    public String doorayWebhookUrl;
 
     public void sendVerificationNumber(SendVerificationCodeRequest request) {
         String code = generateVerificationCode();
