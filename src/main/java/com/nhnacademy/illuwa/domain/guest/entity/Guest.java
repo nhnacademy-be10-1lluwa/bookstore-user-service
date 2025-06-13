@@ -34,7 +34,7 @@ public class Guest {
     private long orderId;
 
     @Builder
-    public Guest(String name, String email, String orderPassword, String contact, Long orderId) {
+    public Guest(String name, String email, String orderPassword, String contact, long orderId) {
         this.name = name;
         this.email = email;
         this.orderPassword = orderPassword;
