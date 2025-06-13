@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 
 public enum Grade {
-    비회원(BigDecimal.ZERO, BigDecimal.ZERO, null),
     일반(BigDecimal.ZERO, new BigDecimal("100000"), new BigDecimal("0.01")),
     로얄(new BigDecimal("100000"), new BigDecimal("200000"), new BigDecimal("0.02")),
     골드(new BigDecimal("200000"), new BigDecimal("300000"), null),
@@ -32,7 +31,7 @@ public enum Grade {
         return Arrays.stream(values())
                 .filter(grade -> grade.inRange(amount))
                 .findFirst()
-                .orElse(비회원);
+                .orElseThrow(() -> new IllegalArgumentException("해당 금액에 해당하는 등급이 없습니다: " + amount));
     }
 
     //등급에 따른 적립포인트 계산
