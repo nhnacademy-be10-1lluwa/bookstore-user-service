@@ -26,11 +26,7 @@ public class MemberServiceImpl implements MemberService {
         this.memberRepository = memberRepository;
         this.memberMapper = memberMapper;
     }
-<<<<<<< feature/13-InactiveVerification-service
 
-    @Transactional
-=======
->>>>>>> develop
     @Override
     @Transactional
     public Member register(Member member) {
