@@ -5,11 +5,10 @@ import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -43,8 +42,8 @@ class MemberRepositoryTest {
                 .build();
     }
 
-
     @Test
+    @DisplayName("회원 저장 성공 테스트")
     void testSave() {
         Member member = createMember("카리나", "karina@naver.com", Grade.로얄, Role.USER);
         Member saved = memberRepository.save(member);
@@ -55,6 +54,7 @@ class MemberRepositoryTest {
 
 
     @Test
+    @DisplayName("회원 정보 수정 성공 테스트")
     void testUpdate() {
         Member member = memberRepository.save(createMember("윈터", "winter@naver.com", Grade.일반, Role.USER));
 
@@ -67,6 +67,7 @@ class MemberRepositoryTest {
     }
 
     @Test
+    @DisplayName("회원 삭제 성공 테스트")
     void testDelete() {
         Member member = memberRepository.save(createMember("닝닝", "ningning@naver.com", Grade.로얄, Role.USER));
         Long id = member.getMemberId();
@@ -78,6 +79,7 @@ class MemberRepositoryTest {
     }
 
     @Test
+    @DisplayName("특정 등급 회원 조회 테스트")
     void testFindByGrade() {
         Member m1 = memberRepository.save(createMember("아이유", "iu@naver.com", Grade.로얄, Role.USER));
         Member m2 = memberRepository.save(createMember("태연", "taeyeon@naver.com", Grade.플래티넘, Role.USER));
@@ -90,6 +92,7 @@ class MemberRepositoryTest {
     }
 
     @Test
+    @DisplayName("특정 역할 회원 조회 테스트")
     void testFindByRole() {
         Member m1 = memberRepository.save(createMember("보아", "boa@naver.com", Grade.일반, Role.ADMIN));
         Member m2 = memberRepository.save(createMember("제니", "jennie@naver.com", Grade.일반, Role.ADMIN));
