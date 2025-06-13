@@ -26,6 +26,11 @@ public class MemberServiceImpl implements MemberService {
         this.memberRepository = memberRepository;
         this.memberMapper = memberMapper;
     }
+<<<<<<< feature/13-InactiveVerification-service
+
+    @Transactional
+=======
+>>>>>>> develop
     @Override
     @Transactional
     public Member register(Member member) {
@@ -54,11 +59,12 @@ public class MemberServiceImpl implements MemberService {
         if(loginMember == null){
             throw new MemberNotFoundException(request.getEmail());
         }
-        updateMemberStatus(loginMember.getMemberId());
+        checkMemberInactive(loginMember.getMemberId());
         loginMember.setLastLoginAt(LocalDateTime.now());
         return loginMember;
     }
 
+    @Transactional
     @Override
     public Member getMemberById(long memberId) {
         return memberRepository.findById(memberId)
@@ -84,18 +90,26 @@ public class MemberServiceImpl implements MemberService {
             orgMember.setGrade(newGrade);
     }
 
+    @Transactional
     @Override
-    public void updateMemberStatus(long memberId) {
+    public void checkMemberInactive(long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
         LocalDateTime threeMonthsAgo  = LocalDateTime.now().minusMonths(3);
         if(member.getLastLoginAt().isBefore(threeMonthsAgo)){
             member.setStatus(Status.INACTIVE);
-            //Todo 휴면해제를 위한 인증절차(두레이 메시지 Service)
         }
-
     }
 
+    @Transactional
+    @Override
+    public void reactivateMember(long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        member.setStatus(Status.ACTIVE);
+    }
+
+    @Transactional
     @Override
     public void removeMember(long memberId) {
         if(!memberRepository.existsById(memberId)){
