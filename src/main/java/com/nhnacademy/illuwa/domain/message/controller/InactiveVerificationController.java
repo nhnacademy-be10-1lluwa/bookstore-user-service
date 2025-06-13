@@ -7,7 +7,7 @@ import com.nhnacademy.illuwa.domain.message.dto.SendVerificationCodeResponse;
 import com.nhnacademy.illuwa.domain.message.dto.VerifyCodeRequest;
 import com.nhnacademy.illuwa.domain.message.dto.VerifyCodeResponse;
 import com.nhnacademy.illuwa.domain.message.service.InactiveVerificationService;
-import com.nhnacademy.illuwa.domain.message.service.SendMessageService;
+import com.nhnacademy.illuwa.domain.message.service.SendVerificationCodeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,14 +17,13 @@ import org.springframework.web.bind.annotation.*;
 public class InactiveVerificationController {
 
     private final MemberService memberService;
-    private final SendMessageService sendMessageService;
+    private final SendVerificationCodeService sendCodeService;
     private final InactiveVerificationService verificationService;
 
-    public InactiveVerificationController(MemberService memberService,
-                                          SendMessageService sendMessageService,
+    public InactiveVerificationController(MemberService memberService, SendVerificationCodeService sendCodeService,
                                           InactiveVerificationService verificationService) {
         this.memberService = memberService;
-        this.sendMessageService = sendMessageService;
+        this.sendCodeService = sendCodeService;
         this.verificationService = verificationService;
     }
 
@@ -35,7 +34,7 @@ public class InactiveVerificationController {
         try {
             SendVerificationCodeRequest request = new SendVerificationCodeRequest();
             request.setEmail(email);
-            sendMessageService.sendVerificationNumber(request);
+            sendCodeService.sendVerificationNumber(request);
             return ResponseEntity.ok(new SendVerificationCodeResponse(memberId, email, "인증번호 메시지가 성공적으로 전송됐어요"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

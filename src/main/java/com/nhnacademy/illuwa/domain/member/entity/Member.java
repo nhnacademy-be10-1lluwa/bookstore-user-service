@@ -1,6 +1,7 @@
 package com.nhnacademy.illuwa.domain.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
@@ -34,7 +35,7 @@ public class Member {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role = Role.USER;
 
     private String contact;
 

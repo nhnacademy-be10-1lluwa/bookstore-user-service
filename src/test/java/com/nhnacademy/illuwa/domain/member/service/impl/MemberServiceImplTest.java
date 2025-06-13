@@ -3,10 +3,10 @@ package com.nhnacademy.illuwa.domain.member.service.impl;
 import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
+import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
-import com.nhnacademy.illuwa.domain.member.exception.MemberAuthenticationFailedException;
+import com.nhnacademy.illuwa.domain.member.exception.InvalidRequestException;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
-import com.nhnacademy.illuwa.domain.member.exception.MemberRegistrationException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +17,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -40,25 +41,33 @@ class MemberServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        testMember = new Member();
-        testMember.setMemberId(1L);
-        testMember.setEmail("test@example.com");
-        testMember.setPassword("password");
-        testMember.setLastLoginAt(LocalDateTime.now().minusMonths(4));
-        testMember.setGrade(Grade.일반);
-        testMember.setStatus(Status.ACTIVE);
+        testMember = Member.builder()
+                .memberId(1)
+                .name("카리나")
+                .birth(LocalDate.of(2000,04,11))
+                .email("test@example.com")
+                .password("password")
+                .contact("010-2345-6879")
+                .netOrderAmount(new BigDecimal("0"))
+                .lastLoginAt(LocalDateTime.now().minusMonths(4))
+                .role(Role.USER)
+                .grade(Grade.일반)
+                .status(Status.ACTIVE)
+                .build();
     }
 
     @Test
     void register_validMember_success() {
+        when(memberRepository.existsByEmail(testMember.getEmail())).thenReturn(false);
         when(memberRepository.save(testMember)).thenReturn(testMember);
+
         Member result = memberService.register(testMember);
         assertEquals(testMember, result);
     }
 
     @Test
     void register_nullMember_throwsException() {
-        assertThrows(MemberRegistrationException.class, () -> memberService.register(null));
+        assertThrows(InvalidRequestException.class, () -> memberService.register(null));
     }
 
     @Test
@@ -78,7 +87,7 @@ class MemberServiceImplTest {
     void login_invalidCredentials_throwsException() {
         MemberLoginRequest request = new MemberLoginRequest("wrong@example.com", "wrong");
         when(memberRepository.getMemberByEmailAndPassword(any(), any())).thenReturn(null);
-        assertThrows(MemberAuthenticationFailedException.class, () -> memberService.login(request));
+        assertThrows(MemberNotFoundException.class, () -> memberService.login(request));
     }
 
     @Test
@@ -135,23 +144,22 @@ class MemberServiceImplTest {
 
 
     @Test
-    void updateMemberStatus_changesToInactive() {
+    void checkMemberInactive_changesToInactive() {
         testMember.setLastLoginAt(LocalDateTime.now().minusMonths(4));
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
-        memberService.updateMemberStatus(1L);
+        memberService.checkMemberInactive(1L);
         assertEquals(Status.INACTIVE, testMember.getStatus());
     }
 
     @Test
-    void updateMemberStatus_recentLogin_doesNotChangeStatus() {
-        // 로그인 시점이 최근(3개월 이내)
+    void checkMemberInactive_recentLogin_doesNotChangeStatus() {
         testMember.setLastLoginAt(LocalDateTime.now().minusMonths(1));
         testMember.setStatus(Status.ACTIVE);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
-        memberService.updateMemberStatus(1L);
+        memberService.checkMemberInactive(1L);
 
         assertEquals(Status.ACTIVE, testMember.getStatus());
     }
