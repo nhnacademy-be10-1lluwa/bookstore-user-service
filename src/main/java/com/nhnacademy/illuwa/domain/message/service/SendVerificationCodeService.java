@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SendMessageService {
+public class SendVerificationCodeService {
 
     private final RestTemplate restTemplate;
     private final RedisTemplate<String, String> redisTemplate;

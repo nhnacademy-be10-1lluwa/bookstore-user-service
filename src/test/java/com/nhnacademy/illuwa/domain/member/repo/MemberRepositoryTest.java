@@ -31,7 +31,7 @@ class MemberRepositoryTest {
                 .email(email)
                 .password("12345!")
                 .role(role)
-                .phoneNumber("01012345678")
+                .contact("01012345678")
                 .grade(grade)
                 .point(new BigDecimal("1000"))
                 .status(Status.ACTIVE)

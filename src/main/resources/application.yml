@@ -24,8 +24,13 @@ spring:
 #      host: s4.java21.net
 #      port: 6379
 
+  dooray:
+    webhook:
+      url: https://nhnacademy.dooray.com/services/3204376758577275363/4071284119244117501/RibHlHtpSlCOQ1Kesn_0KQ
+
 
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
+
