@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.member.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
@@ -20,10 +21,12 @@ import java.util.Objects;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
     private long memberId;
 
     private String name;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birth;
 
     private String email;
@@ -33,8 +36,7 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
+    private String contact;
 
     @Enumerated(EnumType.STRING)
     private Grade grade = Grade.일반;
@@ -51,7 +53,6 @@ public class Member {
 
     public void setGrade(Grade newGrade) {
         if (!Objects.equals(this.grade, newGrade)) {
-            //등급변경 발생
             this.grade = newGrade;
         }
     }

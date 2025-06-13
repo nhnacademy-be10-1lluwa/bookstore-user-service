@@ -1,0 +1,11 @@
+### GET request to example server
+GET https://examples.http-client.intellij.net/get
+    ?generated-in=IntelliJ IDEA
+
+### 인증번호 전송
+POST http://localhost:8080/members/1/inactive/verification-code
+Content-Type: application/json
+
+{
+  "content": "3분 안에 화면에 인증번호를 입력해주세요."
+}

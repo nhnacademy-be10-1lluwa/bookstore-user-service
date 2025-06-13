@@ -1,9 +1,24 @@
+server:
+  port: 8080
+
 spring:
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
     password:
+
   jpa:
     hibernate:
       ddl-auto: create
+
+  data:
+    redis:
+      host: s4.java21.net
+      port: 6379
+      database: 304
+      password: "*N2vya7H@muDTwdNMR!"
+
+  dooray:
+    webhook:
+      url: https://nhnacademy.dooray.com/services/3204376758577275363/4088256248429975930/gxbZ1bhiSYaxcYN_XVgs7Q
