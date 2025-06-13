@@ -1,15 +1,10 @@
 package com.nhnacademy.illuwa.domain.member.dto;
 
-import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberRegisterRequest {
@@ -17,6 +12,6 @@ public class MemberRegisterRequest {
     private LocalDate birth;
     private String email;
     private String password;
-    private String phoneNumber;
+    private String contact;
 }
 

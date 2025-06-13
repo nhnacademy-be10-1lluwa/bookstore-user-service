@@ -4,9 +4,9 @@ import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
-import com.nhnacademy.illuwa.domain.member.exception.MemberAuthenticationFailedException;
+import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;
+import com.nhnacademy.illuwa.domain.member.exception.InvalidRequestException;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
-import com.nhnacademy.illuwa.domain.member.exception.MemberRegistrationException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
@@ -26,22 +26,38 @@ public class MemberServiceImpl implements MemberService {
         this.memberRepository = memberRepository;
         this.memberMapper = memberMapper;
     }
+<<<<<<< feature/13-InactiveVerification-service
 
     @Transactional
+=======
+>>>>>>> develop
     @Override
+    @Transactional
     public Member register(Member member) {
-        if(member == null){
-            throw new MemberRegistrationException("가입정보가 제대로 입력되지 않았습니다.");
+        if (member == null ||
+                member.getEmail() == null || member.getEmail().isBlank() ||
+                member.getPassword() == null || member.getPassword().isBlank() ||
+                member.getName() == null || member.getName().isBlank() ||
+                member.getBirth() == null ||
+                member.getContact() == null || member.getContact().isBlank()) {
+
+            throw new InvalidRequestException("가입정보가 제대로 입력되지 않았습니다.");
         }
+
+        if (memberRepository.existsByEmail(member.getEmail())) {
+            throw new DuplicateMemberException("중복된 이메일입니다: " + member.getEmail());
+        }
+
         return memberRepository.save(member);
     }
+
 
     @Transactional
     @Override
     public Member login(MemberLoginRequest request) {
         Member loginMember = memberRepository.getMemberByEmailAndPassword(request.getEmail(), request.getPassword());
         if(loginMember == null){
-            throw new MemberAuthenticationFailedException();
+            throw new MemberNotFoundException(request.getEmail());
         }
         checkMemberInactive(loginMember.getMemberId());
         loginMember.setLastLoginAt(LocalDateTime.now());
@@ -52,7 +68,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Member getMemberById(long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId) );
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
     }
 
     @Transactional
