@@ -140,6 +140,7 @@
             </plugin>
 
         </plugins>
+        <finalName>user-service</finalName>
     </build>
 
 </project>
