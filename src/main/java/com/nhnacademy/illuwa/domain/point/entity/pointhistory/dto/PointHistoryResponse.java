@@ -1,6 +1,6 @@
-package com.nhnacademy.illuwa.domain.Point.entity.pointhistory.dto;
+package com.nhnacademy.illuwa.domain.point.entity.pointhistory.dto;
 
-import com.nhnacademy.illuwa.domain.Point.entity.pointhistory.enums.PointHistoryType;
+import com.nhnacademy.illuwa.domain.point.entity.pointhistory.enums.PointHistoryType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
