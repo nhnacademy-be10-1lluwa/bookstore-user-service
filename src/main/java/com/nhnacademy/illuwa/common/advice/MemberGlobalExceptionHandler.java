@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class MemberGlobalExceptionHandler {
     @ExceptionHandler(InvalidRequestException.class)
     public ResponseEntity<String> handleInvalidRequest(InvalidRequestException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("누락된 입력칸이 있습니다.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
     @ExceptionHandler(DuplicateMemberException.class)
     public ResponseEntity<String> handleDuplicate(DuplicateMemberException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("회원가입에 실패했습니다. 중복된 회원이에요!");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
     @ExceptionHandler(MemberNotFoundException.class)
