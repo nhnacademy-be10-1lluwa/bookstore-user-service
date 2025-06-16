@@ -12,4 +12,9 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
     Optional<Address> findMemberDefaultAddress(long memberId);
 
     List<Address> findAllByMember_MemberId(long memberId);
+
+    Optional<Address> findAddressByGuest_GuestId(long guestId);
+
+    boolean existsByGuest_GuestId(long guestId);
+
 }
