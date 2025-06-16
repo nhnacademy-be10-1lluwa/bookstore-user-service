@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.common.advice;
 
+import com.nhnacademy.illuwa.domain.guest.exception.GuestNotFoundException;
 import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;
 import com.nhnacademy.illuwa.domain.member.exception.InvalidRequestException;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
@@ -10,7 +11,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class MemberGlobalExceptionHandler {
+public class UserGlobalExceptionHandler {
+
+    /*Member 관련 예외처리*/
     @ExceptionHandler(InvalidRequestException.class)
     public ResponseEntity<String> handleInvalidRequest(InvalidRequestException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -22,7 +25,7 @@ public class MemberGlobalExceptionHandler {
     }
 
     @ExceptionHandler(MemberNotFoundException.class)
-    public ResponseEntity<String> handleNotFound(MemberNotFoundException e) {
+    public ResponseEntity<String> handleMemberNotFound(MemberNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
@@ -30,5 +33,12 @@ public class MemberGlobalExceptionHandler {
     public ResponseEntity<String> handleUnauthorized(UnauthorizedMemberAccessException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
+
+    /*guest 관련 예외처리*/
+    @ExceptionHandler(GuestNotFoundException.class)
+    public ResponseEntity<String> handleGuestNotFound(GuestNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
 
 }
