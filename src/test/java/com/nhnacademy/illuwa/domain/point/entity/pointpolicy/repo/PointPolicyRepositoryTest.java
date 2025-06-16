@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.point.entity.pointpolicy.repo;
 
+import com.nhnacademy.illuwa.domain.Point.entity.pointpolicy.repo.PointPolicyRepository;
 import com.nhnacademy.illuwa.domain.point.entity.pointpolicy.PointPolicy;
 import com.nhnacademy.illuwa.domain.point.entity.pointpolicy.enums.PointValueType;
 import jakarta.transaction.Transactional;
@@ -16,10 +17,11 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Transactional
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
-@Transactional
 class PointPolicyRepositoryTest {
     @Autowired
     PointPolicyRepository pointPolicyRepository;
@@ -75,7 +77,7 @@ class PointPolicyRepositoryTest {
         assertNotNull(joinPointPolicy);
 
         PointPolicy joinPoint = joinPointPolicy.get();
-        assertEquals(new BigDecimal("5000"), joinPoint.getValue());
+        assertEquals(0,joinPoint.getValue().compareTo(new BigDecimal("5000")));
         assertEquals(PointValueType.AMOUNT, joinPoint.getValueType());
         assertEquals("회원가입 포인트 적립액", joinPoint.getDescription());
     }
@@ -96,7 +98,7 @@ class PointPolicyRepositoryTest {
         pointPolicyRepository.save(joinPoint);
 
         PointPolicy updated = pointPolicyRepository.findById("join_point").orElseThrow();
-        assertEquals(new BigDecimal("6000"), updated.getValue());
+        assertEquals(0, updated.getValue().compareTo(new BigDecimal("6000")));
         assertEquals("회원가입 포인트 적립액 수정됨", updated.getDescription());
         assertEquals(PointValueType.AMOUNT, updated.getValueType());
     }
