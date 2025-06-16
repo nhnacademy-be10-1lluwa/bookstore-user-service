@@ -9,6 +9,7 @@ import com.nhnacademy.illuwa.domain.address.repo.AddressRepository;
 import com.nhnacademy.illuwa.domain.address.service.AddressService;
 import com.nhnacademy.illuwa.domain.address.utils.AddressMapper;
 import com.nhnacademy.illuwa.domain.guest.entity.Guest;
+import com.nhnacademy.illuwa.domain.guest.exception.GuestNotFoundException;
 import com.nhnacademy.illuwa.domain.guest.repo.GuestRepository;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
