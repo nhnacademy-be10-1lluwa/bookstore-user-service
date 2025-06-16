@@ -1,6 +1,6 @@
-package com.nhnacademy.illuwa.domain.point.entity.pointhistory;
+package com.nhnacademy.illuwa.domain.pointhistory.entity;
 
-import com.nhnacademy.illuwa.domain.point.entity.pointhistory.enums.PointHistoryType;
+import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointHistoryType;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

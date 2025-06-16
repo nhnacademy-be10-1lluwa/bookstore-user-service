@@ -1,8 +1,8 @@
 package com.nhnacademy.illuwa.domain.point.entity.pointpolicy.repo;
 
-import com.nhnacademy.illuwa.domain.Point.entity.pointpolicy.repo.PointPolicyRepository;
-import com.nhnacademy.illuwa.domain.point.entity.pointpolicy.PointPolicy;
-import com.nhnacademy.illuwa.domain.point.entity.pointpolicy.enums.PointValueType;
+import com.nhnacademy.illuwa.domain.pointpolicy.repo.PointPolicyRepository;
+import com.nhnacademy.illuwa.domain.pointpolicy.entity.PointPolicy;
+import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;

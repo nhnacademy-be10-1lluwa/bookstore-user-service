@@ -1,6 +1,6 @@
-package com.nhnacademy.illuwa.domain.point.entity.pointpolicy;
+package com.nhnacademy.illuwa.domain.pointpolicy.entity;
 
-import com.nhnacademy.illuwa.domain.point.entity.pointpolicy.enums.PointValueType;
+import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

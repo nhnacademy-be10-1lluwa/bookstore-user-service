@@ -1,6 +1,6 @@
-package com.nhnacademy.illuwa.domain.point.entity.pointpolicy.dto;
+package com.nhnacademy.illuwa.domain.pointpolicy.dto;
 
-import com.nhnacademy.illuwa.domain.point.entity.pointpolicy.enums.PointValueType;
+import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
