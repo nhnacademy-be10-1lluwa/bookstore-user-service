@@ -17,6 +17,5 @@ public class PointPolicyUpdateRequest {
     @NotNull(message = "포인트 타입은 RATE/AMOUNT 필수입니다.")
     private PointValueType valueType;
 
-    @NotBlank(message = "포인트 정책 설명은 필수입니다.")
     private String description;
 }

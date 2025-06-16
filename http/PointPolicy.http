@@ -1,0 +1,13 @@
+### 관리자 포인트정책 조회
+GET http://localhost:8080/members/admin/point-policies
+Content-Type: application/json
+
+### 관리자 포인트정책 수정
+PATCH http://localhost:8080/members/admin/point-policies/{policyKey}
+Content-Type: application/json
+
+{
+  "value": "6000",
+  "valueType": "AMOUNT"
+
+}
