@@ -11,11 +11,16 @@ Content-Type: application/json
 }
 
 
-### 인증번호 전송
+### 휴면해제 인증번호 전송
 POST http://localhost:8080/members/1/inactive/verification-code
 Content-Type: application/json
 
-### 인증번호 검증
+### 회원 조회
+GET http://localhost:8080/members/1
+Content-Type: application/json
+
+
+### 휴면해제 인증번호 검증
 POST http://localhost:8080/members/1/inactive/verification-code/verify
 Content-Type: application/json
 

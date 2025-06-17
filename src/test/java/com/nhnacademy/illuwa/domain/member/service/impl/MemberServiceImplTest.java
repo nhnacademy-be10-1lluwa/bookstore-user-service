@@ -1,6 +1,8 @@
 package com.nhnacademy.illuwa.domain.member.service.impl;
 
 import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
+import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
+import com.nhnacademy.illuwa.domain.member.dto.MemberUpdateRequest;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
@@ -33,7 +35,6 @@ import static org.mockito.Mockito.*;
 @Transactional
 @ExtendWith(MockitoExtension.class)
 @DisplayName("MemberServiceImpl 단위 테스트")
-// ... 생략된 import 구문은 동일하게 유지 ...
 
 class MemberServiceImplTest {
 
@@ -73,7 +74,7 @@ class MemberServiceImplTest {
             return saved;
         });
 
-        Member result = memberService.register(testMember);
+        MemberResponse result = memberService.register(testMember);
 
         assertEquals(1L, result.getMemberId());
     }
@@ -119,14 +120,15 @@ class MemberServiceImplTest {
             return m;
         });
 
-        Member registered = memberService.register(testMember);
+        MemberResponse registeredDto = memberService.register(testMember);
+        Member registered = memberRepository.findById(registeredDto.getMemberId()).get();
 
         MemberLoginRequest request = new MemberLoginRequest(registered.getEmail(), registered.getPassword());
         when(memberRepository.getMemberByEmailAndPassword(registered.getEmail(), registered.getPassword()))
                 .thenReturn(registered);
         when(memberRepository.findById(registered.getMemberId())).thenReturn(Optional.of(registered));
 
-        Member result = memberService.login(request);
+        MemberResponse result = memberService.login(request);
 
         assertNotNull(result.getLastLoginAt());
         assertEquals(registered.getEmail(), result.getEmail());
@@ -165,9 +167,9 @@ class MemberServiceImplTest {
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
-        Member result = memberService.getMemberById(1L);
+        MemberResponse result = memberService.getMemberById(1L);
 
-        assertEquals(testMember, result);
+        assertEquals(memberMapper.toDto(testMember), result);
     }
 
     @Test
@@ -184,8 +186,7 @@ class MemberServiceImplTest {
         testMember.setMemberId(1L);
         memberService.register(testMember);
 
-        Member updated = new Member();
-        updated.setMemberId(1L);
+        MemberUpdateRequest updated = new MemberUpdateRequest();
         updated.setEmail("updated@example.com");
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
@@ -199,7 +200,7 @@ class MemberServiceImplTest {
     @DisplayName("회원 수정 시 이름이 정상적으로 반영되는지 확인")
     void updateMember_fieldUpdatedCorrectly() {
         testMember.setMemberId(1L);
-        Member updated = new Member();
+        MemberUpdateRequest updated = new MemberUpdateRequest();
         updated.setName("윈터");
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
@@ -214,8 +215,8 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("회원 수정 - 존재하지 않는 회원 예외 발생")
     void updateMember_memberNotFound_throwsException() {
-        Member updated = new Member();
-        updated.setMemberId(999L);
+        MemberUpdateRequest updated = new MemberUpdateRequest();
+        updated.setName("수정이름");
 
         when(memberRepository.findById(999L)).thenReturn(Optional.empty());
 
