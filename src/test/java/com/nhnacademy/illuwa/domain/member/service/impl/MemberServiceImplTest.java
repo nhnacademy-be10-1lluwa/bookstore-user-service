@@ -32,9 +32,6 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @Transactional
 @ExtendWith(MockitoExtension.class)
-@DisplayName("MemberServiceImpl 단위 테스트")
-// ... 생략된 import 구문은 동일하게 유지 ...
-
 class MemberServiceImplTest {
 
     @Mock

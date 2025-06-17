@@ -1,8 +1,11 @@
 package com.nhnacademy.illuwa.domain.pointpolicy.entity.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public enum PointValueType {
     RATE, AMOUNT;
 
+    @JsonCreator
     public static PointValueType fromStringIgnoreCase(String value) {
         for (PointValueType type : PointValueType.values()) {
             if (type.name().equalsIgnoreCase(value)) {

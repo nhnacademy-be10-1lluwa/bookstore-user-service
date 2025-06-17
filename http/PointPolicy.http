@@ -1,9 +1,46 @@
+### (임시) 관리자 포인트정책 등록(관리자 계정과 함께 초기데이터 넣어줘야함)
+POST http://localhost:8080/members/admin/point-policies
+Content-Type: application/json
+
+[
+  {
+    "policyKey": "join_point",
+    "value": 5000,
+    "valueType": "amount",
+    "description": "회원가입 포인트 적립액"
+  },
+  {
+    "policyKey": "review_point",
+    "value": 200,
+    "valueType": "amount",
+    "description": "리뷰 포인트 적립액"
+  },
+  {
+    "policyKey": "photo_review_point",
+    "value": 500,
+    "valueType": "amount",
+    "description": "포토리뷰 포인트 적립액"
+  },
+  {
+    "policyKey": "book_default_rate",
+    "value": 1.00,
+    "valueType": "rate",
+    "description": "도서구매 기본 적립률"
+  }
+]
+
+
 ### 관리자 포인트정책 조회
 GET http://localhost:8080/members/admin/point-policies
 Content-Type: application/json
 
+### 관리자 포인트정책 단일조회
+GET http://localhost:8080/members/admin/point-policies/book_default_rate
+Content-Type: application/json
+
+
 ### 관리자 포인트정책 수정
-PATCH http://localhost:8080/members/admin/point-policies/{policyKey}
+PATCH http://localhost:8080/members/admin/point-policies/join_point
 Content-Type: application/json
 
 {
