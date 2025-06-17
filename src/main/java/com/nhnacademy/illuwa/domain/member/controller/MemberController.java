@@ -47,6 +47,7 @@ public class MemberController {
     }
 
     // 회원 단일 조회
+    // TODO memberId pathVaraiable로 안 받기로 고려
     @GetMapping("/{memberId}")
     public ResponseEntity<MemberResponse> getMember(@PathVariable Long memberId){
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberById(memberId));

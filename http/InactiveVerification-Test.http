@@ -25,5 +25,5 @@ POST http://localhost:8080/members/1/inactive/verification-code/verify
 Content-Type: application/json
 
 {
-  "code": "884879"
+  "code": "803890"
 }

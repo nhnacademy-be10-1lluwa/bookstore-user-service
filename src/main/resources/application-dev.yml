@@ -23,4 +23,5 @@ spring:
 
   dooray:
     webhook:
-      url: https://nhnacademy.dooray.com/services/3204376758577275363/4088256248429975930/gxbZ1bhiSYaxcYN_XVgs7Q
+#      url: https://nhnacademy.dooray.com/services/3204376758577275363/4088256248429975930/gxbZ1bhiSYaxcYN_XVgs7Q   나와의채팅
+      url: https://nhnacademy.dooray.com/services/3204376758577275363/4071284119244117501/RibHlHtpSlCOQ1Kesn_0KQ
