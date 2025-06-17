@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
@@ -31,7 +32,6 @@ public class MemberServiceImpl implements MemberService {
     private final SendVerificationCodeService sendVerificationCodeService;
 
     @Override
-    @Transactional
     public MemberResponse register(Member member) {
         if (member == null ||
                 member.getEmail() == null || member.getEmail().isBlank() ||
@@ -48,8 +48,6 @@ public class MemberServiceImpl implements MemberService {
         return memberMapper.toDto(memberRepository.save(member));
     }
 
-
-    @Transactional
     @Override
     public MemberResponse login(MemberLoginRequest request) {
         Member loginMember = memberRepository.getMemberByEmailAndPassword(request.getEmail(), request.getPassword());
@@ -79,7 +77,6 @@ public class MemberServiceImpl implements MemberService {
         return memberMapper.toDto(member);
     }
 
-    @Transactional
     @Override
     public MemberResponse updateMember(Long memberId, MemberUpdateRequest newMemberRequest) {
         Member orgMember = memberRepository.findById(memberId)
@@ -88,7 +85,6 @@ public class MemberServiceImpl implements MemberService {
         return memberMapper.toDto(updatedMember);
     }
 
-    @Transactional
     @Override
     public void updateNetOrderAmountAndChangeGrade(Long memberId, BigDecimal netOrderAmount) {
         Member orgMember = memberRepository.findById(memberId)
@@ -97,7 +93,6 @@ public class MemberServiceImpl implements MemberService {
             orgMember.setGrade(newGrade);
     }
 
-    @Transactional
     @Override
     public boolean checkMemberInactive(Long memberId) {
         Member member = memberRepository.findById(memberId)
@@ -123,7 +118,6 @@ public class MemberServiceImpl implements MemberService {
         );
     }
 
-    @Transactional
     @Override
     public void reactivateMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
@@ -131,7 +125,6 @@ public class MemberServiceImpl implements MemberService {
         member.setStatus(Status.ACTIVE);
     }
 
-    @Transactional
     @Override
     public void removeMember(Long memberId) {
         if(!memberRepository.existsById(memberId)){
