@@ -34,8 +34,6 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @Transactional
 @ExtendWith(MockitoExtension.class)
-@DisplayName("MemberServiceImpl 단위 테스트")
-
 class MemberServiceImplTest {
 
     @Mock

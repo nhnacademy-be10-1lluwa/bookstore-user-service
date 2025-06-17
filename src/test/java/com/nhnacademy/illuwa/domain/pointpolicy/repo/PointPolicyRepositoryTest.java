@@ -1,4 +1,4 @@
-package com.nhnacademy.illuwa.domain.point.entity.pointpolicy.repo;
+package com.nhnacademy.illuwa.domain.pointpolicy.repo;
 
 import com.nhnacademy.illuwa.domain.pointpolicy.repo.PointPolicyRepository;
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.PointPolicy;
