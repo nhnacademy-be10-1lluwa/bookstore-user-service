@@ -1,6 +1,6 @@
 package com.nhnacademy.illuwa.common.advice;
 
-import com.nhnacademy.illuwa.domain.address.exception.AddressAlreadyExistsException;
+import com.nhnacademy.illuwa.domain.address.exception.DuplicateAddressException;
 import com.nhnacademy.illuwa.domain.address.exception.AddressNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class AddressGlobalExceptionHandler {
 
-    @ExceptionHandler(AddressAlreadyExistsException.class)
-    public ResponseEntity<String> handleAddressAlreadyExists(AddressAlreadyExistsException ex) {
+    @ExceptionHandler(DuplicateAddressException.class)
+    public ResponseEntity<String> handleAddressAlreadyExists(DuplicateAddressException ex) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ex.getMessage());

@@ -11,5 +11,5 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface AddressMapper {
     Address toEntity(AddressRequest request);
     AddressResponse addressToDto(Address address);
-    void updateAddress(@MappingTarget Address target, Address source);
+    Address updateAddress(@MappingTarget Address target, Address source);
 }

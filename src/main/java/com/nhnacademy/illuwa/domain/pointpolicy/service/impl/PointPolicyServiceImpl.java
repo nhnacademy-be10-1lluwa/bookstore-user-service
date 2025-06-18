@@ -4,6 +4,7 @@ import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyCreateRequest;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyResponse;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyUpdateRequest;
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.PointPolicy;
+import com.nhnacademy.illuwa.domain.pointpolicy.exception.DuplicatePointPolicyException;
 import com.nhnacademy.illuwa.domain.pointpolicy.exception.PointPolicyNotFoundException;
 import com.nhnacademy.illuwa.domain.pointpolicy.repo.PointPolicyRepository;
 import com.nhnacademy.illuwa.domain.pointpolicy.service.PointPolicyService;
@@ -30,7 +31,7 @@ public class PointPolicyServiceImpl implements PointPolicyService {
         Set<String> uniqueKeys = new HashSet<>();
         for (PointPolicyCreateRequest request : requestList) {
             if (!uniqueKeys.add(request.getPolicyKey())) {   //false 반환 시 중복
-                throw new IllegalArgumentException("중복된 policyKey가 존재합니다: " + request.getPolicyKey());
+                throw new DuplicatePointPolicyException(request.getPolicyKey());
             }
         }
 
