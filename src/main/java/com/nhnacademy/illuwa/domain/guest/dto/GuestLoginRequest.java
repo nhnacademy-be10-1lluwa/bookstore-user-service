@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GuestLoginRequest {
     @NotEmpty
-    long orderId;
+    String orderNumber;
     @NotEmpty
     String orderPassword;
 }

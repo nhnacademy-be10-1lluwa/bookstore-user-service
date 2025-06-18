@@ -5,5 +5,5 @@ import com.nhnacademy.illuwa.domain.guest.entity.Guest;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GuestRepository extends JpaRepository<Guest, Long> {
-    GuestResponse findGuestByOrderIdAndOrderPassword(long orderId, String orderPassword);
+    Guest findGuestByOrderNumberAndOrderPassword(String orderNumber, String orderPassword);
 }
