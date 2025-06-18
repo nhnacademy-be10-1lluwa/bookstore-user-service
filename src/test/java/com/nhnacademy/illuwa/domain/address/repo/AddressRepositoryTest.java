@@ -203,7 +203,9 @@ class AddressRepositoryTest {
         addressRepository.save(addr1);
         addressRepository.save(addr2);
 
-        List<Address> addresses = addressRepository.findAllByMember_MemberId(testMember.getMemberId());
+        List<Address> addresses = addressRepository.findAllByMember_MemberId(testMember.getMemberId())
+                .stream()
+                .map();
 
         assertThat(addresses).isNotEmpty();
         assertThat(addresses.size()).isGreaterThanOrEqualTo(2);

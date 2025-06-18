@@ -3,7 +3,7 @@ package com.nhnacademy.illuwa.domain.address.service.impl;
 import com.nhnacademy.illuwa.domain.address.dto.AddressRequest;
 import com.nhnacademy.illuwa.domain.address.dto.AddressResponse;
 import com.nhnacademy.illuwa.domain.address.entity.Address;
-import com.nhnacademy.illuwa.domain.address.exception.AddressAlreadyExistsException;
+import com.nhnacademy.illuwa.domain.address.exception.DuplicateAddressException;
 import com.nhnacademy.illuwa.domain.address.exception.AddressNotFoundException;
 import com.nhnacademy.illuwa.domain.address.repo.AddressRepository;
 import com.nhnacademy.illuwa.domain.address.service.AddressService;
@@ -23,6 +23,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AddressServiceImpl implements AddressService {
     private final MemberRepository memberRepository;
     private final GuestRepository guestRepository;
@@ -31,49 +32,40 @@ public class AddressServiceImpl implements AddressService {
     private final AddressMapper addressMapper;
 
     @Override
-    @Transactional
-    public Address registerAddressForMember(long memberId, AddressRequest request) {
-        if(!memberRepository.existsById(memberId)){
-            throw new MemberNotFoundException(memberId);
-        }
-        Address address = addressMapper.toEntity(request);
-
+    public AddressResponse registerAddressForMember(long memberId, AddressRequest request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberNotFoundException(memberId));
+
+        Address address = addressMapper.toEntity(request);
         address.setMember(member);
 
-        return addressRepository.save(address);
+        return addressMapper.addressToDto(addressRepository.save(address));
     }
 
     @Override
-    @Transactional
-    public Address registerAddressForGuest(long guestId, AddressRequest request) {
-        //비회원 주소 이미 존재하는지 체크
+    public AddressResponse registerAddressForGuest(long guestId, AddressRequest request) {
         if(addressRepository.existsByGuest_GuestId(guestId)) {
-            throw new AddressAlreadyExistsException();
+            throw new DuplicateAddressException("비회원은 주소 1개만 설정할 수 있습니다.");
         }
-        Address address = addressMapper.toEntity(request);
-
         Guest guest = guestRepository.findById(guestId)
                 .orElseThrow(() -> new GuestNotFoundException(guestId));
+        Address address = addressMapper.toEntity(request);
         address.setGuest(guest);
 
-        return addressRepository.save(address);
+        Address savedAddress = addressRepository.save(address);
+
+        return addressMapper.addressToDto(savedAddress);
     }
 
     @Override
-    @Transactional
-    public Address updateAddress(long addressId, AddressRequest request) {
-        Optional<Address> optionalAddress = addressRepository.findById(addressId);
+    public AddressResponse updateAddress(long addressId, AddressRequest request) {
+        Address orgAddress = addressRepository.findById(addressId)
+                .orElseThrow(() -> new AddressNotFoundException(addressId));
+
         Address newAddress = addressMapper.toEntity(request);
-        Address orgAddress;
-        if(optionalAddress.isEmpty()){
-            throw new AddressNotFoundException();
-        } else{
-            orgAddress = optionalAddress.get();
-            addressMapper.updateAddress(orgAddress, newAddress);
-        }
-        return orgAddress;
+        newAddress = addressMapper.updateAddress(orgAddress, newAddress);
+
+        return addressMapper.addressToDto(newAddress);
     }
 
     @Override
@@ -87,7 +79,8 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Transactional(readOnly = true)
     public AddressResponse getAddress(long addressId) {
-        Address address = addressRepository.findById(addressId).orElseThrow(AddressNotFoundException::new);
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(AddressNotFoundException::new);
         return addressMapper.addressToDto(address);
     }
 
@@ -105,11 +98,9 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Transactional(readOnly = true)
     public AddressResponse getAddressByGuest(long guestId) {
-        Optional<Address> optionalAddress = addressRepository.findAddressByGuest_GuestId(guestId);
-        if(optionalAddress.isEmpty()){
-            throw new AddressNotFoundException();
-        }
+        Address guestAddress =  addressRepository.findAddressByGuest_GuestId(guestId)
+                .orElseThrow(() -> new AddressNotFoundException("해당 비회원의 주소가 등록되지 않았습니다."));
 
-        return addressMapper.addressToDto(optionalAddress.get());
+        return addressMapper.addressToDto(guestAddress);
     }
 }

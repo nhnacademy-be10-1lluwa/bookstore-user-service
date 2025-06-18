@@ -7,7 +7,7 @@ import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;
-import com.nhnacademy.illuwa.domain.member.exception.InvalidRequestException;
+import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
@@ -40,20 +40,18 @@ public class MemberServiceImpl implements MemberService {
                 member.getBirth() == null ||
                 member.getContact() == null || member.getContact().isBlank()) {
 
-            throw new InvalidRequestException("가입정보가 제대로 입력되지 않았습니다.");
+            throw new InvalidInputException("가입정보가 제대로 입력되지 않았습니다.");
         }
         if (memberRepository.existsByEmail(member.getEmail())) {
-            throw new DuplicateMemberException("중복된 이메일입니다: " + member.getEmail());
+            throw new DuplicateMemberException();
         }
         return memberMapper.toDto(memberRepository.save(member));
     }
 
     @Override
     public MemberResponse login(MemberLoginRequest request) {
-        Member loginMember = memberRepository.getMemberByEmailAndPassword(request.getEmail(), request.getPassword());
-        if(loginMember == null){
-            throw new MemberNotFoundException(request.getEmail());
-        }
+        Member loginMember = memberRepository.getMemberByEmailAndPassword(request.getEmail(), request.getPassword())
+                .orElseThrow(MemberNotFoundException::new);
         checkMemberInactive(loginMember.getMemberId());
         loginMember.setLastLoginAt(LocalDateTime.now());
         return memberMapper.toDto(loginMember);
@@ -107,8 +105,8 @@ public class MemberServiceImpl implements MemberService {
 
     //TODO 수정/리팩토링 예정
     public void sendVerificationCodeForInactiveMember(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(
-                ()-> new MemberNotFoundException(memberId)
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()-> new MemberNotFoundException(memberId)
         );
         if (!member.getStatus().equals(Status.INACTIVE)) {
             throw new IllegalStateException("휴면 회원에게만 인증번호를 전송할 수 있어요!");

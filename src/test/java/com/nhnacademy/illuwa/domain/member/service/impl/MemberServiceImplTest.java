@@ -7,7 +7,7 @@ import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;
-import com.nhnacademy.illuwa.domain.member.exception.InvalidRequestException;
+import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
@@ -89,14 +89,14 @@ class MemberServiceImplTest {
                 .contact("010-1234-5678")
                 .build();
 
-        assertThrows(InvalidRequestException.class, () -> memberService.register(invalid));
+        assertThrows(InvalidInputException.class, () -> memberService.register(invalid));
     }
 
 
     @Test
     @DisplayName("회원 가입 - null 회원 정보 예외 발생")
     void register_nullMember_throwsException() {
-        assertThrows(InvalidRequestException.class, () -> memberService.register(null));
+        assertThrows(InvalidInputException.class, () -> memberService.register(null));
     }
 
     @Test

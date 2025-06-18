@@ -1,44 +1,77 @@
 package com.nhnacademy.illuwa.common.advice;
 
+import com.nhnacademy.illuwa.domain.address.exception.DuplicateAddressException;
 import com.nhnacademy.illuwa.domain.guest.exception.GuestNotFoundException;
 import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;
-import com.nhnacademy.illuwa.domain.member.exception.InvalidRequestException;
+import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.exception.UnauthorizedMemberAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class UserGlobalExceptionHandler {
 
-    /*Member 관련 예외처리*/
-    @ExceptionHandler(InvalidRequestException.class)
-    public ResponseEntity<String> handleInvalidRequest(InvalidRequestException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    /*Guest 관련 예외처리*/
+    @ExceptionHandler(GuestNotFoundException.class)
+    public ResponseEntity<Object> handleUGuestNotFoundException(GuestNotFoundException ex, WebRequest request) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("error", HttpStatus.NOT_FOUND.getReasonPhrase());
+        body.put("code", "GUEST_NOT_FOUND");
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false).replace("uri=", "")); // 요청 URI
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
+    /*Member 관련 예외처리*/
     @ExceptionHandler(DuplicateMemberException.class)
-    public ResponseEntity<String> handleDuplicate(DuplicateMemberException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    public ResponseEntity<Object> handleDuplicateMember(DuplicateMemberException ex, WebRequest request) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.CONFLICT.value());
+        body.put("error", HttpStatus.CONFLICT.getReasonPhrase());
+        body.put("code", "DUPLICATE_MEMBER");
+        body.put("message", ex.getMessage());
+
+        body.put("path", request.getDescription(false).replace("uri=",""));
+
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(MemberNotFoundException.class)
-    public ResponseEntity<String> handleMemberNotFound(MemberNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    public ResponseEntity<Object> handleMemberNotFoundException(MemberNotFoundException ex, WebRequest request) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("error", HttpStatus.NOT_FOUND.getReasonPhrase());
+        body.put("code", "MEMBER_NOT_FOUND");
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false).replace("uri=", ""));
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UnauthorizedMemberAccessException.class)
-    public ResponseEntity<String> handleUnauthorized(UnauthorizedMemberAccessException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-    }
+    public ResponseEntity<Object> handleUnauthorizedMemberException(UnauthorizedMemberAccessException ex, WebRequest request) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.UNAUTHORIZED.value());
+        body.put("error", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+        body.put("code", "UNAUTHORIZED_MEMBER_ACCESS");
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false).replace("uri=", "")); // 요청 URI
 
-    /*guest 관련 예외처리*/
-    @ExceptionHandler(GuestNotFoundException.class)
-    public ResponseEntity<String> handleGuestNotFound(GuestNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
     }
-
 
 }
