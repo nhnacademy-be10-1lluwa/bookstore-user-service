@@ -59,7 +59,7 @@ class AddressRepositoryTest {
                 .email("guest@test.com")
                 .orderPassword("123456!")
                 .contact("010-9876-5432")
-                .orderId(1L)
+                .orderNumber("20250819063812-234877")
                 .build();
         testGuest = guestRepository.save(guest);
     }
