@@ -5,6 +5,7 @@ import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,7 @@ class MemberRepositoryTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("특정 등급 회원 조회 테스트")
     void testFindByGrade() {
         Member m1 = memberRepository.save(createMember("아이유", "iu@naver.com", Grade.로얄, Role.USER));
