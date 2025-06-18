@@ -17,7 +17,7 @@ public class GuestServiceImpl implements GuestService {
     @Override
     public GuestResponse login(GuestLoginRequest request) {
         Guest guest = guestRepository.findGuestByOrderNumberAndOrderPassword(request.getOrderNumber(), request.getOrderPassword())
-                .orElseThrow(() -> new GuestNotFoundException(guest.getGuestId()));
+                .orElseThrow(GuestNotFoundException::new);
         return GuestResponse.from(guest);
     }
 }

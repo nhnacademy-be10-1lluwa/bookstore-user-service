@@ -205,7 +205,7 @@ class AddressRepositoryTest {
 
         List<Address> addresses = addressRepository.findAllByMember_MemberId(testMember.getMemberId())
                 .stream()
-                .map();
+                .toList();
 
         assertThat(addresses).isNotEmpty();
         assertThat(addresses.size()).isGreaterThanOrEqualTo(2);

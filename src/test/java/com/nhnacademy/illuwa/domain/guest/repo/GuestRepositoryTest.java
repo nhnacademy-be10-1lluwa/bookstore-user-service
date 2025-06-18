@@ -11,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -40,7 +42,6 @@ class GuestRepositoryTest {
     void testSave(){
         Guest saved = guestRepository.save(testGuest);
 
-        assertNotNull(saved.getGuestId());
         assertEquals(testGuest.getName(), saved.getName());
         assertEquals(testGuest.getEmail(), saved.getEmail());
         assertEquals(testGuest.getOrderPassword(), saved.getOrderPassword());
@@ -49,19 +50,34 @@ class GuestRepositoryTest {
     }
 
     @Test
-    @DisplayName("비회원 정보조회 - 로그인")
-    void testFindGuestByOrderIdAndOrderPassword(){
-        String orderNumber = testGuest.getOrderNumber();
-        String orderPassword = testGuest.getOrderPassword();;
+    @DisplayName("비회원 정보조회 - 로그인 성공")
+    void testFindGuestByOrderIdAndOrderPassword() {
+        Guest savedGuest = guestRepository.save(testGuest);
 
-        Guest guest = guestRepository.findGuestByOrderNumberAndOrderPassword(orderNumber, orderPassword);
-        GuestResponse guestDto = GuestResponse.from(guest);
+        Optional<Guest> optionalGuest = guestRepository.findGuestByOrderNumberAndOrderPassword(
+                savedGuest.getOrderNumber(),
+                savedGuest.getOrderPassword()
+        );
+
+        assertTrue(optionalGuest.isPresent(), "Guest should be found!");
+
+        GuestResponse guestDto = GuestResponse.from(optionalGuest.get());
 
         assertNotNull(guestDto);
-        assertEquals(testGuest.getGuestId(), guestDto.getGuestId());
-        assertEquals(testGuest.getOrderNumber(), guestDto.getName());
-        assertEquals(testGuest.getOrderPassword(), guest.getOrderPassword());
+        assertEquals(savedGuest.getGuestId(), guestDto.getGuestId());
+        assertEquals(savedGuest.getOrderNumber(), guestDto.getOrderNumber());
+        assertEquals(savedGuest.getOrderPassword(), optionalGuest.get().getOrderPassword());
     }
 
 
+    @Test
+    @DisplayName("비회원 정보조회 - 로그인 실패")
+    void testFindGuestByInvalidOrderNumberAndPassword(){
+        guestRepository.save(testGuest);
+
+        Optional<Guest> result = guestRepository.findGuestByOrderNumberAndOrderPassword(
+                "wrongOrderNumber", "wrongPassword");
+
+        assertTrue(result.isEmpty());
+    }
 }

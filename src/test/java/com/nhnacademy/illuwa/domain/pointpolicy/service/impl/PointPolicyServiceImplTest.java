@@ -5,6 +5,7 @@ import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyResponse;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyUpdateRequest;
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.PointPolicy;
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
+import com.nhnacademy.illuwa.domain.pointpolicy.exception.DuplicatePointPolicyException;
 import com.nhnacademy.illuwa.domain.pointpolicy.exception.PointPolicyNotFoundException;
 import com.nhnacademy.illuwa.domain.pointpolicy.repo.PointPolicyRepository;
 import com.nhnacademy.illuwa.domain.pointpolicy.utils.PointPolicyMapper;
@@ -71,17 +72,17 @@ class PointPolicyServiceImplTest {
                 new PointPolicyCreateRequest("join_point", new BigDecimal("2000"), PointValueType.AMOUNT, "설명2")
         );
 
-        IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class,
+        DuplicatePointPolicyException ex = Assertions.assertThrows(DuplicatePointPolicyException.class,
                 () -> pointPolicyService.saveAllPointPolicy(duplicateList));
 
-        Assertions.assertTrue(ex.getMessage().contains("중복된 policyKey"));
+        Assertions.assertTrue(ex.getMessage().contains("이미 존재하는 포인트 정책입니다"));
     }
 
 
     @Test
     @DisplayName("포인트 정책 단일조회")
     void testFindByPolicyKey() {
-        PointPolicyCreateRequest joinPointRequestDto = requestList.get(0);
+        PointPolicyCreateRequest joinPointRequestDto = requestList.getFirst();
         PointPolicy entity = new PointPolicy(
                 joinPointRequestDto.getPolicyKey(),
                 joinPointRequestDto.getValue(),

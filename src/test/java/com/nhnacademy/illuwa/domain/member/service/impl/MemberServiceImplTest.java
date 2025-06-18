@@ -72,6 +72,22 @@ class MemberServiceImplTest {
             return saved;
         });
 
+        when(memberMapper.toDto(any(Member.class))).thenAnswer(invocation -> {
+            Member m = invocation.getArgument(0);
+            return new MemberResponse(
+                    m.getMemberId(),
+                    m.getName(),
+                    m.getBirth(),
+                    m.getEmail(),
+                    m.getRole(),
+                    m.getContact(),
+                    m.getGrade(),
+                    m.getPoint(),
+                    m.getStatus(),
+                    m.getLastLoginAt()
+            );
+        });
+
         MemberResponse result = memberService.register(testMember);
 
         assertEquals(1L, result.getMemberId());
@@ -112,31 +128,38 @@ class MemberServiceImplTest {
     void login_validCredentials_success() {
         testMember.setMemberId(1L);
 
-        when(memberRepository.save(any(Member.class))).thenAnswer(invocation -> {
-            Member m = invocation.getArgument(0);
-            m.setMemberId(1L);
-            return m;
-        });
+        when(memberRepository.getMemberByEmailAndPassword(testMember.getEmail(), testMember.getPassword()))
+                .thenReturn(Optional.of(testMember));
+        when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
-        MemberResponse registeredDto = memberService.register(testMember);
-        Member registered = memberRepository.findById(registeredDto.getMemberId()).get();
+        when(memberMapper.toDto(testMember)).thenReturn(
+                MemberResponse.builder()
+                        .memberId(testMember.getMemberId())
+                        .name(testMember.getName())
+                        .birth(testMember.getBirth())
+                        .email(testMember.getEmail())
+                        .contact(testMember.getContact())
+                        .point(testMember.getPoint())
+                        .role(testMember.getRole())
+                        .grade(testMember.getGrade())
+                        .lastLoginAt(testMember.getLastLoginAt())
+                        .build()
+        );
 
-        MemberLoginRequest request = new MemberLoginRequest(registered.getEmail(), registered.getPassword());
-        when(memberRepository.getMemberByEmailAndPassword(registered.getEmail(), registered.getPassword()))
-                .thenReturn(registered);
-        when(memberRepository.findById(registered.getMemberId())).thenReturn(Optional.of(registered));
-
+        // 로그인 요청
+        MemberLoginRequest request = new MemberLoginRequest(testMember.getEmail(), testMember.getPassword());
         MemberResponse result = memberService.login(request);
 
         assertNotNull(result.getLastLoginAt());
-        assertEquals(registered.getEmail(), result.getEmail());
+        assertEquals(testMember.getEmail(), result.getEmail());
     }
+
 
     @Test
     @DisplayName("로그인 - 잘못된 자격 증명 예외 발생")
     void login_invalidCredentials_throwsException() {
         MemberLoginRequest request = new MemberLoginRequest("wrong@example.com", "wrong");
-        when(memberRepository.getMemberByEmailAndPassword(any(), any())).thenReturn(null);
+        when(memberRepository.getMemberByEmailAndPassword(any(), any())).thenReturn(Optional.empty());
 
         assertThrows(MemberNotFoundException.class, () -> memberService.login(request));
     }
@@ -148,7 +171,7 @@ class MemberServiceImplTest {
         testMember.setStatus(Status.ACTIVE);
         testMember.setMemberId(1L);
 
-        when(memberRepository.getMemberByEmailAndPassword(any(), any())).thenReturn(testMember);
+        when(memberRepository.getMemberByEmailAndPassword(any(), any())).thenReturn(Optional.of(testMember));
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
         memberService.login(new MemberLoginRequest(testMember.getEmail(), testMember.getPassword()));
@@ -181,17 +204,35 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("회원 수정 - 정상 수정 성공")
     void updateMember_validMember_success() {
-        testMember.setMemberId(1L);
-        memberService.register(testMember);
-
-        MemberUpdateRequest updated = new MemberUpdateRequest();
-        updated.setEmail("updated@example.com");
+        MemberUpdateRequest updateRequest = new MemberUpdateRequest();
+        updateRequest.setName("닝닝");
+        updateRequest.setContact("010-9876-5432");
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
-        memberService.updateMember(1L, updated);
+        when(memberMapper.updateMember(any(Member.class), any(MemberUpdateRequest.class)))
+                .thenAnswer(invocation -> {
+                    Member org = invocation.getArgument(0);
+                    MemberUpdateRequest req = invocation.getArgument(1);
+                    org.setName(req.getName());
+                    org.setContact(req.getContact());
+                    return org;
+                });
 
-        verify(memberMapper).updateMember(testMember, updated);
+        // memberMapper.toDto가 Member를 MemberResponse로 변환
+        when(memberMapper.toDto(any(Member.class))).thenAnswer(invocation -> {
+            Member m = invocation.getArgument(0);
+            return MemberResponse.builder()
+                    .memberId(m.getMemberId())
+                    .name(m.getName())
+                    .contact(m.getContact())
+                    .build();
+        });
+
+        MemberResponse result = memberService.updateMember(1L, updateRequest);
+
+        assertEquals("닝닝", result.getName());
+        assertEquals("010-9876-5432", result.getContact());
     }
 
     @Test
