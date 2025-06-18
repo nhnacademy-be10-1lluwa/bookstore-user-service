@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.message.controller;
 
+import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.message.dto.SendVerificationCodeRequest;
 import com.nhnacademy.illuwa.domain.message.service.InactiveVerificationService;
@@ -38,11 +39,11 @@ class InactiveVerificationControllerTest {
         long memberId = 1L;
         String email = "test@example.com";
 
-        when(memberService.getMemberById(memberId)).thenReturn(
-                new com.nhnacademy.illuwa.domain.member.entity.Member() {{
-                    setEmail(email);
-                }}
-        );
+        when(memberService.getMemberById(memberId)).thenReturn(new MemberResponse() {
+            {
+                setEmail(email);
+            }
+        });
 
         mockMvc.perform(post("/members/{memberId}/inactive/verification-code", memberId))
                 .andExpect(status().isOk())
@@ -59,9 +60,11 @@ class InactiveVerificationControllerTest {
         long memberId = 1L;
         String email = "test@example.com";
 
-        when(memberService.getMemberById(memberId)).thenReturn(new com.nhnacademy.illuwa.domain.member.entity.Member() {{
-            setEmail(email);
-        }});
+        when(memberService.getMemberById(memberId)).thenReturn(new MemberResponse() {
+            {
+                setEmail(email);
+            }
+        });
 
         doThrow(new RuntimeException("fail")).when(sendCodeService).sendVerificationNumber(any());
 
@@ -79,9 +82,11 @@ class InactiveVerificationControllerTest {
         String email = "test@example.com";
         String code = "123456";
 
-        when(memberService.getMemberById(memberId)).thenReturn(new com.nhnacademy.illuwa.domain.member.entity.Member() {{
-            setEmail(email);
-        }});
+        when(memberService.getMemberById(memberId)).thenReturn(new MemberResponse() {
+            {
+                setEmail(email);
+            }
+        });
         when(verificationService.verifyCode(email, code)).thenReturn(true);
 
         String requestBody = "{\"code\":\"" + code + "\"}";
@@ -104,9 +109,12 @@ class InactiveVerificationControllerTest {
         String email = "test@example.com";
         String code = "wrongcode";
 
-        when(memberService.getMemberById(memberId)).thenReturn(new com.nhnacademy.illuwa.domain.member.entity.Member() {{
-            setEmail(email);
-        }});
+        when(memberService.getMemberById(memberId)).thenReturn(new MemberResponse() {
+            {
+                setEmail(email);
+            }
+        });
+
         when(verificationService.verifyCode(email, code)).thenReturn(false);
 
         String requestBody = "{\"code\":\"" + code + "\"}";

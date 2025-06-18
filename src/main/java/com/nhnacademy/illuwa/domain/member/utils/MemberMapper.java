@@ -1,6 +1,8 @@
 package com.nhnacademy.illuwa.domain.member.utils;
 
 import com.nhnacademy.illuwa.domain.member.dto.MemberRegisterRequest;
+import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
+import com.nhnacademy.illuwa.domain.member.dto.MemberUpdateRequest;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,5 +18,8 @@ public interface MemberMapper {
     @Mapping(source = "contact", target = "contact")
     Member toEntity(MemberRegisterRequest request);
 
-    void updateMember(@MappingTarget Member target, Member source);
+    MemberResponse toDto(Member member);
+
+    Member updateMember(@MappingTarget Member target, MemberUpdateRequest source);
+    Member updateMember(@MappingTarget Member target, Member source);
 }
