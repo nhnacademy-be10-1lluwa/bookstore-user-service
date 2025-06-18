@@ -7,7 +7,7 @@ import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;
-import com.nhnacademy.illuwa.domain.member.exception.InvalidRequestException;
+import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
@@ -40,7 +40,7 @@ public class MemberServiceImpl implements MemberService {
                 member.getBirth() == null ||
                 member.getContact() == null || member.getContact().isBlank()) {
 
-            throw new InvalidRequestException("가입정보가 제대로 입력되지 않았습니다.");
+            throw new InvalidInputException("가입정보가 제대로 입력되지 않았습니다.");
         }
         if (memberRepository.existsByEmail(member.getEmail())) {
             throw new DuplicateMemberException();
