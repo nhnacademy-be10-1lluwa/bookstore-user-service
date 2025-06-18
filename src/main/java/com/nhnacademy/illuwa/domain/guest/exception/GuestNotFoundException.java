@@ -1,10 +1,7 @@
 package com.nhnacademy.illuwa.domain.guest.exception;
 
 public class GuestNotFoundException extends RuntimeException {
-    public GuestNotFoundException(String message) {
-        super(message);
-    }
     public GuestNotFoundException(Long guestId) {
-        super("존재하지 않는 비회원입니다: " + guestId);
+        super("해당 비회원을 찾을 수 없습니다: " + guestId);
     }
 }
