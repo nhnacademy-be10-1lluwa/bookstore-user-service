@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
@@ -45,6 +46,7 @@ class MemberRepositoryTest {
 
     @Test
     @DisplayName("회원 저장 성공 테스트")
+    @Rollback
     void testSave() {
         Member member = createMember("카리나", "karina@naver.com", Grade.로얄, Role.USER);
         Member saved = memberRepository.save(member);
@@ -56,6 +58,7 @@ class MemberRepositoryTest {
 
     @Test
     @DisplayName("회원 정보 수정 성공 테스트")
+    @Rollback
     void testUpdate() {
         Member member = memberRepository.save(createMember("윈터", "winter@naver.com", Grade.일반, Role.USER));
 
@@ -69,6 +72,7 @@ class MemberRepositoryTest {
 
     @Test
     @DisplayName("회원 삭제 성공 테스트")
+    @Rollback
     void testDelete() {
         Member member = memberRepository.save(createMember("닝닝", "ningning@naver.com", Grade.로얄, Role.USER));
         Long id = member.getMemberId();
