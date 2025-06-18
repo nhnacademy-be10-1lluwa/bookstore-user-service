@@ -23,7 +23,7 @@ Content-Type: application/json
   },
   {
     "policyKey": "book_default_rate",
-    "value": 1.00,
+    "value": 0.01,
     "valueType": "rate",
     "description": "도서구매 기본 적립률"
   }
@@ -44,7 +44,7 @@ PATCH http://localhost:8080/members/admin/point-policies/join_point
 Content-Type: application/json
 
 {
-  "value": "6000",
-  "valueType": "AMOUNT"
+  "value": "0.30",
+  "valueType": "RATE"
 
 }

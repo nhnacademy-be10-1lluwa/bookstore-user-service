@@ -6,7 +6,7 @@ import java.util.Arrays;
 public enum Grade {
     일반(BigDecimal.ZERO, new BigDecimal("100000"), new BigDecimal("0.01")),
     로얄(new BigDecimal("100000"), new BigDecimal("200000"), new BigDecimal("0.02")),
-    골드(new BigDecimal("200000"), new BigDecimal("300000"), null),
+    골드(new BigDecimal("200000"), new BigDecimal("300000"), new BigDecimal("0.02")),
     플래티넘(new BigDecimal("300000"), null, new BigDecimal("0.03"));
 
     private final BigDecimal minAmount;     //최소 순수주문금액
