@@ -29,6 +29,7 @@ jobs:
           -Dsonar.projectName=1lluwa-User-service 
           -Dsonar.host.url=${{secrets.SONAR_HOST}} 
           -Dsonar.login=${{secrets.SONAR_TOKEN}}
+          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
   deploy:
     name: Build & Deploy
