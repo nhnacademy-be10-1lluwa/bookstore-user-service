@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.nhnacademy</groupId>
-    <artifactId>illuwa</artifactId>
+    <artifactId>1lluwa-User-Service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>illuwa</name>
     <description>illuwa</description>
