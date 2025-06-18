@@ -47,24 +47,29 @@ public class Member {
     private Role role = Role.USER;
 
     @Setter
+    @Column(name = "contact", nullable = false)
     private String contact;
 
     @Setter
+    @Column(name = "grade", nullable = false)
     @Enumerated(EnumType.STRING)
     private Grade grade = Grade.일반;
 
     @Setter
-    @Column(name = "net_order_amount")
+    @Column(name = "net_order_amount", nullable = false)
     private BigDecimal netOrderAmount = new BigDecimal("0");
 
     @Setter
+    @Column(name = "point", nullable = false)
     private BigDecimal point = new BigDecimal("0");
 
     @Setter
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
     @Setter
+    @Column(name = "last_login_at", nullable = false)
     private LocalDateTime lastLoginAt = LocalDateTime.now();
 
     @Builder
@@ -83,6 +88,19 @@ public class Member {
         this.point = (point != null) ? point : BigDecimal.ZERO;
         this.status = (status != null) ? status : Status.ACTIVE;
         this.lastLoginAt = (lastLoginAt != null) ? lastLoginAt : LocalDateTime.now();
+    }
+
+    // LocalDate 값 편하게 넣기 위한 커스텀 Builder
+    public static class MemberBuilder {
+        public MemberBuilder birth(String birth) {
+            this.birth = LocalDate.parse(birth);
+            return this;
+        }
+
+        public MemberBuilder birth(LocalDate birth) {
+            this.birth = birth;
+            return this;
+        }
     }
 
 }

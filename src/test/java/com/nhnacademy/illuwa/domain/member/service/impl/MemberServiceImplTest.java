@@ -1,11 +1,13 @@
 package com.nhnacademy.illuwa.domain.member.service.impl;
 
 import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
+import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
+import com.nhnacademy.illuwa.domain.member.dto.MemberUpdateRequest;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;
-import com.nhnacademy.illuwa.domain.member.exception.InvalidRequestException;
+import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
@@ -32,9 +34,6 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @Transactional
 @ExtendWith(MockitoExtension.class)
-@DisplayName("MemberServiceImpl 단위 테스트")
-// ... 생략된 import 구문은 동일하게 유지 ...
-
 class MemberServiceImplTest {
 
     @Mock
@@ -73,7 +72,23 @@ class MemberServiceImplTest {
             return saved;
         });
 
-        Member result = memberService.register(testMember);
+        when(memberMapper.toDto(any(Member.class))).thenAnswer(invocation -> {
+            Member m = invocation.getArgument(0);
+            return new MemberResponse(
+                    m.getMemberId(),
+                    m.getName(),
+                    m.getBirth(),
+                    m.getEmail(),
+                    m.getRole(),
+                    m.getContact(),
+                    m.getGrade(),
+                    m.getPoint(),
+                    m.getStatus(),
+                    m.getLastLoginAt()
+            );
+        });
+
+        MemberResponse result = memberService.register(testMember);
 
         assertEquals(1L, result.getMemberId());
     }
@@ -90,14 +105,14 @@ class MemberServiceImplTest {
                 .contact("010-1234-5678")
                 .build();
 
-        assertThrows(InvalidRequestException.class, () -> memberService.register(invalid));
+        assertThrows(InvalidInputException.class, () -> memberService.register(invalid));
     }
 
 
     @Test
     @DisplayName("회원 가입 - null 회원 정보 예외 발생")
     void register_nullMember_throwsException() {
-        assertThrows(InvalidRequestException.class, () -> memberService.register(null));
+        assertThrows(InvalidInputException.class, () -> memberService.register(null));
     }
 
     @Test
@@ -113,30 +128,38 @@ class MemberServiceImplTest {
     void login_validCredentials_success() {
         testMember.setMemberId(1L);
 
-        when(memberRepository.save(any(Member.class))).thenAnswer(invocation -> {
-            Member m = invocation.getArgument(0);
-            m.setMemberId(1L);
-            return m;
-        });
+        when(memberRepository.getMemberByEmailAndPassword(testMember.getEmail(), testMember.getPassword()))
+                .thenReturn(Optional.of(testMember));
+        when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
-        Member registered = memberService.register(testMember);
+        when(memberMapper.toDto(testMember)).thenReturn(
+                MemberResponse.builder()
+                        .memberId(testMember.getMemberId())
+                        .name(testMember.getName())
+                        .birth(testMember.getBirth())
+                        .email(testMember.getEmail())
+                        .contact(testMember.getContact())
+                        .point(testMember.getPoint())
+                        .role(testMember.getRole())
+                        .grade(testMember.getGrade())
+                        .lastLoginAt(testMember.getLastLoginAt())
+                        .build()
+        );
 
-        MemberLoginRequest request = new MemberLoginRequest(registered.getEmail(), registered.getPassword());
-        when(memberRepository.getMemberByEmailAndPassword(registered.getEmail(), registered.getPassword()))
-                .thenReturn(registered);
-        when(memberRepository.findById(registered.getMemberId())).thenReturn(Optional.of(registered));
-
-        Member result = memberService.login(request);
+        // 로그인 요청
+        MemberLoginRequest request = new MemberLoginRequest(testMember.getEmail(), testMember.getPassword());
+        MemberResponse result = memberService.login(request);
 
         assertNotNull(result.getLastLoginAt());
-        assertEquals(registered.getEmail(), result.getEmail());
+        assertEquals(testMember.getEmail(), result.getEmail());
     }
+
 
     @Test
     @DisplayName("로그인 - 잘못된 자격 증명 예외 발생")
     void login_invalidCredentials_throwsException() {
         MemberLoginRequest request = new MemberLoginRequest("wrong@example.com", "wrong");
-        when(memberRepository.getMemberByEmailAndPassword(any(), any())).thenReturn(null);
+        when(memberRepository.getMemberByEmailAndPassword(any(), any())).thenReturn(Optional.empty());
 
         assertThrows(MemberNotFoundException.class, () -> memberService.login(request));
     }
@@ -148,7 +171,7 @@ class MemberServiceImplTest {
         testMember.setStatus(Status.ACTIVE);
         testMember.setMemberId(1L);
 
-        when(memberRepository.getMemberByEmailAndPassword(any(), any())).thenReturn(testMember);
+        when(memberRepository.getMemberByEmailAndPassword(any(), any())).thenReturn(Optional.of(testMember));
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
         memberService.login(new MemberLoginRequest(testMember.getEmail(), testMember.getPassword()));
@@ -165,9 +188,9 @@ class MemberServiceImplTest {
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
-        Member result = memberService.getMemberById(1L);
+        MemberResponse result = memberService.getMemberById(1L);
 
-        assertEquals(testMember, result);
+        assertEquals(memberMapper.toDto(testMember), result);
     }
 
     @Test
@@ -181,25 +204,42 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("회원 수정 - 정상 수정 성공")
     void updateMember_validMember_success() {
-        testMember.setMemberId(1L);
-        memberService.register(testMember);
-
-        Member updated = new Member();
-        updated.setMemberId(1L);
-        updated.setEmail("updated@example.com");
+        MemberUpdateRequest updateRequest = new MemberUpdateRequest();
+        updateRequest.setName("닝닝");
+        updateRequest.setContact("010-9876-5432");
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
-        memberService.updateMember(1L, updated);
+        when(memberMapper.updateMember(any(Member.class), any(MemberUpdateRequest.class)))
+                .thenAnswer(invocation -> {
+                    Member org = invocation.getArgument(0);
+                    MemberUpdateRequest req = invocation.getArgument(1);
+                    org.setName(req.getName());
+                    org.setContact(req.getContact());
+                    return org;
+                });
 
-        verify(memberMapper).updateMember(testMember, updated);
+        // memberMapper.toDto가 Member를 MemberResponse로 변환
+        when(memberMapper.toDto(any(Member.class))).thenAnswer(invocation -> {
+            Member m = invocation.getArgument(0);
+            return MemberResponse.builder()
+                    .memberId(m.getMemberId())
+                    .name(m.getName())
+                    .contact(m.getContact())
+                    .build();
+        });
+
+        MemberResponse result = memberService.updateMember(1L, updateRequest);
+
+        assertEquals("닝닝", result.getName());
+        assertEquals("010-9876-5432", result.getContact());
     }
 
     @Test
     @DisplayName("회원 수정 시 이름이 정상적으로 반영되는지 확인")
     void updateMember_fieldUpdatedCorrectly() {
         testMember.setMemberId(1L);
-        Member updated = new Member();
+        MemberUpdateRequest updated = new MemberUpdateRequest();
         updated.setName("윈터");
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
@@ -214,8 +254,8 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("회원 수정 - 존재하지 않는 회원 예외 발생")
     void updateMember_memberNotFound_throwsException() {
-        Member updated = new Member();
-        updated.setMemberId(999L);
+        MemberUpdateRequest updated = new MemberUpdateRequest();
+        updated.setName("수정이름");
 
         when(memberRepository.findById(999L)).thenReturn(Optional.empty());
 

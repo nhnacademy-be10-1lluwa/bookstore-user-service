@@ -3,24 +3,23 @@ package com.nhnacademy.illuwa.domain.member.dto;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Setter
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class MemberResponse {
-    private int memberId;
+    private long memberId;
     private String name;
+    private LocalDate birth;
     private String email;
     private Role role;
-    private String phoneNumber;
+    private String contact;
     private Grade grade;
     private BigDecimal point;
     private Status status;

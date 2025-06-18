@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.guest.repo;
 
+import com.nhnacademy.illuwa.domain.guest.dto.GuestResponse;
 import com.nhnacademy.illuwa.domain.guest.entity.Guest;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,47 +27,57 @@ class GuestRepositoryTest {
     Guest testGuest;
 
     @BeforeEach
-    void SetUp(){
+    void SetUp() {
         testGuest = Guest.builder()
-                .name("카리나")
+                .name("비회원카리나")
                 .email("test@email.com")
                 .orderPassword("guestPW!")
                 .contact("010-2394-0592")
-                .orderId(1L)
+                .orderNumber("20250819063812-234877")
                 .build();
-
-        guestRepository.save(testGuest);
     }
 
     @Test
     @DisplayName("비회원 정보저장 - 주문 시")
     void testSave(){
-        Guest guest = Guest.builder()
-                .name("저장된비회원")
-                .email("guest@email.com")
-                .orderPassword("guestPW1!")
-                .contact("010-2394-0592")
-                .orderId(2L)
-                .build();
+        Guest saved = guestRepository.save(testGuest);
 
-        Guest saved = guestRepository.save(guest);
-
-        assertNotNull(saved.getGuestId());
-        assertEquals("저장된비회원", saved.getName());
+        assertEquals(testGuest.getName(), saved.getName());
+        assertEquals(testGuest.getEmail(), saved.getEmail());
+        assertEquals(testGuest.getOrderPassword(), saved.getOrderPassword());
+        assertEquals(testGuest.getContact(), saved.getContact());
+        assertEquals(testGuest.getOrderNumber(), saved.getOrderNumber());
     }
 
     @Test
-    @DisplayName("비회원 정보조회 - 로그인")
-    void testFindGuestByOrderIdAndOrderPassword(){
-        long orderId = testGuest.getOrderId();
-        String orderPassword = testGuest.getOrderPassword();;
+    @DisplayName("비회원 정보조회 - 로그인 성공")
+    void testFindGuestByOrderIdAndOrderPassword() {
+        Guest savedGuest = guestRepository.save(testGuest);
 
-        Guest customerGuest = guestRepository.findGuestByOrderIdAndOrderPassword(orderId, orderPassword);
+        Optional<Guest> optionalGuest = guestRepository.findGuestByOrderNumberAndOrderPassword(
+                savedGuest.getOrderNumber(),
+                savedGuest.getOrderPassword()
+        );
 
-        assertNotNull(customerGuest);
-        assertEquals(customerGuest.getGuestId(), testGuest.getGuestId());
-        assertEquals("카리나", customerGuest.getName());
+        assertTrue(optionalGuest.isPresent(), "Guest should be found!");
+
+        GuestResponse guestDto = GuestResponse.from(optionalGuest.get());
+
+        assertNotNull(guestDto);
+        assertEquals(savedGuest.getGuestId(), guestDto.getGuestId());
+        assertEquals(savedGuest.getOrderNumber(), guestDto.getOrderNumber());
+        assertEquals(savedGuest.getOrderPassword(), optionalGuest.get().getOrderPassword());
     }
 
 
+    @Test
+    @DisplayName("비회원 정보조회 - 로그인 실패")
+    void testFindGuestByInvalidOrderNumberAndPassword(){
+        guestRepository.save(testGuest);
+
+        Optional<Guest> result = guestRepository.findGuestByOrderNumberAndOrderPassword(
+                "wrongOrderNumber", "wrongPassword");
+
+        assertTrue(result.isEmpty());
+    }
 }

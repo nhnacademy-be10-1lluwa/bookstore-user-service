@@ -1,0 +1,9 @@
+### 비회원 로그인(주문조회 버튼)
+POST http://localhost:8080/guests/login
+Content-Type: application/json
+
+{
+  "orderId": "",
+  "orderPassword": ""
+}
+
