@@ -6,7 +6,6 @@ import com.nhnacademy.illuwa.domain.guest.entity.Guest;
 import com.nhnacademy.illuwa.domain.guest.exception.GuestNotFoundException;
 import com.nhnacademy.illuwa.domain.guest.repo.GuestRepository;
 import com.nhnacademy.illuwa.domain.guest.service.GuestService;
-import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +16,8 @@ public class GuestServiceImpl implements GuestService {
 
     @Override
     public GuestResponse login(GuestLoginRequest request) {
-        Guest guest = guestRepository.findGuestByOrderIdAndOrderPassword(request.getOrderNumber(), request.getOrderPassword())
-                .orElseThrow(() -> new GuestNotFoundException(request.getOrderNumber));
+        Guest guest = guestRepository.findGuestByOrderNumberAndOrderPassword(request.getOrderNumber(), request.getOrderPassword())
+                .orElseThrow(() -> new GuestNotFoundException(guest.getGuestId()));
         return GuestResponse.from(guest);
     }
 }
