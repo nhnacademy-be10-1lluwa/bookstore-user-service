@@ -24,8 +24,6 @@ public class AddressGlobalExceptionHandler {
         body.put("code", "DUPLICATE_ADDRESS");
         body.put("message", ex.getMessage());
 
-        body.put("path", request.getDescription(false).replace("uri=",""));
-
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
@@ -37,7 +35,6 @@ public class AddressGlobalExceptionHandler {
         body.put("error", HttpStatus.NOT_FOUND.getReasonPhrase());
         body.put("code", "ADDRESS_NOT_FOUND");
         body.put("message", ex.getMessage());
-        body.put("path", request.getDescription(false).replace("uri=", "")); // 요청 URI
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }

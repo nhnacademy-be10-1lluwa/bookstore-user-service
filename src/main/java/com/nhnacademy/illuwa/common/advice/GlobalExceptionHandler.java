@@ -22,7 +22,6 @@ public class GlobalExceptionHandler {
         body.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
         body.put("code", "INVALID_INPUT");
         body.put("message", ex.getMessage());
-        body.put("path", request.getDescription(false).replace("uri=", ""));
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }

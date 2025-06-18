@@ -28,7 +28,6 @@ public class UserGlobalExceptionHandler {
         body.put("error", HttpStatus.NOT_FOUND.getReasonPhrase());
         body.put("code", "GUEST_NOT_FOUND");
         body.put("message", ex.getMessage());
-        body.put("path", request.getDescription(false).replace("uri=", "")); // 요청 URI
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
@@ -43,8 +42,6 @@ public class UserGlobalExceptionHandler {
         body.put("code", "DUPLICATE_MEMBER");
         body.put("message", ex.getMessage());
 
-        body.put("path", request.getDescription(false).replace("uri=",""));
-
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
@@ -56,7 +53,6 @@ public class UserGlobalExceptionHandler {
         body.put("error", HttpStatus.NOT_FOUND.getReasonPhrase());
         body.put("code", "MEMBER_NOT_FOUND");
         body.put("message", ex.getMessage());
-        body.put("path", request.getDescription(false).replace("uri=", ""));
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
@@ -69,7 +65,6 @@ public class UserGlobalExceptionHandler {
         body.put("error", HttpStatus.UNAUTHORIZED.getReasonPhrase());
         body.put("code", "UNAUTHORIZED_MEMBER_ACCESS");
         body.put("message", ex.getMessage());
-        body.put("path", request.getDescription(false).replace("uri=", "")); // 요청 URI
 
         return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
     }
