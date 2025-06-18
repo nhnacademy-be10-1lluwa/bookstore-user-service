@@ -30,15 +30,15 @@ public class Guest {
     private String contact;
 
     @Setter
-    @JoinColumn(name = "order_id",nullable = false)
-    private long orderId;
+    @Column(name = "orderNumber", nullable = false)
+    private String orderNumber;
 
     @Builder
-    public Guest(String name, String email, String orderPassword, String contact, long orderId) {
+    public Guest(String name, String email, String orderPassword, String contact, String orderNumber) {
         this.name = name;
         this.email = email;
         this.orderPassword = orderPassword;
         this.contact = contact;
-        this.orderId = orderId;
+        this.orderNumber = orderNumber;
     }
 }

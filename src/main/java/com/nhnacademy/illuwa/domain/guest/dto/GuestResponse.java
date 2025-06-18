@@ -15,7 +15,7 @@ public class GuestResponse {
     String name;
     String email;
     String contact;
-    long orderId;
+    String orderNumber;
 
     public static GuestResponse from(Guest guest){
         return GuestResponse.builder()
@@ -23,7 +23,7 @@ public class GuestResponse {
                 .name(guest.getName())
                 .email(guest.getEmail())
                 .contact(guest.getContact())
-                .orderId(guest.getOrderId())
+                .orderNumber(guest.getOrderNumber())
                 .build();
     }
 }

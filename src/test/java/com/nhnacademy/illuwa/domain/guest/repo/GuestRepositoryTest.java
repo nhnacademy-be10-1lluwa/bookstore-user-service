@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.guest.repo;
 
+import com.nhnacademy.illuwa.domain.guest.dto.GuestResponse;
 import com.nhnacademy.illuwa.domain.guest.entity.Guest;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,46 +25,42 @@ class GuestRepositoryTest {
     Guest testGuest;
 
     @BeforeEach
-    void SetUp(){
+    void SetUp() {
         testGuest = Guest.builder()
-                .name("카리나")
+                .name("비회원카리나")
                 .email("test@email.com")
                 .orderPassword("guestPW!")
                 .contact("010-2394-0592")
-                .orderId(1L)
+                .orderNumber("20250819063812-234877")
                 .build();
-
-        guestRepository.save(testGuest);
     }
 
     @Test
     @DisplayName("비회원 정보저장 - 주문 시")
     void testSave(){
-        Guest guest = Guest.builder()
-                .name("저장된비회원")
-                .email("guest@email.com")
-                .orderPassword("guestPW1!")
-                .contact("010-2394-0592")
-                .orderId(2L)
-                .build();
-
-        Guest saved = guestRepository.save(guest);
+        Guest saved = guestRepository.save(testGuest);
 
         assertNotNull(saved.getGuestId());
-        assertEquals("저장된비회원", saved.getName());
+        assertEquals(testGuest.getName(), saved.getName());
+        assertEquals(testGuest.getEmail(), saved.getEmail());
+        assertEquals(testGuest.getOrderPassword(), saved.getOrderPassword());
+        assertEquals(testGuest.getContact(), saved.getContact());
+        assertEquals(testGuest.getOrderNumber(), saved.getOrderNumber());
     }
 
     @Test
     @DisplayName("비회원 정보조회 - 로그인")
     void testFindGuestByOrderIdAndOrderPassword(){
-        long orderId = testGuest.getOrderId();
+        String orderNumber = testGuest.getOrderNumber();
         String orderPassword = testGuest.getOrderPassword();;
 
-        Guest customerGuest = guestRepository.findGuestByOrderIdAndOrderPassword(orderId, orderPassword);
+        Guest guest = guestRepository.findGuestByOrderNumberAndOrderPassword(orderNumber, orderPassword);
+        GuestResponse guestDto = GuestResponse.from(guest);
 
-        assertNotNull(customerGuest);
-        assertEquals(customerGuest.getGuestId(), testGuest.getGuestId());
-        assertEquals("카리나", customerGuest.getName());
+        assertNotNull(guestDto);
+        assertEquals(testGuest.getGuestId(), guestDto.getGuestId());
+        assertEquals(testGuest.getOrderNumber(), guestDto.getName());
+        assertEquals(testGuest.getOrderPassword(), guest.getOrderPassword());
     }
 
 
