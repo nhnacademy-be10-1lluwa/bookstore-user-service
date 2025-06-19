@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SendVerificationCodeResponse {
+public class SendMessageResponse {
     long memberId;
     String email;
     String message;
