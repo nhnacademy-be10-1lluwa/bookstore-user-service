@@ -1,7 +1,7 @@
 package com.nhnacademy.illuwa.domain.member.repo;
 
+import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
-import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 

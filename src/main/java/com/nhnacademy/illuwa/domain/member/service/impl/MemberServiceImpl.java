@@ -1,10 +1,11 @@
 package com.nhnacademy.illuwa.domain.member.service.impl;
 
+import com.nhnacademy.illuwa.domain.grade.entity.Grade;
+import com.nhnacademy.illuwa.domain.grade.service.GradeService;
 import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.dto.MemberUpdateRequest;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
-import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;
 import com.nhnacademy.illuwa.common.exception.InvalidInputException;
@@ -28,6 +29,7 @@ import java.util.List;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final GradeService gradeService;
     private final MemberMapper memberMapper;
     private final SendVerificationCodeService sendVerificationCodeService;
 
@@ -45,6 +47,10 @@ public class MemberServiceImpl implements MemberService {
         if (memberRepository.existsByEmail(member.getEmail())) {
             throw new DuplicateMemberException();
         }
+
+        Grade basicGrade = gradeService.findByName("BASIC");
+        member.setGrade(basicGrade);
+
         return memberMapper.toDto(memberRepository.save(member));
     }
 
@@ -84,10 +90,10 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void updateNetOrderAmountAndChangeGrade(Long memberId, BigDecimal netOrderAmount) {
+    public void updateMemberGrade(Long memberId, BigDecimal netOrderAmount) {
         Member orgMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
-        Grade newGrade = Grade.calculateByAmount(netOrderAmount);
+        Grade newGrade = gradeService.calculateGrade(netOrderAmount);
             orgMember.setGrade(newGrade);
     }
 

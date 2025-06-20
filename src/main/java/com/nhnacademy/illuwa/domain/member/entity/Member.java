@@ -2,7 +2,7 @@ package com.nhnacademy.illuwa.domain.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
+import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import jakarta.persistence.*;
@@ -21,7 +21,6 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
-    @Setter // 임시
     private long memberId;
 
     @Setter
@@ -51,9 +50,9 @@ public class Member {
     private String contact;
 
     @Setter
-    @Column(name = "grade", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Grade grade = Grade.일반;
+    @ManyToOne
+    @JoinColumn(name = "grade_id", nullable = false)
+    private Grade grade;
 
     @Setter
     @Column(name = "net_order_amount", nullable = false)
@@ -72,9 +71,10 @@ public class Member {
     @Column(name = "last_login_at", nullable = false)
     private LocalDateTime lastLoginAt = LocalDateTime.now();
 
+    //pk와 grade 제외
     @Builder
     public Member(String name, LocalDate birth, String email, String password,
-                  Role role, String contact, Grade grade,
+                  Role role, String contact,
                   BigDecimal netOrderAmount, BigDecimal point,
                   Status status, LocalDateTime lastLoginAt) {
         this.name = name;
@@ -83,7 +83,6 @@ public class Member {
         this.password = password;
         this.role = (role != null) ? role : Role.USER;
         this.contact = contact;
-        this.grade = (grade != null) ? grade : Grade.일반;
         this.netOrderAmount = (netOrderAmount != null) ? netOrderAmount : BigDecimal.ZERO;
         this.point = (point != null) ? point : BigDecimal.ZERO;
         this.status = (status != null) ? status : Status.ACTIVE;

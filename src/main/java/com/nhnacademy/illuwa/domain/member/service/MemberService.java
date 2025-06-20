@@ -19,7 +19,7 @@ public interface MemberService {
 
     MemberResponse updateMember(Long memberId, MemberUpdateRequest newMemberRequest);
 
-    void updateNetOrderAmountAndChangeGrade(Long memberId, BigDecimal netOrderAmount);
+    void updateMemberGrade(Long memberId, BigDecimal netOrderAmount);
 
     boolean checkMemberInactive(Long memberId);
 

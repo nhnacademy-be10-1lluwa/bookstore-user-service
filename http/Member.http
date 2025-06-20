@@ -18,6 +18,7 @@ Content-Type: application/json
   "contact": "010-1234-5678"
 }
 
+
 ### 회원 로그인
 POST http://localhost:8080/members/login
 Content-Type: application/json
