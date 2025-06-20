@@ -21,7 +21,7 @@ public interface MemberService {
 
     void updateMemberGrade(Long memberId, BigDecimal netOrderAmount);
 
-    boolean checkMemberInactive(Long memberId);
+    void checkMemberStatus(Long memberId);
 
     void reactivateMember(Long memberId);
 

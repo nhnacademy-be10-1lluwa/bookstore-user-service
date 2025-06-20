@@ -58,7 +58,7 @@ public class MemberServiceImpl implements MemberService {
     public MemberResponse login(MemberLoginRequest request) {
         Member loginMember = memberRepository.getMemberByEmailAndPassword(request.getEmail(), request.getPassword())
                 .orElseThrow(MemberNotFoundException::new);
-        checkMemberInactive(loginMember.getMemberId());
+        checkMemberStatus(loginMember.getMemberId());
         loginMember.setLastLoginAt(LocalDateTime.now());
         return memberMapper.toDto(loginMember);
     }
@@ -98,15 +98,13 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean checkMemberInactive(Long memberId) {
+    public void checkMemberStatus(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
         LocalDateTime threeMonthsAgo  = LocalDateTime.now().minusMonths(3);
         if(member.getLastLoginAt().isBefore(threeMonthsAgo)){
             member.setStatus(Status.INACTIVE);
-            return true;
         }
-        return false;
     }
 
     //TODO 수정/리팩토링 예정

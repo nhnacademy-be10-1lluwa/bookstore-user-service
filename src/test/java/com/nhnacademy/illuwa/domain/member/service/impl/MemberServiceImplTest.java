@@ -308,7 +308,7 @@ class MemberServiceImplTest {
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
-        memberService.checkMemberInactive(1L);
+        memberService.checkMemberStatus(1L);
 
         assertEquals(Status.INACTIVE, testMember.getStatus());
     }
@@ -323,7 +323,7 @@ class MemberServiceImplTest {
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
-        memberService.checkMemberInactive(1L);
+        memberService.checkMemberStatus(1L);
 
         assertEquals(Status.ACTIVE, testMember.getStatus());
     }
