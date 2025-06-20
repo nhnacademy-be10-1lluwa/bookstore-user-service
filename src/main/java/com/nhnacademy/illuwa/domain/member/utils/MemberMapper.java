@@ -22,5 +22,4 @@ public interface MemberMapper {
     MemberResponse toDto(Member member);
 
     Member updateMember(@MappingTarget Member target, MemberUpdateRequest source);
-    Member updateMember(@MappingTarget Member target, Member source);
 }
