@@ -1,6 +1,7 @@
 package com.nhnacademy.illuwa.domain.member.service.impl;
 
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
+import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.grade.service.GradeService;
 import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
@@ -47,8 +48,7 @@ public class MemberServiceImpl implements MemberService {
         if (memberRepository.existsByEmail(member.getEmail())) {
             throw new DuplicateMemberException();
         }
-
-        Grade basicGrade = gradeService.findByName("BASIC");
+        Grade basicGrade = gradeService.getByGradeName(GradeName.BASIC);
         member.setGrade(basicGrade);
 
         return memberMapper.toDto(memberRepository.save(member));

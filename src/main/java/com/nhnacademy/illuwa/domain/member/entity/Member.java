@@ -71,10 +71,9 @@ public class Member {
     @Column(name = "last_login_at", nullable = false)
     private LocalDateTime lastLoginAt = LocalDateTime.now();
 
-    //pk와 grade 제외
     @Builder
     public Member(String name, LocalDate birth, String email, String password,
-                  Role role, String contact,
+                  Role role, String contact, Grade grade,
                   BigDecimal netOrderAmount, BigDecimal point,
                   Status status, LocalDateTime lastLoginAt) {
         this.name = name;
@@ -83,6 +82,7 @@ public class Member {
         this.password = password;
         this.role = (role != null) ? role : Role.USER;
         this.contact = contact;
+        this.grade = grade;
         this.netOrderAmount = (netOrderAmount != null) ? netOrderAmount : BigDecimal.ZERO;
         this.point = (point != null) ? point : BigDecimal.ZERO;
         this.status = (status != null) ? status : Status.ACTIVE;

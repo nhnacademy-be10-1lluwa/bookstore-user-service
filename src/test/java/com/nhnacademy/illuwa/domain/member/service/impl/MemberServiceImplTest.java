@@ -1,5 +1,8 @@
 package com.nhnacademy.illuwa.domain.member.service.impl;
 
+import com.nhnacademy.illuwa.domain.grade.entity.Grade;
+import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
+import com.nhnacademy.illuwa.domain.grade.service.GradeService;
 import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.dto.MemberUpdateRequest;
@@ -21,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,27 +39,50 @@ import static org.mockito.Mockito.*;
 class MemberServiceImplTest {
 
     @Mock
-    private MemberRepository memberRepository;
+    MemberRepository memberRepository;
 
     @Mock
-    private MemberMapper memberMapper;
+    MemberMapper memberMapper;
+
+    @Mock
+    GradeService gradeService;
 
     @InjectMocks
-    private MemberServiceImpl memberService;
+    MemberServiceImpl memberService;
 
-    private Member testMember;
+    Grade basicGrade;
+    Member testMember;
+
+    void setMemberId(Member member, Long memberId) {
+        try {
+            Field field = Member.class.getDeclaredField("memberId");
+            field.setAccessible(true);
+            field.set(member, memberId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @BeforeEach
     void setUp() {
+        basicGrade = Grade.builder()
+                .gradeName(GradeName.BASIC)
+                .priority(4)
+                .pointRate(new BigDecimal("0.01"))
+                .minAmount(new BigDecimal(0))
+                .maxAmount(new BigDecimal("100000"))
+                .build();
+
         testMember = Member.builder()
                 .name("카리나")
                 .birth(LocalDate.of(2000, 4, 11))
                 .email("test@example.com")
                 .password("password")
                 .contact("010-2345-6879")
+                .grade(basicGrade)
                 .netOrderAmount(BigDecimal.ZERO)
                 .lastLoginAt(LocalDateTime.now().minusMonths(4))
-                .grade(Grade.일반)
+                .grade(basicGrade)
                 .status(Status.ACTIVE)
                 .build();
     }
@@ -66,10 +93,9 @@ class MemberServiceImplTest {
         when(memberRepository.existsByEmail(testMember.getEmail())).thenReturn(false);
         when(memberRepository.save(testMember)).thenAnswer(invocation -> {
             Member saved = invocation.getArgument(0);
-            saved.setMemberId(1L);
+            setMemberId(saved, 1L);
             return saved;
         });
-
         when(memberMapper.toDto(any(Member.class))).thenAnswer(invocation -> {
             Member m = invocation.getArgument(0);
             return new MemberResponse(
@@ -79,7 +105,7 @@ class MemberServiceImplTest {
                     m.getEmail(),
                     m.getRole(),
                     m.getContact(),
-                    m.getGrade(),
+                    m.getGrade().getGradeName().toString(),
                     m.getPoint(),
                     m.getStatus(),
                     m.getLastLoginAt()
@@ -87,7 +113,6 @@ class MemberServiceImplTest {
         });
 
         MemberResponse result = memberService.register(testMember);
-
         assertEquals(1L, result.getMemberId());
     }
 
@@ -124,7 +149,7 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("로그인 - 올바른 자격 증명 성공")
     void login_validCredentials_success() {
-        testMember.setMemberId(1L);
+        setMemberId(testMember, 1L);
 
         when(memberRepository.getMemberByEmailAndPassword(testMember.getEmail(), testMember.getPassword()))
                 .thenReturn(Optional.of(testMember));
@@ -139,12 +164,11 @@ class MemberServiceImplTest {
                         .contact(testMember.getContact())
                         .point(testMember.getPoint())
                         .role(testMember.getRole())
-                        .grade(testMember.getGrade())
+                        .gradeName(testMember.getGrade().toString())
                         .lastLoginAt(testMember.getLastLoginAt())
                         .build()
         );
 
-        // 로그인 요청
         MemberLoginRequest request = new MemberLoginRequest(testMember.getEmail(), testMember.getPassword());
         MemberResponse result = memberService.login(request);
 
@@ -167,7 +191,7 @@ class MemberServiceImplTest {
     void login_triggersInactiveStatusChange() {
         testMember.setLastLoginAt(LocalDateTime.now().minusMonths(4));
         testMember.setStatus(Status.ACTIVE);
-        testMember.setMemberId(1L);
+        setMemberId(testMember,1L);
 
         when(memberRepository.getMemberByEmailAndPassword(any(), any())).thenReturn(Optional.of(testMember));
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
@@ -181,7 +205,7 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("회원 조회 - 존재하는 회원 성공")
     void getMemberById_exists_success() {
-        testMember.setMemberId(1L);
+        setMemberId(testMember, 1L);
         memberService.register(testMember);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
@@ -195,7 +219,6 @@ class MemberServiceImplTest {
     @DisplayName("회원 조회 - 존재하지 않는 회원 예외 발생")
     void getMemberById_notExists_throwsException() {
         when(memberRepository.findById(anyLong())).thenReturn(Optional.empty());
-
         assertThrows(MemberNotFoundException.class, () -> memberService.getMemberById(99L));
     }
 
@@ -217,7 +240,6 @@ class MemberServiceImplTest {
                     return org;
                 });
 
-        // memberMapper.toDto가 Member를 MemberResponse로 변환
         when(memberMapper.toDto(any(Member.class))).thenAnswer(invocation -> {
             Member m = invocation.getArgument(0);
             return MemberResponse.builder()
@@ -236,7 +258,7 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("회원 수정 시 이름이 정상적으로 반영되는지 확인")
     void updateMember_fieldUpdatedCorrectly() {
-        testMember.setMemberId(1L);
+        setMemberId(testMember, 1L);
         MemberUpdateRequest updated = new MemberUpdateRequest();
         updated.setName("윈터");
 
@@ -245,7 +267,6 @@ class MemberServiceImplTest {
         memberService.updateMember(1L, updated);
 
         verify(memberMapper).updateMember(testMember, updated);
-        // memberMapper가 통합 테스트에서 필드 검증
     }
 
 
@@ -263,47 +284,49 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("순매출액 적을 경우 일반 등급 유지")
     void updateNetOrderAmountAndChangeGrade_remainNormal() {
-        testMember.setMemberId(1L);
+        setMemberId(testMember, 1L);
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
-        memberService.updateNetOrderAmountAndChangeGrade(1L, new BigDecimal("50000"));
+        memberService.updateMemberGrade(1L, new BigDecimal("50000"));
 
-        assertEquals(Grade.일반, testMember.getGrade());
+        when(gradeService.getByGradeName(GradeName.BASIC)).thenReturn(basicGrade);
+
+        assertEquals(GradeName.BASIC, testMember.getGrade().getGradeName());
     }
 
 
     @Test
     @DisplayName("순매출액 업데이트 및 등급 변경 - 골드 등급 변경")
     void updateNetOrderAmountAndChangeGrade_success() {
-        testMember.setMemberId(1L);
+        setMemberId(testMember, 1L);
         memberService.register(testMember);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
         BigDecimal newAmount = new BigDecimal("250000");
-        memberService.updateNetOrderAmountAndChangeGrade(1L, newAmount);
+        memberService.updateMemberGrade(1L, newAmount);
 
-        assertEquals(Grade.골드, testMember.getGrade());
+        assertEquals(GradeName.GOLD, testMember.getGrade().getGradeName());
     }
 
     @Test
     @DisplayName("순매출액 업데이트 및 등급 변경 - 플래티넘 등급 변경")
     void updateNetOrderAmountAndChangeGrade_toPlatinum() {
-        testMember.setMemberId(1L);
+        setMemberId(testMember, 1L);
         memberService.register(testMember);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
-        memberService.updateNetOrderAmountAndChangeGrade(1L, new BigDecimal("1000000"));
+        memberService.updateMemberGrade(1L, new BigDecimal("1000000"));
 
-        assertEquals(Grade.플래티넘, testMember.getGrade());
+        assertEquals(GradeName.PLATINUM, testMember.getGrade().getGradeName());
     }
 
     @Test
     @DisplayName("회원 비활성 체크 - 마지막 로그인 3개월 전 시 상태 변경")
     void checkMemberInactive_changesToInactive() {
         testMember.setLastLoginAt(LocalDateTime.now().minusMonths(4));
-        testMember.setMemberId(1L);
+        setMemberId(testMember, 1L);
         memberService.register(testMember);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
@@ -318,7 +341,7 @@ class MemberServiceImplTest {
     void checkMemberInactive_recentLogin_doesNotChangeStatus() {
         testMember.setLastLoginAt(LocalDateTime.now().minusMonths(1));
         testMember.setStatus(Status.ACTIVE);
-        testMember.setMemberId(1L);
+        setMemberId(testMember, 1L);
         memberService.register(testMember);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
@@ -332,7 +355,7 @@ class MemberServiceImplTest {
     @DisplayName("회원 활성화 성공")
     void reactivateMember_success() {
         testMember.setStatus(Status.INACTIVE);
-        testMember.setMemberId(1L);
+        setMemberId(testMember, 1L);
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
         memberService.reactivateMember(1L);
@@ -345,7 +368,7 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("회원 삭제 - 존재하는 회원 성공")
     void removeMember_exists_success() {
-        testMember.setMemberId(1L);
+        setMemberId(testMember, 1L);
         memberService.register(testMember);
 
         when(memberRepository.existsById(1L)).thenReturn(true);
