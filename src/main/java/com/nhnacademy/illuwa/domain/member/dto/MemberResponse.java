@@ -1,6 +1,5 @@
 package com.nhnacademy.illuwa.domain.member.dto;
 
-import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import lombok.*;
@@ -20,7 +19,7 @@ public class MemberResponse {
     private String email;
     private Role role;
     private String contact;
-    private Grade grade;
+    private String gradeName;
     private BigDecimal point;
     private Status status;
     private LocalDateTime lastLoginAt;

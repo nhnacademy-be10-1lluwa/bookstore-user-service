@@ -1,10 +1,12 @@
 package com.nhnacademy.illuwa.domain.address.repo;
 
 import com.nhnacademy.illuwa.domain.address.entity.Address;
+import com.nhnacademy.illuwa.domain.grade.entity.Grade;
+import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
+import com.nhnacademy.illuwa.domain.grade.repo.GradeRepository;
 import com.nhnacademy.illuwa.domain.guest.entity.Guest;
 import com.nhnacademy.illuwa.domain.guest.repo.GuestRepository;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
-import com.nhnacademy.illuwa.domain.member.entity.enums.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import jakarta.transaction.Transactional;
@@ -36,6 +38,9 @@ class AddressRepositoryTest {
     MemberRepository memberRepository;
 
     @Autowired
+    GradeRepository gradeRepository;
+
+    @Autowired
     GuestRepository guestRepository;
 
     Member testMember;
@@ -43,15 +48,17 @@ class AddressRepositoryTest {
 
     @BeforeEach
     public void setUp(){
+        Grade grade = gradeRepository.findByGradeName(GradeName.BASIC).orElseThrow();
         Member member = Member.builder()
                 .name("카리나")
                 .birth("2000-04-11")
                 .email("karina@test.com")
                 .password("123456!")
+                .grade(grade)
                 .role(Role.USER)
                 .contact("010-1234-5678")
-                .grade(Grade.로얄)
                 .build();
+
         testMember = memberRepository.save(member);
 
         Guest guest = Guest.builder()

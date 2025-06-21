@@ -18,8 +18,8 @@ public interface MemberMapper {
     @Mapping(source = "contact", target = "contact")
     Member toEntity(MemberRegisterRequest request);
 
+    @Mapping(source = "grade.gradeName", target = "gradeName")
     MemberResponse toDto(Member member);
 
     Member updateMember(@MappingTarget Member target, MemberUpdateRequest source);
-    Member updateMember(@MappingTarget Member target, Member source);
 }
