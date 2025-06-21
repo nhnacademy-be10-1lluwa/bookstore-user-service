@@ -26,7 +26,6 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
-
     private final MemberRepository memberRepository;
     private final GradeService gradeService;
     private final MemberMapper memberMapper;
@@ -77,7 +76,7 @@ public class MemberServiceImpl implements MemberService {
     public MemberResponse getMemberById(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
-        checkMemberInactive(memberId);
+        checkMemberStatus(memberId);
         return memberMapper.toDto(member);
     }
 
