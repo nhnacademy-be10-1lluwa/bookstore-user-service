@@ -1,9 +1,11 @@
 package com.nhnacademy.illuwa.domain.pointpolicy.service.impl;
 
+import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyCreateRequest;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyResponse;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyUpdateRequest;
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.PointPolicy;
+import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
 import com.nhnacademy.illuwa.domain.pointpolicy.exception.DuplicatePointPolicyException;
 import com.nhnacademy.illuwa.domain.pointpolicy.exception.PointPolicyNotFoundException;
 import com.nhnacademy.illuwa.domain.pointpolicy.repo.PointPolicyRepository;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,9 +72,40 @@ public class PointPolicyServiceImpl implements PointPolicyService {
     @Transactional
     @Override
     public PointPolicyResponse updatePointPolicy(String policyKey, PointPolicyUpdateRequest request) {
-        PointPolicy pointPolicy = pointPolicyRepository.findById(policyKey).orElseThrow(() -> new PointPolicyNotFoundException(policyKey));
+        PointPolicy pointPolicy = pointPolicyRepository.findById(policyKey)
+                .orElseThrow(() -> new PointPolicyNotFoundException(policyKey));
+
+        //타입 검증
+        validatePointPolicyValue(request);
+
         PointPolicy updatedPolicy = pointPolicyMapper.updatePointPolicy(pointPolicy, request);
 
         return pointPolicyMapper.entityToDto(updatedPolicy);
     }
+
+    private void validatePointPolicyValue(PointPolicyUpdateRequest request) {
+        BigDecimal value = request.getValue();
+        PointValueType type = request.getValueType();
+
+        if (value == null || type == null) {
+            throw new InvalidInputException("value와 valueType은 빈 값일 수 없습니다.");
+        }
+
+        switch (type) {
+            case RATE -> {
+                // 0보다 크고 1보다 작거나 같은 값만 허용
+                if (value.compareTo(BigDecimal.ZERO) <= 0 || value.compareTo(BigDecimal.ONE) > 0) {
+                    throw new InvalidInputException("RATE 타입은 0보다 크고 1.0 이하의 값만 허용됩니다.");
+                }
+            }
+            case AMOUNT -> {
+                // 0 이상만 허용
+                if (value.compareTo(BigDecimal.ZERO) < 0) {
+                    throw new IllegalArgumentException("AMOUNT 타입은 0 이상만 허용됩니다.");
+                }
+            }
+            default -> throw new InvalidInputException("알 수 없는 valueType이에요.");
+        }
+    }
+
 }

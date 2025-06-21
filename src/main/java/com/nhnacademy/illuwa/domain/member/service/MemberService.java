@@ -17,6 +17,8 @@ public interface MemberService {
 
     MemberResponse getMemberById(Long memberId);
 
+    MemberResponse getMemberByEmail(String email);
+
     MemberResponse updateMember(Long memberId, MemberUpdateRequest newMemberRequest);
 
     void updateMemberGrade(Long memberId, BigDecimal netOrderAmount);
