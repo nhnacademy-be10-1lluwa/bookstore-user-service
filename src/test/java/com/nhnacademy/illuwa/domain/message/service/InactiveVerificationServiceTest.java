@@ -1,12 +1,16 @@
 package com.nhnacademy.illuwa.domain.message.service;
 
+import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
+import com.nhnacademy.illuwa.domain.member.service.MemberService;
+import com.nhnacademy.illuwa.domain.message.dto.SendMessageRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-
-import org.springframework.data.redis.core.ValueOperations;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -18,6 +22,12 @@ class InactiveVerificationServiceTest {
 
     @Mock
     ValueOperations<String, String> valueOperations;
+
+    @Mock
+    MemberService memberService;
+
+    @Mock
+    MessageSendService messageSendService;
 
     @InjectMocks
     InactiveVerificationService service;
@@ -76,5 +86,40 @@ class InactiveVerificationServiceTest {
         boolean result = service.verifyCode(email, inputCode);
 
         assertFalse(result);
+    }
+
+    @Test
+    @DisplayName("인증 성공 시 회원을 재활성화하고 성공 메시지를 보냄")
+    void verifyAndReactivateMember_shouldReturnTrue_whenVerificationSucceeds() {
+        long memberId = 1L;
+        String email = "test@example.com";
+        String code = "123456";
+
+        when(valueOperations.get("verify:" + email)).thenReturn(code);
+        when(memberService.getMemberById(memberId)).thenReturn(MemberResponse.builder().name("공주님").build());
+
+        boolean result = service.verifyAndReactivateMember(memberId, email, code);
+
+        assertTrue(result);
+        verify(memberService).reactivateMember(memberId);
+        verify(messageSendService).sendDoorayMessage(any(SendMessageRequest.class));
+    }
+
+    @Test
+    @DisplayName("인증 실패 시 실패 메시지를 보냄")
+    void verifyAndReactivateMember_shouldReturnFalse_whenVerificationFails() {
+        long memberId = 1L;
+        String email = "test@example.com";
+        String inputCode = "wrongCode";
+        String storedCode = "correctCode";
+
+        when(valueOperations.get("verify:" + email)).thenReturn(storedCode);
+        when(memberService.getMemberById(memberId)).thenReturn(MemberResponse.builder().name("공주님").build());
+
+        boolean result = service.verifyAndReactivateMember(memberId, email, inputCode);
+
+        assertFalse(result);
+        verify(memberService, never()).reactivateMember(anyLong());
+        verify(messageSendService).sendDoorayMessage(any(SendMessageRequest.class));
     }
 }

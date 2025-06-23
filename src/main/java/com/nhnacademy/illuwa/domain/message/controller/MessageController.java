@@ -22,8 +22,8 @@ public class MessageController {
 
     //커스텀 메시지
     @PostMapping("/custom")
-    public ResponseEntity<Void> sendCustomMessage(@RequestBody SendMessageRequest request) {
+    public ResponseEntity<SendMessageResponse> sendCustomMessage(@RequestBody SendMessageRequest request) {
         messageSendService.sendDoorayMessage(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(new SendMessageResponse(request.getRecipientEmail(), "두레이 메시지 전송 성공!"));
     }
 }

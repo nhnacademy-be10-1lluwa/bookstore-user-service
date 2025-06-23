@@ -15,9 +15,7 @@ public class SendMessageRequest {
 
     String text;
 
-    //수신자 이름(회원/비회원)
     String recipientName;
-    //수신자 이메일아이디
     String recipientEmail;
 
     String attachmentTitle;

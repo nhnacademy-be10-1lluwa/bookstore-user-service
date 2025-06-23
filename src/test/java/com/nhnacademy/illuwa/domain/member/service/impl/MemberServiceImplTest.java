@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
-//@Transactional
 @ExtendWith(MockitoExtension.class)
 class MemberServiceImplTest {
 
@@ -51,6 +50,9 @@ class MemberServiceImplTest {
     MemberServiceImpl memberService;
 
     Grade basicGrade;
+    Grade goldGrade;
+    Grade royalGrade;
+    Grade platinumGrade;
     Member testMember;
 
     void setMemberId(Member member, Long memberId) {
@@ -71,6 +73,29 @@ class MemberServiceImplTest {
                 .pointRate(new BigDecimal("0.01"))
                 .minAmount(new BigDecimal(0))
                 .maxAmount(new BigDecimal("100000"))
+                .build();
+
+        goldGrade = Grade.builder()
+                .gradeName(GradeName.GOLD)
+                .priority(3)
+                .pointRate(new BigDecimal("0.02"))
+                .minAmount(new BigDecimal(100000))
+                .maxAmount(new BigDecimal("200000"))
+                .build();
+
+        royalGrade = Grade.builder()
+                .gradeName(GradeName.ROYAL)
+                .priority(2)
+                .pointRate(new BigDecimal("0.025"))
+                .minAmount(new BigDecimal(200000))
+                .maxAmount(new BigDecimal("300000"))
+                .build();
+
+        platinumGrade = Grade.builder()
+                .gradeName(GradeName.PLATINUM)
+                .priority(1)
+                .pointRate(new BigDecimal("0.03"))
+                .minAmount(new BigDecimal(300000))
                 .build();
 
         testMember = Member.builder()
@@ -111,6 +136,7 @@ class MemberServiceImplTest {
                     m.getLastLoginAt()
             );
         });
+        when(gradeService.getByGradeName(GradeName.BASIC)).thenReturn(basicGrade);
 
         MemberResponse result = memberService.register(testMember);
         assertEquals(1L, result.getMemberId());
@@ -287,9 +313,10 @@ class MemberServiceImplTest {
         setMemberId(testMember, 1L);
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
+        when(gradeService.calculateGrade(new BigDecimal("50000"))).thenReturn(basicGrade);
+
         memberService.updateMemberGrade(1L, new BigDecimal("50000"));
 
-        when(gradeService.getByGradeName(GradeName.BASIC)).thenReturn(basicGrade);
 
         assertEquals(GradeName.BASIC, testMember.getGrade().getGradeName());
     }
@@ -302,6 +329,7 @@ class MemberServiceImplTest {
         memberService.register(testMember);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
+        when(gradeService.calculateGrade(new BigDecimal("250000"))).thenReturn(goldGrade);
 
         BigDecimal newAmount = new BigDecimal("250000");
         memberService.updateMemberGrade(1L, newAmount);
@@ -316,6 +344,7 @@ class MemberServiceImplTest {
         memberService.register(testMember);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
+        when(gradeService.calculateGrade(new BigDecimal("1000000"))).thenReturn(platinumGrade);
 
         memberService.updateMemberGrade(1L, new BigDecimal("1000000"));
 
