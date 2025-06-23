@@ -31,7 +31,8 @@ public class PointHistoryRepositoryImpl implements CustomPointHistoryRepository 
         QPointHistory pointHistory = QPointHistory.pointHistory;
 
         return queryFactory.selectFrom(pointHistory)
-                .where(pointHistory.type.eq(PointHistoryType.EARN))
+                .where(pointHistory.member.memberId.eq(memberId)
+                .and(pointHistory.type.eq(PointHistoryType.EARN)))
                 .orderBy(pointHistory.createdAt.desc())
                 .fetch();
     }
@@ -41,7 +42,8 @@ public class PointHistoryRepositoryImpl implements CustomPointHistoryRepository 
         QPointHistory pointHistory = QPointHistory.pointHistory;
 
         return queryFactory.selectFrom(pointHistory)
-                .where(pointHistory.type.eq(PointHistoryType.USE))
+                .where(pointHistory.member.memberId.eq(memberId)
+                        .and(pointHistory.type.eq(PointHistoryType.USE)))
                 .orderBy(pointHistory.createdAt.desc())
                 .fetch();
     }
@@ -51,7 +53,8 @@ public class PointHistoryRepositoryImpl implements CustomPointHistoryRepository 
         QPointHistory pointHistory = QPointHistory.pointHistory;
 
         return queryFactory.selectFrom(pointHistory)
-                .where(pointHistory.createdAt.between(startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX)))
+                .where(pointHistory.member.memberId.eq(memberId)
+                .and(pointHistory.createdAt.between(startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX))))
                 .orderBy(pointHistory.createdAt.desc())
                 .fetch();
     }
