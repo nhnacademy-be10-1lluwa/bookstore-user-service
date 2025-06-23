@@ -89,8 +89,12 @@ public class AddressServiceImplTest {
         assertThat(response).isNotNull();
         verify(addressRepository).findMemberDefaultAddress(anyLong());
         verify(addressRepository).save(any(Address.class));
-        verify(addressMapper).addressToDto(addressRepository.save(any(Address.class)));
         assertThat(oldAddress.isDefault()).isFalse();
+
+        assertThat(response.getRecipient()).isEqualTo(request.getRecipient());
+        assertThat(response.getAddressName()).isEqualTo(request.getAddressName());
+        assertThat(response.getContact()).isEqualTo(request.getContact());
+        assertThat(response.getAddressDetail()).isEqualTo(request.getAddressDetail());
     }
 
     @Test
