@@ -10,6 +10,7 @@ import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
-@Transactional
 class AddressRepositoryTest {
 
     @Autowired
@@ -48,13 +49,23 @@ class AddressRepositoryTest {
 
     @BeforeEach
     public void setUp(){
-        Grade grade = gradeRepository.findByGradeName(GradeName.BASIC).orElseThrow();
+        Grade basicGrade = gradeRepository.findByGradeName(GradeName.BASIC)
+                .orElseGet(() -> gradeRepository.save(
+                        Grade.builder()
+                                .gradeName(GradeName.BASIC)
+                                .priority(4)
+                                .pointRate(new BigDecimal("0.01"))
+                                .minAmount(BigDecimal.ZERO)
+                                .maxAmount(new BigDecimal("100000"))
+                                .build()
+                ));
+
         Member member = Member.builder()
                 .name("카리나")
                 .birth("2000-04-11")
                 .email("karina@test.com")
                 .password("123456!")
-                .grade(grade)
+                .grade(basicGrade)
                 .role(Role.USER)
                 .contact("010-1234-5678")
                 .build();
@@ -72,7 +83,6 @@ class AddressRepositoryTest {
     }
 
     @Test
-//    @Commit   // db 들어간 거 확인하려면 주석해제
     @DisplayName("Address 저장 - Member")
     void testSaveMemberAddress() {
         Address address = Address.builder()
@@ -94,7 +104,6 @@ class AddressRepositoryTest {
     }
 
     @Test
-//    @Commit
     @DisplayName("Address 저장 - Guest")
     void testSaveGuestAddress() {
         Address address = Address.builder()
@@ -116,8 +125,7 @@ class AddressRepositoryTest {
     }
 
     @Test
-    @Commit
-    @DisplayName("Member의 Address 수정")
+    @DisplayName("Member Address 수정")
     void testUpdateAddress(){
         Address address = Address.builder()
                 .addressName("선배님 댁")
@@ -142,8 +150,7 @@ class AddressRepositoryTest {
     }
 
     @Test
-    @Commit
-    @DisplayName("Member의 Address 삭제")
+    @DisplayName("Member Address 삭제")
     void testDeleteAddress() {
         Address address = Address.builder()
                 .addressName("삭제할 집")
@@ -164,8 +171,7 @@ class AddressRepositoryTest {
     }
 
     @Test
-    @Commit
-    @DisplayName("Member의 기본 배송지 조회")
+    @DisplayName("Member 기본 배송지 조회")
     void testFindDefaultAddressByMember() {
         Address defaultAddress = Address.builder()
                 .addressName("기본 집")
@@ -182,12 +188,11 @@ class AddressRepositoryTest {
 
         assertTrue(found.isPresent(), "기본 배송지가 조회되어야 합니다.");
         assertTrue(found.get().isDefault(), "조회된 주소는 기본 배송지여야 합니다.");
-        assertEquals(testMember, found.get().getMember());
+        assertEquals(testMember.getMemberId(), found.get().getMember().getMemberId());
     }
 
     @Test
-    @Commit
-    @DisplayName("Member의 모든 주소 조회")
+    @DisplayName("Member 모든 주소 조회")
     void testFindAllByMember() {
         Address addr1 = Address.builder()
                 .addressName("집1")
@@ -216,7 +221,7 @@ class AddressRepositoryTest {
 
         assertThat(addresses).isNotEmpty();
         assertThat(addresses.size()).isGreaterThanOrEqualTo(2);
-        addresses.forEach(address -> assertEquals(testMember, address.getMember()));
+        addresses.forEach(address -> assertEquals(testMember.getMemberId(), address.getMember().getMemberId()));
     }
 
 }

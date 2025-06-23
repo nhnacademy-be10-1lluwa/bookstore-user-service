@@ -3,15 +3,13 @@ package com.nhnacademy.illuwa.domain.address.entity;
 import com.nhnacademy.illuwa.domain.guest.entity.Guest;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Table(name = "address")
 @Getter
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode
 public class Address {
     @Id
     @GeneratedValue
@@ -36,16 +34,16 @@ public class Address {
 
     @Setter
     @Column(name = "is_default")
-    private boolean isDefault;
+    private boolean isDefault = true;
 
     @Setter
     @ManyToOne
-    @JoinColumn(name = "member_id", nullable = true)
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @Setter
     @OneToOne
-    @JoinColumn(name = "guest_id", nullable = true)
+    @JoinColumn(name = "guest_id")
     private Guest guest;
 
     @Builder

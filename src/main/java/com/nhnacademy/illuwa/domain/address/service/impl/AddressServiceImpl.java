@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +35,11 @@ public class AddressServiceImpl implements AddressService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberNotFoundException(memberId));
 
+        if(request.getIsDefault()){
+            Address orgAddress = addressRepository.findMemberDefaultAddress(memberId)
+                    .orElseThrow(()-> new AddressNotFoundException("기존의 기본배송지가 없습니다."));
+            orgAddress.setDefault(false);
+        }
         Address address = addressMapper.toEntity(request);
         address.setMember(member);
 
