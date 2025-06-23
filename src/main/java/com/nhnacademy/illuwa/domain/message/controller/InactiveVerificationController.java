@@ -33,9 +33,8 @@ public class InactiveVerificationController {
         request.setRecipientEmail(member.getEmail());
 
         messageSendService.sendVerificationCode(request);
-
         return ResponseEntity.ok(
-                new SendMessageResponse(memberId, member.getEmail(), "인증번호를 발송했습니다!")
+                new SendMessageResponse(member.getEmail(), "인증번호를 발송했습니다!")
         );
     }
 
@@ -57,7 +56,7 @@ public class InactiveVerificationController {
         }
     }
 
-    private MemberResponse getMemberOrThrow(long memberId) {
+    public MemberResponse getMemberOrThrow(long memberId) {
         try {
             return memberService.getMemberById(memberId);
         } catch (RuntimeException e) {

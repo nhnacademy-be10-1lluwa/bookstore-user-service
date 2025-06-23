@@ -5,6 +5,7 @@ import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.message.dto.SendMessageRequest;
+import com.nhnacademy.illuwa.domain.message.dto.SendMessageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,8 +25,7 @@ public class MessageSendService {
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    //최상위 두레이메시지전송 메서드
-    public void sendDoorayMessage(SendMessageRequest request) {
+    public SendMessageResponse sendDoorayMessage(SendMessageRequest request) {
         Map<String, Object> body = new HashMap<>();
         body.put("botName", request.getBotName());
         if(request.getText() != null){
@@ -41,12 +41,15 @@ public class MessageSendService {
 
             body.put("attachments", List.of(attachment));
         }
-
         try {
             doorayMessageClient.sendMessage(body);
-            log.debug("두레이 메시지 전송 성공!");
+            String message = "두레이 메시지 전송 성공!";
+            log.debug(message);
+            return new SendMessageResponse(request.getRecipientEmail(), message);
         } catch (Exception e) {
-            log.error("두레이 메시지 전송 실패: {}", e.getMessage());
+            String message = "두레이 메시지 전송 실패!";
+            log.error(message + "{}", e.getMessage());
+            return new SendMessageResponse(request.getRecipientEmail(), message);
         }
     }
 
@@ -55,7 +58,6 @@ public class MessageSendService {
         request.setText(request.getRecipientName() + "님의 소중한 주문이 완료되었습니다!😎");
         request.setAttachmentTitle("🎁주문완료");
         request.setAttachmentText("주문번호: " + "[" + orderNumber + "]");
-
         sendDoorayMessage(request);
     }
 
@@ -65,11 +67,9 @@ public class MessageSendService {
         if (!memberDto.getStatus().equals(Status.INACTIVE)) {
             throw new IllegalStateException("휴면 회원만 인증이 필요합니다!");
         }
-
         String code = generateVerificationCode();
         String key = "verify:" + request.getRecipientEmail();
 
-        // Redis에 인증번호 저장 (3분간 유효)
         redisTemplate.opsForValue().set(key, code, 3, TimeUnit.MINUTES);
 
         String messageText = request.getRecipientName() + "님 🙌\n" +
@@ -83,9 +83,8 @@ public class MessageSendService {
     }
 
     //인증번호 생성
-    private String generateVerificationCode() {
+    public String generateVerificationCode() {
         int code = SECURE_RANDOM.nextInt(900_000) + 100_000;
         return String.valueOf(code);
     }
-
 }
