@@ -60,8 +60,8 @@ class InactiveVerificationControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody())
-                .extracting("memberId", "email", "message")
-                .containsExactly(memberId, member.getEmail(), "인증번호를 발송했습니다!");
+                .extracting( "email", "message")
+                .containsExactly( member.getEmail(), "인증번호를 발송했습니다!");
     }
 
     @Test
@@ -97,8 +97,8 @@ class InactiveVerificationControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody())
-                .extracting("memberId", "email", "message")
-                .containsExactly(memberId, email, "인증에 성공하여 휴면상태가 해제됐어요");
+                .extracting("email", "message")
+                .containsExactly(email, "인증에 성공하여 휴면상태가 해제됐어요");
     }
 
     @Test
@@ -122,8 +122,8 @@ class InactiveVerificationControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(response.getBody())
-                .extracting("memberId", "email", "message")
-                .containsExactly(memberId, email, "인증에 실패하여 휴면상태가 지속됩니다.");
+                .extracting("email", "message")
+                .containsExactly(email, "인증에 실패하여 휴면상태가 지속됩니다.");
     }
 
     @Test

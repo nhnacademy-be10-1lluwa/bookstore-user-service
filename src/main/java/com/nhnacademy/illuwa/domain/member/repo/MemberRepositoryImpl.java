@@ -4,6 +4,10 @@ import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 
 import com.nhnacademy.illuwa.domain.member.entity.QMember;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
@@ -11,16 +15,14 @@ import java.util.List;
 
 
 @Repository
-public class MemberRepositoryImpl extends QuerydslRepositorySupport implements MemberGradeRepository{
-    public MemberRepositoryImpl() {
-        super(Member.class);
-    }
-
-    QMember member = QMember.member;
+@RequiredArgsConstructor
+public class MemberRepositoryImpl implements MemberGradeRepository{
+    private final JPAQueryFactory queryFactory;
 
     @Override
     public List<Member> findByGrade(Grade grade) {
-        return from(member)
+        QMember member = QMember.member;
+        return queryFactory.selectFrom(member)
                 .where(member.grade.eq(grade))
                 .fetch();
     }

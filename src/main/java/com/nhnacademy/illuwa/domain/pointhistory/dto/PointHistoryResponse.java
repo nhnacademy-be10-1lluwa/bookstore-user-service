@@ -1,20 +1,17 @@
 package com.nhnacademy.illuwa.domain.pointhistory.dto;
 
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointHistoryType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class PointHistoryResponse {
     private int amount;
-    private String reason;
+    private PointReason reason;
     private PointHistoryType type;
     private LocalDateTime createdAt;
 }
