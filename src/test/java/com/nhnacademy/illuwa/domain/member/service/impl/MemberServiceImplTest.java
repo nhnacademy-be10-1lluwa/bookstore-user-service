@@ -165,7 +165,7 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("회원 가입 - 중복 이메일 예외 발생")
     void register_duplicateMember_throwsException() {
-        when(memberRepository.existsByEmail(testMember.getEmail())).thenReturn(true);
+        when(memberRepository.existsByEmail(anyString())).thenReturn(true);
 
         assertThrows(DuplicateMemberException.class, () -> memberService.register(testMember));
     }
@@ -177,7 +177,6 @@ class MemberServiceImplTest {
 
         when(memberRepository.getMemberByEmailAndPassword(testMember.getEmail(), testMember.getPassword()))
                 .thenReturn(Optional.of(testMember));
-        when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
 
         when(memberMapper.toDto(testMember)).thenReturn(
                 MemberResponse.builder()
@@ -193,6 +192,8 @@ class MemberServiceImplTest {
                         .build()
         );
         MemberLoginRequest request = new MemberLoginRequest(testMember.getEmail(), testMember.getPassword());
+        when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
+
         MemberResponse result = memberService.login(request);
 
         assertNotNull(result.getLastLoginAt());
@@ -214,9 +215,10 @@ class MemberServiceImplTest {
         testMember.setLastLoginAt(LocalDateTime.now().minusMonths(4));
         testMember.setStatus(Status.ACTIVE);
         setMemberId(testMember);
+        memberService.register(testMember);
 
-        when(memberRepository.getMemberByEmailAndPassword(any(), any())).thenReturn(Optional.of(testMember));
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
+        when(memberRepository.getMemberByEmailAndPassword(testMember.getEmail(), testMember.getPassword())).thenReturn(Optional.of(testMember));
 
         memberService.login(new MemberLoginRequest(testMember.getEmail(), testMember.getPassword()));
 
@@ -310,7 +312,6 @@ class MemberServiceImplTest {
 
         memberService.updateMemberGrade(1L, new BigDecimal("50000"));
 
-
         assertEquals(GradeName.BASIC, testMember.getGrade().getGradeName());
     }
 
@@ -391,7 +392,6 @@ class MemberServiceImplTest {
         memberService.register(testMember);
 
         when(memberRepository.existsById(1L)).thenReturn(true);
-
         memberService.removeMember(1L);
 
         verify(memberRepository).deleteById(1L);
@@ -401,7 +401,6 @@ class MemberServiceImplTest {
     @DisplayName("회원 삭제 - 존재하지 않는 회원 예외 발생")
     void removeMember_notExists_throwsException() {
         when(memberRepository.existsById(anyLong())).thenReturn(false);
-
         assertThrows(MemberNotFoundException.class, () -> memberService.removeMember(99L));
     }
 }
