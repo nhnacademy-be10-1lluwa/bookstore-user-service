@@ -307,7 +307,6 @@ class MemberServiceImplTest {
     void updateNetOrderAmountAndChangeGrade_remainNormal() {
         setMemberId(testMember);
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
-
         when(gradeService.calculateGrade(new BigDecimal("50000"))).thenReturn(basicGrade);
 
         memberService.updateMemberGrade(1L, new BigDecimal("50000"));
