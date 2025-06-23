@@ -89,6 +89,7 @@ public class AddressServiceImplTest {
         assertThat(response).isNotNull();
         verify(addressRepository).findMemberDefaultAddress(anyLong());
         verify(addressRepository).save(any(Address.class));
+        verify(addressMapper).addressToDto(addressRepository.save(any(Address.class)));
         assertThat(oldAddress.isDefault()).isFalse();
     }
 
@@ -251,7 +252,7 @@ public class AddressServiceImplTest {
         List<AddressResponse> result = addressService.getAddressesByMember(1L);
 
         assertThat(result).hasSize(1);
-        AddressResponse res = result.get(0);
+        AddressResponse res = result.getFirst();
         assertThat(res.getRecipient()).isEqualTo("카리나");
         assertThat(res.getAddressDetail()).isEqualTo("서울 강남구");
         assertThat(res.isDefault()).isTrue();
