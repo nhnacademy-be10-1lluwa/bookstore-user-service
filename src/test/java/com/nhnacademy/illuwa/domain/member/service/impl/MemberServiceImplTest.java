@@ -157,7 +157,6 @@ class MemberServiceImplTest {
         assertThrows(InvalidInputException.class, () -> memberService.register(invalid));
     }
 
-
     @Test
     @DisplayName("회원 가입 - null 회원 정보 예외 발생")
     void register_nullMember_throwsException() {
