@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -20,7 +21,7 @@ public class PointHistory {
     private long pointHistoryId;
 
     @Column(nullable = false)
-    private int amount;
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "reason", nullable = false)
@@ -37,7 +38,7 @@ public class PointHistory {
     private long memberId;
 
     @Builder
-    public PointHistory(int amount, PointReason reason, PointHistoryType type, LocalDateTime createdAt, long memberId) {
+    public PointHistory(BigDecimal amount, PointReason reason, PointHistoryType type, LocalDateTime createdAt, long memberId) {
         this.amount = amount;
         this.reason = reason;
         this.type = type;

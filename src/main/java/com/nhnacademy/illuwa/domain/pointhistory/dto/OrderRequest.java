@@ -13,7 +13,7 @@ public class OrderRequest {
 
     //회원 정보
     BigDecimal netOrderAmount;
-    int usedPoint;
+    BigDecimal usedPoint;
 
     //비회원 개인정보
     String orderNumber;

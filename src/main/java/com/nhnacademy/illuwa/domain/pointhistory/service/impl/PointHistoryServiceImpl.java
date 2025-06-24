@@ -48,30 +48,29 @@ public class PointHistoryServiceImpl implements PointHistoryService {
     //memberId + reason + 주문정보로 포인트 처리 후 히스토리 남기는 메서드
     @Override
     public PointHistoryResponse processPointHistory(long memberId, PointReason reason, OrderRequest request) {
-        int point = calculatePoint(memberId, reason, request);
+        BigDecimal point = calculatePoint(memberId, reason, request);
         memberService.updateMemberPoint(memberId, point);
         return recordPointHistory(memberId, point, reason);
     }
 
     //1-2. 포인트 계산
-    @Override
-    public int calculatePoint(long memberId, PointReason reason, OrderRequest request) {
+    public BigDecimal calculatePoint(long memberId, PointReason reason, OrderRequest request) {
         return reason.getPolicyKey()
                 .map(key -> calculatedFromPolicy(pointPolicyService.findByPolicyKey(key), request))
                 .orElseGet(() -> calculateByOrder(memberId, reason, request));
     }
 
     //2-1. 포인트 정책 기반 포인트 계산
-    private int calculatedFromPolicy(PointPolicyResponse policy, OrderRequest request) {
+    private BigDecimal calculatedFromPolicy(PointPolicyResponse policy, OrderRequest request) {
         if(policy.getValueType().equals(PointValueType.AMOUNT)){
-            return policy.getValue().intValue();
+            return policy.getValue();
         } else{
-            return request.getNetOrderAmount().multiply(policy.getValue()).intValue();
+            return request.getNetOrderAmount().multiply(policy.getValue());
         }
     }
 
     //2-2 주문으로 인한 포인트 계산
-    private int calculateByOrder(long memberId, PointReason reason, OrderRequest request) {
+    private BigDecimal calculateByOrder(long memberId, PointReason reason, OrderRequest request) {
         switch (reason) {
             case PURCHASE :
                 GradeName gradeName = GradeName.valueOf(memberService.getMemberById(memberId).getGradeName());
@@ -84,11 +83,11 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 
                 //구매 후 등급별 적립
                 BigDecimal gradePoint = netOrderAmount.multiply(grade.getPointRate());
-                return defaultPoint.add(gradePoint).intValue();
+                return defaultPoint.add(gradePoint);
 
             //구매 시 사용한 포인트 차감
             case USED_IN_ORDER:
-                return -request.getUsedPoint();
+                return request.getUsedPoint();
             default :
                 throw new UnsupportedOperationException("정책 없이 처리할 수 없는 reason: " + reason);
         }
@@ -96,7 +95,7 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 
     //3. 포인트 내역 기록
     @Override
-    public PointHistoryResponse recordPointHistory(long memberId, int point, PointReason reason){
+    public PointHistoryResponse recordPointHistory(long memberId, BigDecimal point, PointReason reason){
         PointHistory pointHistory = PointHistory.builder()
                 .memberId(memberId)
                 .amount(point)
@@ -104,7 +103,7 @@ public class PointHistoryServiceImpl implements PointHistoryService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        PointHistoryType type = point > 0 ? PointHistoryType.EARN : PointHistoryType.USE;
+        PointHistoryType type = point.compareTo(BigDecimal.ZERO) > 0 ? PointHistoryType.EARN : PointHistoryType.USE;
         pointHistory.setType(type);
 
         return pointHistoryMapper.toDto(pointHistoryRepository.save(pointHistory));
