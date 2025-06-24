@@ -60,7 +60,7 @@ public class Member {
 
     @Setter
     @Column(name = "point", nullable = false)
-    private int point = 0;
+    private BigDecimal point = BigDecimal.ZERO;
 
     @Setter
     @Column(name = "status", nullable = false)

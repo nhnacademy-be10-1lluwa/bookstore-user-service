@@ -4,10 +4,12 @@ import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.grade.service.GradeService;
 import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
+import com.nhnacademy.illuwa.domain.member.dto.MemberRegisterRequest;
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.dto.MemberUpdateRequest;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
+import com.nhnacademy.illuwa.domain.member.exception.DeletedMemberException;
 import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;
 import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
@@ -31,23 +33,27 @@ public class MemberServiceImpl implements MemberService {
     private final MemberMapper memberMapper;
 
     @Override
-    public MemberResponse register(Member member) {
-        if (member == null ||
-                member.getEmail() == null || member.getEmail().isBlank() ||
-                member.getPassword() == null || member.getPassword().isBlank() ||
-                member.getName() == null || member.getName().isBlank() ||
-                member.getBirth() == null ||
-                member.getContact() == null || member.getContact().isBlank()) {
-
+    public MemberResponse register(MemberRegisterRequest request) {
+        if (request.getEmail() == null || request.getEmail().isBlank() ||
+            request.getPassword() == null || request.getPassword().isBlank() ||
+            request.getName() == null || request.getName().isBlank() ||
+            request.getBirth() == null || request.getContact() == null || request.getContact().isBlank()) {
             throw new InvalidInputException("가입정보가 제대로 입력되지 않았습니다.");
         }
-        if (memberRepository.existsByEmail(member.getEmail())) {
-            throw new DuplicateMemberException();
-        }
-        Grade basicGrade = gradeService.getByGradeName(GradeName.BASIC);
-        member.setGrade(basicGrade);
+        //기존 존재 || 탈퇴한 회원 이메일인지 체크
+        memberRepository.findByEmail(request.getEmail())
+                .ifPresent(member -> {
+                    if (member.getStatus() == Status.DELETED) {
+                        throw new DeletedMemberException();
+                    }
+                    throw new DuplicateMemberException();
+                });
 
-        return memberMapper.toDto(memberRepository.save(member));
+        Grade basicGrade = gradeService.getByGradeName(GradeName.BASIC);
+        Member newMember = memberMapper.toEntity(request);
+        newMember.setGrade(basicGrade);
+
+        return memberMapper.toDto(memberRepository.save(newMember));
     }
 
     @Override
@@ -65,15 +71,23 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public List<MemberResponse> getAllMembers() {
         List<Member> memberList = memberRepository.findAll();
-        List<MemberResponse> responseList = memberList.stream()
+        return memberList.stream()
                 .map(memberMapper::toDto)
                 .toList();
-        return responseList;
     }
 
     @Transactional(readOnly = true)
     @Override
-    public MemberResponse getMemberById(Long memberId) {
+    public List<MemberResponse> getAllMembersByStatus(Status status) {
+        List<Member> memberList = memberRepository.findMembersByStatus(status);
+        return memberList.stream()
+                .map(memberMapper::toDto)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public MemberResponse getMemberById(long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
         checkMemberStatus(memberId);
@@ -88,7 +102,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberResponse updateMember(Long memberId, MemberUpdateRequest newMemberRequest) {
+    public MemberResponse updateMember(long memberId, MemberUpdateRequest newMemberRequest) {
         Member orgMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
         Member updatedMember = memberMapper.updateMember(orgMember, newMemberRequest);
@@ -96,14 +110,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void updateMemberPoint(Long memberId, int point) {
+    public void updateMemberPoint(long memberId, BigDecimal point) {
         Member orgMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
-        orgMember.setPoint(orgMember.getPoint() + point);
+        orgMember.setPoint(orgMember.getPoint().add(point));
     }
 
     @Override
-    public void updateMemberGrade(Long memberId, BigDecimal netOrderAmount) {
+    public void updateMemberGrade(long memberId, BigDecimal netOrderAmount) {
         Member orgMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
         Grade newGrade = gradeService.calculateGrade(netOrderAmount);
@@ -111,7 +125,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void checkMemberStatus(Long memberId) {
+    public void checkMemberStatus(long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
         LocalDateTime threeMonthsAgo  = LocalDateTime.now().minusMonths(3);
@@ -121,14 +135,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void reactivateMember(Long memberId) {
+    public void reactivateMember(long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
         member.setStatus(Status.ACTIVE);
     }
 
     @Override
-    public void removeMember(Long memberId) {
+    public void removeMember(long memberId) {
         if(!memberRepository.existsById(memberId)){
             throw new MemberNotFoundException(memberId);
         }

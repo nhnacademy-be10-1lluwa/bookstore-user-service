@@ -12,8 +12,10 @@ import java.time.LocalDate;
 public class MemberRegisterRequest {
     @NotBlank
     private String name;
+
     @Past
     private LocalDate birth;
+
     @Email
     @NotBlank
     private String email;
