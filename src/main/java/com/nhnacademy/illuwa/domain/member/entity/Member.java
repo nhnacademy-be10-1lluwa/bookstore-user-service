@@ -74,7 +74,7 @@ public class Member {
     @Builder
     public Member(String name, LocalDate birth, String email, String password,
                   Role role, String contact, Grade grade,
-                  BigDecimal netOrderAmount, BigDecimal point,
+                  BigDecimal netOrderAmount, Integer point,
                   Status status, LocalDateTime lastLoginAt) {
         this.name = name;
         this.birth = birth;
@@ -84,7 +84,7 @@ public class Member {
         this.contact = contact;
         this.grade = grade;
         this.netOrderAmount = (netOrderAmount != null) ? netOrderAmount : BigDecimal.ZERO;
-        this.point = (point != null) ? point : BigDecimal.ZERO;
+        this.point = (point != null) ? point : 0;
         this.status = (status != null) ? status : Status.ACTIVE;
         this.lastLoginAt = (lastLoginAt != null) ? lastLoginAt : LocalDateTime.now();
     }
