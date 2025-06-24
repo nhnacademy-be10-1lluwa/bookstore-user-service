@@ -1,10 +1,8 @@
 package com.nhnacademy.illuwa.domain.pointhistory.entity;
 
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointHistoryType;
-import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,16 +33,15 @@ public class PointHistory {
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @Column(name = "member_id")
+    private long memberId;
 
     @Builder
-    public PointHistory(int amount, PointReason reason, PointHistoryType type, LocalDateTime createdAt, Member member) {
+    public PointHistory(int amount, PointReason reason, PointHistoryType type, LocalDateTime createdAt, long memberId) {
         this.amount = amount;
         this.reason = reason;
         this.type = type;
         this.createdAt = createdAt;
-        this.member = member;
+        this.memberId = memberId;
     }
 }
