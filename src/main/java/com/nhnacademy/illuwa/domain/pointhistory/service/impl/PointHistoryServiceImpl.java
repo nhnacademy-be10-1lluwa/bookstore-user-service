@@ -26,6 +26,14 @@ import java.time.LocalDateTime;
 @Transactional
 @RequiredArgsConstructor
 public class PointHistoryServiceImpl implements PointHistoryService {
+    private final PointHistoryRepository pointHistoryRepository;
+    private final PointHistoryMapper pointHistoryMapper;
+    private final PointPolicyService pointPolicyService;
+    private final GradeService gradeService;
+    private final MemberService memberService;
+
+    private static final String BOOK_DEFAULT_RATE = "book_default_rate";
+
     //pointPolicy 참고해야하는 포인트적립
     //1. joinPoint
     //2. reviewPoint
@@ -36,31 +44,7 @@ public class PointHistoryServiceImpl implements PointHistoryService {
     //구매 후 포인트 적립 (by Grade)
     //구매 시 사용한 포인트 차감
 
-    private final PointHistoryRepository pointHistoryRepository;
-    private final PointHistoryMapper pointHistoryMapper;
-    private final PointPolicyService pointPolicyService;
-    private final GradeService gradeService;
-    private final MemberService memberService;
-
-    private static final String BOOK_DEFAULT_RATE = "book_default_rate";
-
-    //포인트 내역 기록
-    @Override
-    public PointHistoryResponse recordPointHistory(long memberId, int point, PointReason reason){
-        PointHistory pointHistory = PointHistory.builder()
-                        .memberId(memberId)
-                        .amount(point)
-                        .reason(reason)
-                        .createdAt(LocalDateTime.now())
-                        .build();
-
-        PointHistoryType type = point > 0 ? PointHistoryType.EARN : PointHistoryType.USE;
-        pointHistory.setType(type);
-
-        return pointHistoryMapper.toDto(pointHistoryRepository.save(pointHistory));
-    }
-
-    //총괄 메서드
+    //1. 총괄 메서드
     //memberId + reason + 주문정보로 포인트 처리 후 히스토리 남기는 메서드
     @Override
     public PointHistoryResponse processPointHistory(long memberId, PointReason reason, OrderRequest request) {
@@ -69,14 +53,24 @@ public class PointHistoryServiceImpl implements PointHistoryService {
         return recordPointHistory(memberId, point, reason);
     }
 
-    //포인트 계산
-    private int calculatePoint(long memberId, PointReason reason, OrderRequest request) {
+    //1-2. 포인트 계산
+    @Override
+    public int calculatePoint(long memberId, PointReason reason, OrderRequest request) {
         return reason.getPolicyKey()
                 .map(key -> calculatedFromPolicy(pointPolicyService.findByPolicyKey(key), request))
                 .orElseGet(() -> calculateByOrder(memberId, reason, request));
     }
 
-    //1. 주문으로 인한 포인트 계산
+    //2-1. 포인트 정책 기반 포인트 계산
+    private int calculatedFromPolicy(PointPolicyResponse policy, OrderRequest request) {
+        if(policy.getValueType().equals(PointValueType.AMOUNT)){
+            return policy.getValue().intValue();
+        } else{
+            return request.getNetOrderAmount().multiply(policy.getValue()).intValue();
+        }
+    }
+
+    //2-2 주문으로 인한 포인트 계산
     private int calculateByOrder(long memberId, PointReason reason, OrderRequest request) {
         switch (reason) {
             case PURCHASE :
@@ -100,12 +94,19 @@ public class PointHistoryServiceImpl implements PointHistoryService {
         }
     }
 
-    //2. 포인트 정책 기반 포인트 계산
-    private int calculatedFromPolicy(PointPolicyResponse policy, OrderRequest request) {
-        if(policy.getValueType().equals(PointValueType.AMOUNT)){
-            return policy.getValue().intValue();
-        } else{
-            return request.getNetOrderAmount().multiply(policy.getValue()).intValue();
-        }
+    //3. 포인트 내역 기록
+    @Override
+    public PointHistoryResponse recordPointHistory(long memberId, int point, PointReason reason){
+        PointHistory pointHistory = PointHistory.builder()
+                .memberId(memberId)
+                .amount(point)
+                .reason(reason)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        PointHistoryType type = point > 0 ? PointHistoryType.EARN : PointHistoryType.USE;
+        pointHistory.setType(type);
+
+        return pointHistoryMapper.toDto(pointHistoryRepository.save(pointHistory));
     }
 }

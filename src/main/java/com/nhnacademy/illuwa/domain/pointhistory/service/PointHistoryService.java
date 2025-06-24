@@ -6,6 +6,12 @@ import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
 
 public interface PointHistoryService {
 
-    PointHistoryResponse recordPointHistory(long memberId, int point, PointReason reason);
+    //포인트계산-생성까지의 총괄메서드
     PointHistoryResponse processPointHistory(long memberId, PointReason reason, OrderRequest request);
+
+    //포인트 계산
+    int calculatePoint(long memberId, PointReason reason, OrderRequest request);
+
+    //포인트 히스토리 생성
+    PointHistoryResponse recordPointHistory(long memberId, int point, PointReason reason);
 }
