@@ -4,10 +4,9 @@ import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
 import com.nhnacademy.illuwa.domain.member.dto.MemberRegisterRequest;
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.dto.MemberUpdateRequest;
-import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
-import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,14 +15,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/members")
+@RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
-    private final MemberMapper memberMapper;
-
-    public MemberController(MemberService memberService, MemberMapper memberMapper) {
-        this.memberService = memberService;
-        this.memberMapper = memberMapper;
-    }
 
     // 회원 목록 조회
     @GetMapping
@@ -40,8 +34,7 @@ public class MemberController {
     // 회원가입
     @PostMapping
     public ResponseEntity<MemberResponse> register(@Valid @RequestBody MemberRegisterRequest request) {
-        Member member = memberMapper.toEntity(request);
-        MemberResponse saved = memberService.register(member);
+        MemberResponse saved = memberService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(saved);
     }

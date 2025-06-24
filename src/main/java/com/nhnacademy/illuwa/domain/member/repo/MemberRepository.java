@@ -2,6 +2,7 @@ package com.nhnacademy.illuwa.domain.member.repo;
 
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
+import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -11,6 +12,8 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberGra
     Optional<Member> findByEmail(String email);
 
     List<Member> findByRole(Role role);
+
+    List<Member> findMembersByStatus(Status status);
 
     Optional<Member> getMemberByEmailAndPassword(String email, String password);
 

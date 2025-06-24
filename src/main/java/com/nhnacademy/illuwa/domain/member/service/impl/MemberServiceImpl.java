@@ -4,10 +4,12 @@ import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.grade.service.GradeService;
 import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
+import com.nhnacademy.illuwa.domain.member.dto.MemberRegisterRequest;
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.dto.MemberUpdateRequest;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
+import com.nhnacademy.illuwa.domain.member.exception.DeletedMemberException;
 import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;
 import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
@@ -15,6 +17,7 @@ import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DeadlockLoserDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -31,23 +34,24 @@ public class MemberServiceImpl implements MemberService {
     private final MemberMapper memberMapper;
 
     @Override
-    public MemberResponse register(Member member) {
-        if (member == null ||
-                member.getEmail() == null || member.getEmail().isBlank() ||
-                member.getPassword() == null || member.getPassword().isBlank() ||
-                member.getName() == null || member.getName().isBlank() ||
-                member.getBirth() == null ||
-                member.getContact() == null || member.getContact().isBlank()) {
-
+    public MemberResponse register(MemberRegisterRequest request) {
+        if (request.getEmail() == null || request.getEmail().isBlank() ||
+            request.getPassword() == null || request.getPassword().isBlank() ||
+            request.getName() == null || request.getName().isBlank() ||
+            request.getBirth() == null || request.getContact() == null || request.getContact().isBlank()) {
             throw new InvalidInputException("가입정보가 제대로 입력되지 않았습니다.");
         }
-        if (memberRepository.existsByEmail(member.getEmail())) {
+        if (memberRepository.existsByEmail(request.getEmail())) {
+            if(memberRepository.findByEmail(request.getEmail()).get().getStatus().equals(Status.DELETED)){
+                throw new DeletedMemberException();
+            }
             throw new DuplicateMemberException();
         }
         Grade basicGrade = gradeService.getByGradeName(GradeName.BASIC);
-        member.setGrade(basicGrade);
+        Member newMember = memberMapper.toEntity(request);
+        newMember.setGrade(basicGrade);
 
-        return memberMapper.toDto(memberRepository.save(member));
+        return memberMapper.toDto(memberRepository.save(newMember));
     }
 
     @Override
@@ -65,10 +69,18 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public List<MemberResponse> getAllMembers() {
         List<Member> memberList = memberRepository.findAll();
-        List<MemberResponse> responseList = memberList.stream()
+        return memberList.stream()
                 .map(memberMapper::toDto)
                 .toList();
-        return responseList;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<MemberResponse> getAllMembersByStatus(Status status) {
+        List<Member> memberList = memberRepository.findMembersByStatus(status);
+        return memberList.stream()
+                .map(memberMapper::toDto)
+                .toList();
     }
 
     @Transactional(readOnly = true)
