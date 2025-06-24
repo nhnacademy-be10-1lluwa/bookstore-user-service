@@ -4,7 +4,6 @@ import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
 import com.nhnacademy.illuwa.domain.member.dto.MemberRegisterRequest;
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.dto.MemberUpdateRequest;
-import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 
 import java.math.BigDecimal;
@@ -19,17 +18,19 @@ public interface MemberService {
 
     List<MemberResponse> getAllMembersByStatus(Status status);
 
-    MemberResponse getMemberById(Long memberId);
+    MemberResponse getMemberById(long memberId);
 
     MemberResponse getMemberByEmail(String email);
 
-    MemberResponse updateMember(Long memberId, MemberUpdateRequest newMemberRequest);
+    MemberResponse updateMember(long memberId, MemberUpdateRequest newMemberRequest);
 
-    void updateMemberGrade(Long memberId, BigDecimal netOrderAmount);
+    void updateMemberPoint(long memberId, BigDecimal point);
 
-    void checkMemberStatus(Long memberId);
+    void updateMemberGrade(long memberId, BigDecimal netOrderAmount);
 
-    void reactivateMember(Long memberId);
+    void checkMemberStatus(long memberId);
 
-    void removeMember(Long memberId);
+    void reactivateMember(long memberId);
+
+    void removeMember(long memberId);
 }
