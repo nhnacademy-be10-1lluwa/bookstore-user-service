@@ -6,6 +6,7 @@ import com.nhnacademy.illuwa.domain.guest.entity.Guest;
 import com.nhnacademy.illuwa.domain.guest.exception.GuestNotFoundException;
 import com.nhnacademy.illuwa.domain.guest.repo.GuestRepository;
 import com.nhnacademy.illuwa.domain.guest.service.GuestService;
+import com.nhnacademy.illuwa.domain.pointhistory.dto.OrderRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,19 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GuestServiceImpl implements GuestService {
     private final GuestRepository guestRepository;
+
+    @Override
+    public GuestResponse create(OrderRequest request){
+        Guest guest = Guest.builder()
+                .orderNumber(request.getOrderNumber())
+                .name(request.getGuestName())
+                .email(request.getGuestEmail())
+                .orderPassword(request.getOrderPassword())
+                .contact(request.getGuestContact())
+                .build();
+
+        return GuestResponse.from(guestRepository.save(guest));
+    }
 
     @Override
     public GuestResponse login(GuestLoginRequest request) {

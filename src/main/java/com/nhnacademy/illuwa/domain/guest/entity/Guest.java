@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.guest.entity;
 
+import com.nhnacademy.illuwa.domain.guest.dto.GuestResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
