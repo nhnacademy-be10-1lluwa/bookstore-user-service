@@ -96,6 +96,13 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public void updateMemberPoint(Long memberId, int point) {
+        Member orgMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        orgMember.setPoint(orgMember.getPoint() + point);
+    }
+
+    @Override
     public void updateMemberGrade(Long memberId, BigDecimal netOrderAmount) {
         Member orgMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
