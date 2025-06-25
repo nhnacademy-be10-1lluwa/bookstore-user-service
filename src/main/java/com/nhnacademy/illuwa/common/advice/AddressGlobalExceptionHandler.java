@@ -1,7 +1,7 @@
 package com.nhnacademy.illuwa.common.advice;
 
-import com.nhnacademy.illuwa.domain.address.exception.DuplicateAddressException;
-import com.nhnacademy.illuwa.domain.address.exception.AddressNotFoundException;
+import com.nhnacademy.illuwa.domain.memberaddress.exception.DuplicateMemberAddressException;
+import com.nhnacademy.illuwa.domain.memberaddress.exception.MemberAddressNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,8 +15,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class AddressGlobalExceptionHandler {
 
-    @ExceptionHandler(DuplicateAddressException.class)
-    public ResponseEntity<Object> handleDuplicateAddress(DuplicateAddressException ex, WebRequest request) {
+    @ExceptionHandler(DuplicateMemberAddressException.class)
+    public ResponseEntity<Object> handleDuplicateAddress(DuplicateMemberAddressException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.CONFLICT.value());
@@ -27,8 +27,8 @@ public class AddressGlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(AddressNotFoundException.class)
-    public ResponseEntity<Object> handleUserNotFoundException(AddressNotFoundException ex, WebRequest request) {
+    @ExceptionHandler(MemberAddressNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFoundException(MemberAddressNotFoundException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.NOT_FOUND.value());

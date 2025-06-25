@@ -66,26 +66,26 @@ class PointHistoryRepositoryTest {
         member = memberRepository.save(member);
 
         PointHistory history1 = PointHistory.builder()
-                .member(member)
-                .reason(PointReason.JOIN_EVENT)
+                .memberId(member.getMemberId())
+                .reason(PointReason.JOIN)
                 .type(PointHistoryType.EARN)
-                .amount(5000)
+                .amount(new BigDecimal("5000"))
                 .createdAt(LocalDateTime.now().minusDays(2))
                 .build();
 
         PointHistory history2 = PointHistory.builder()
-                .member(member)
+                .memberId(member.getMemberId())
                 .reason(PointReason.PURCHASE)
                 .type(PointHistoryType.USE)
-                .amount(300)
+                .amount(new BigDecimal("300"))
                 .createdAt(LocalDateTime.now().minusDays(1))
                 .build();
 
         PointHistory history3 = PointHistory.builder()
-                .member(member)
+                .memberId(member.getMemberId())
                 .reason(PointReason.PHOTO_REVIEW)
                 .type(PointHistoryType.EARN)
-                .amount(500)
+                .amount(new BigDecimal("500"))
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -98,11 +98,11 @@ class PointHistoryRepositoryTest {
     @DisplayName("포인트 히스토리 저장 및 ID로 조회")
     void testSaveAndFindById() {
         PointHistory history = PointHistory.builder()
-                .amount(5000)
+                .amount(new BigDecimal("5000"))
                 .type(PointHistoryType.EARN)
-                .reason(PointReason.JOIN_EVENT)
+                .reason(PointReason.JOIN)
                 .createdAt(LocalDateTime.now())
-                .member(member)
+                .memberId(member.getMemberId())
                 .build();
 
         PointHistory saved = pointHistoryRepository.save(history);
@@ -110,14 +110,14 @@ class PointHistoryRepositoryTest {
         Optional<PointHistory> found = pointHistoryRepository.findById(saved.getPointHistoryId());
         assertThat(found).isPresent();
         assertThat(found.get().getType()).isEqualTo(PointHistoryType.EARN);
-        assertThat(found.get().getMember().getMemberId()).isEqualTo(member.getMemberId());
+        assertThat(found.get().getMemberId()).isEqualTo(member.getMemberId());
     }
 
     @Test
     @DisplayName("모든 포인트 히스토리 조회")
     void testFindAll() {
-        PointHistory history1 = new PointHistory(200, PointReason.WRITE_REVIEW, PointHistoryType.EARN, LocalDateTime.of(2025,3,19,21,29), member);
-        PointHistory history2 = new PointHistory(500, PointReason.PHOTO_REVIEW, PointHistoryType.EARN, LocalDateTime.now(), member);
+        PointHistory history1 = new PointHistory(new BigDecimal("200"), PointReason.WRITE_REVIEW, PointHistoryType.EARN, LocalDateTime.of(2025,3,19,21,29), member.getMemberId());
+        PointHistory history2 = new PointHistory(new BigDecimal("500"), PointReason.PHOTO_REVIEW, PointHistoryType.EARN, LocalDateTime.now(), member.getMemberId());
 
         pointHistoryRepository.save(history1);
         pointHistoryRepository.save(history2);

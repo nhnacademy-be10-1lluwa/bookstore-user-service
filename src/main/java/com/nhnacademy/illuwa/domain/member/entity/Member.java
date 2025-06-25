@@ -55,10 +55,6 @@ public class Member {
     private Grade grade;
 
     @Setter
-    @Column(name = "net_order_amount", nullable = false)
-    private BigDecimal netOrderAmount = new BigDecimal("0");
-
-    @Setter
     @Column(name = "point", nullable = false)
     private BigDecimal point = BigDecimal.ZERO;
 
@@ -73,8 +69,7 @@ public class Member {
 
     @Builder
     public Member(String name, LocalDate birth, String email, String password,
-                  Role role, String contact, Grade grade,
-                  BigDecimal netOrderAmount, BigDecimal point,
+                  Role role, String contact, Grade grade, BigDecimal point,
                   Status status, LocalDateTime lastLoginAt) {
         this.name = name;
         this.birth = birth;
@@ -83,7 +78,6 @@ public class Member {
         this.role = (role != null) ? role : Role.USER;
         this.contact = contact;
         this.grade = grade;
-        this.netOrderAmount = (netOrderAmount != null) ? netOrderAmount : BigDecimal.ZERO;
         this.point = (point != null) ? point : BigDecimal.ZERO;
         this.status = (status != null) ? status : Status.ACTIVE;
         this.lastLoginAt = (lastLoginAt != null) ? lastLoginAt : LocalDateTime.now();

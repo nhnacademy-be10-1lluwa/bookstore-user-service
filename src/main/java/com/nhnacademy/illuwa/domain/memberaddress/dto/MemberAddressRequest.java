@@ -1,4 +1,4 @@
-package com.nhnacademy.illuwa.domain.address.dto;
+package com.nhnacademy.illuwa.domain.memberaddress.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,7 +8,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressRequest {
+public class MemberAddressRequest {
 
     @Size(max = 50, message = "배송지 이름은 50자 이내여야 합니다.")
     private String addressName;
