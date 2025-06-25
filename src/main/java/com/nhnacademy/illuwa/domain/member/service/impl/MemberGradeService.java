@@ -1,7 +1,8 @@
-package com.nhnacademy.illuwa.domain.member.service;
+package com.nhnacademy.illuwa.domain.member.service.impl;
 
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
+import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;

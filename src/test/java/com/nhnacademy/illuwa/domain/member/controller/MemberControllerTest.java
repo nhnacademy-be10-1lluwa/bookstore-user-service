@@ -102,7 +102,7 @@ class MemberControllerTest {
                 .build();
 
         Mockito.when(memberMapper.toEntity(any(MemberRegisterRequest.class))).thenReturn(dummyEntity);
-        Mockito.when(memberService.register(any(Member.class))).thenReturn(dummyResponse);
+        Mockito.when(memberService.register(any(MemberRegisterRequest.class))).thenReturn(dummyResponse);
 
         mockMvc.perform(post("/members")
                         .contentType(MediaType.APPLICATION_JSON)

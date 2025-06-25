@@ -1,11 +1,11 @@
-package com.nhnacademy.illuwa.domain.address.dto;
+package com.nhnacademy.illuwa.domain.memberaddress.dto;
 
 import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressResponse {
+public class MemberAddressResponse {
     private long addressId;
     private String addressName;
     private String recipient;

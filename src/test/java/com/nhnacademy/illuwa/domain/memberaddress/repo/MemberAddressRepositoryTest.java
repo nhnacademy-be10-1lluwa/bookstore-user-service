@@ -1,0 +1,193 @@
+package com.nhnacademy.illuwa.domain.memberaddress.repo;
+
+import com.nhnacademy.illuwa.domain.memberaddress.entity.MemberAddress;
+import com.nhnacademy.illuwa.domain.grade.entity.Grade;
+import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
+import com.nhnacademy.illuwa.domain.grade.repo.GradeRepository;
+import com.nhnacademy.illuwa.domain.member.entity.Member;
+import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
+import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ActiveProfiles("test")
+class MemberAddressRepositoryTest {
+
+    @Autowired
+    MemberAddressRepository memberAddressRepository;
+
+    @Autowired
+    MemberRepository memberRepository;
+
+    @Autowired
+    GradeRepository gradeRepository;
+
+    Member testMember;
+
+    @BeforeEach
+    public void setUp() {
+        Grade basicGrade = gradeRepository.findByGradeName(GradeName.BASIC)
+                .orElseGet(() -> gradeRepository.save(
+                        Grade.builder()
+                                .gradeName(GradeName.BASIC)
+                                .priority(4)
+                                .pointRate(new BigDecimal("0.01"))
+                                .minAmount(BigDecimal.ZERO)
+                                .maxAmount(new BigDecimal("100000"))
+                                .build()
+                ));
+
+        Member member = Member.builder()
+                .name("카리나")
+                .birth("2000-04-11")
+                .email("karina@test.com")
+                .password("123456!")
+                .grade(basicGrade)
+                .role(Role.USER)
+                .contact("010-1234-5678")
+                .build();
+
+        testMember = memberRepository.save(member);
+    }
+
+    @Test
+    @DisplayName("MemberAddress 저장")
+    void testSaveMemberAddress() {
+        MemberAddress memberAddress = MemberAddress.builder()
+                .addressName("우리집")
+                .recipientName("유지민")
+                .recipientContact("010-1234-5678")
+                .roadAddress("서울시 강남구 테헤란로")
+                .detailAddress("123")
+                .isDefault(true)
+                .member(testMember)
+                .build();
+
+        MemberAddress saved = memberAddressRepository.save(memberAddress);
+
+        assertThat(saved.getMemberAddressId()).isPositive();
+        assertThat(saved.getRoadAddress()).contains("테헤란로");
+        assertThat(saved.getMember()).isEqualTo(testMember);
+        assertThat(saved.isDefault()).isTrue();
+    }
+
+    @Test
+    @DisplayName("MemberAddress 수정")
+    void testUpdateAddress() {
+        MemberAddress memberAddress = MemberAddress.builder()
+                .addressName("선배님 댁")
+                .recipientName("장도연")
+                .recipientContact("010-2222-2222")
+                .roadAddress("광주광역시 동구 필문대로")
+                .detailAddress("123")
+                .isDefault(false)
+                .member(testMember)
+                .build();
+
+        MemberAddress saved = memberAddressRepository.save(memberAddress);
+
+        saved.setAddressName("도연언니 댁");
+        saved.setRoadAddress("경기도 고양시 일산동구 월드고양로");
+        saved.setDetailAddress("102-65");
+
+        MemberAddress updated = memberAddressRepository.save(saved);
+
+        assertEquals(saved.getMemberAddressId(), updated.getMemberAddressId());
+        assertEquals("도연언니 댁", updated.getAddressName());
+        assertEquals("장도연", updated.getRecipientName());
+        assertEquals("경기도 고양시 일산동구 월드고양로", updated.getRoadAddress());
+        assertEquals("102-65", updated.getDetailAddress());
+    }
+
+    @Test
+    @DisplayName("MemberAddress 삭제")
+    void testDeleteAddress() {
+        MemberAddress memberAddress = MemberAddress.builder()
+                .addressName("삭제할 집")
+                .recipientName("김도영")
+                .recipientContact("010-0000-0000")
+                .roadAddress("서울시 강남구 삭제로")
+                .detailAddress("1")
+                .isDefault(false)
+                .member(testMember)
+                .build();
+
+        MemberAddress saved = memberAddressRepository.save(memberAddress);
+        Long id = saved.getMemberAddressId();
+
+        memberAddressRepository.deleteById(id);
+
+        Optional<MemberAddress> deleted = memberAddressRepository.findById(id);
+        assertTrue(deleted.isEmpty(), "삭제된 주소는 조회되지 않아야 합니다.");
+    }
+
+    @Test
+    @DisplayName("Member 기본 배송지 조회")
+    void testFindDefaultAddressByMember() {
+        MemberAddress defaultAddress = MemberAddress.builder()
+                .addressName("기본 집")
+                .recipientName("기본 수령인")
+                .recipientContact("010-1111-2222")
+                .roadAddress("서울시 용산구 기본로")
+                .detailAddress("123")
+                .isDefault(true)
+                .member(testMember)
+                .build();
+
+        memberAddressRepository.save(defaultAddress);
+
+        Optional<MemberAddress> found = memberAddressRepository.findDefaultMemberAddress(testMember.getMemberId());
+
+        assertTrue(found.isPresent(), "기본 배송지가 조회되어야 합니다.");
+        assertTrue(found.get().isDefault(), "조회된 주소는 기본 배송지여야 합니다.");
+        assertEquals(testMember.getMemberId(), found.get().getMember().getMemberId());
+    }
+
+    @Test
+    @DisplayName("Member 모든 주소 조회")
+    void testFindAllByMember() {
+        MemberAddress addr1 = MemberAddress.builder()
+                .addressName("집1")
+                .recipientName("유지민")
+                .recipientContact("010-1111-1111")
+                .roadAddress("서울시 강남구")
+                .detailAddress("1번지")
+                .isDefault(false)
+                .member(testMember)
+                .build();
+
+        MemberAddress addr2 = MemberAddress.builder()
+                .addressName("집2")
+                .recipientName("유지민")
+                .recipientContact("010-2222-2222")
+                .roadAddress("서울시 강남구")
+                .detailAddress("2번지")
+                .isDefault(false)
+                .member(testMember)
+                .build();
+
+        memberAddressRepository.save(addr1);
+        memberAddressRepository.save(addr2);
+
+        List<MemberAddress> result = memberAddressRepository.findAllByMember_MemberId(testMember.getMemberId());
+
+        assertThat(result).isNotEmpty();
+        assertThat(result.size()).isGreaterThanOrEqualTo(2);
+        result.forEach(address -> assertEquals(testMember.getMemberId(), address.getMember().getMemberId()));
+    }
+
+}
