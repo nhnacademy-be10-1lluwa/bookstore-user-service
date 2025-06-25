@@ -16,8 +16,20 @@ public class MemberAddress {
     private long memberAddressId;
 
     @Setter
+    @Column(name = "post_code")
+    private String postCode;
+
+    @Setter
     @Column(name = "address_name")
     private String addressName;
+
+    @Setter
+    @Column(name = "address", nullable = false)
+    private String address;
+
+    @Setter
+    @Column(name = "detail_address", nullable = false)
+    private String detailAddress;
 
     @Setter
     @Column(name = "is_default")
@@ -31,13 +43,6 @@ public class MemberAddress {
     @Column(name = "recipient_contact", nullable = false)
     private String recipientContact;
 
-    @Setter
-    @Column(name = "road_address", nullable = false)
-    private String roadAddress;
-
-    @Setter
-    @Column(name = "detail_address", nullable = false)
-    private String detailAddress;
 
     @Setter
     @ManyToOne
@@ -45,11 +50,19 @@ public class MemberAddress {
     private Member member;
 
     @Builder
-    public MemberAddress(String addressName, boolean isDefault, String recipientName, String recipientContact, String roadAddress, String detailAddress, Member member) {
+    public MemberAddress(String postCode,
+                         String addressName,
+                         String address,
+                         String detailAddress,
+                         boolean isDefault,
+                         String recipientName,
+                         String recipientContact,
+                         Member member) {
+
         this.addressName = addressName;
         this.recipientName = recipientName;
         this.recipientContact = recipientContact;
-        this.roadAddress = roadAddress;
+        this.address = address;
         this.detailAddress = detailAddress;
         this.isDefault = isDefault;
         this.member = member;
