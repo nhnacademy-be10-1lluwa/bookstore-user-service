@@ -1,7 +1,9 @@
 package com.nhnacademy.illuwa.common.advice;
 
+import com.nhnacademy.illuwa.domain.address.exception.DuplicateAddressException;
 import com.nhnacademy.illuwa.domain.guest.exception.GuestNotFoundException;
 import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;
+import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.exception.UnauthorizedMemberAccessException;
 import org.springframework.http.HttpStatus;
