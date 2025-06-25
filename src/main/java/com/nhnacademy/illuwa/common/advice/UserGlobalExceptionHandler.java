@@ -1,16 +1,13 @@
 package com.nhnacademy.illuwa.common.advice;
 
-import com.nhnacademy.illuwa.domain.address.exception.DuplicateAddressException;
 import com.nhnacademy.illuwa.domain.guest.exception.GuestNotFoundException;
 import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;
-import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.exception.UnauthorizedMemberAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -21,7 +18,7 @@ public class UserGlobalExceptionHandler {
 
     /*Guest 관련 예외처리*/
     @ExceptionHandler(GuestNotFoundException.class)
-    public ResponseEntity<Object> handleUGuestNotFoundException(GuestNotFoundException ex, WebRequest request) {
+    public ResponseEntity<Object> handleUGuestNotFoundException(GuestNotFoundException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.NOT_FOUND.value());
@@ -34,7 +31,7 @@ public class UserGlobalExceptionHandler {
 
     /*Member 관련 예외처리*/
     @ExceptionHandler(DuplicateMemberException.class)
-    public ResponseEntity<Object> handleDuplicateMember(DuplicateMemberException ex, WebRequest request) {
+    public ResponseEntity<Object> handleDuplicateMember(DuplicateMemberException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.CONFLICT.value());
@@ -46,7 +43,7 @@ public class UserGlobalExceptionHandler {
     }
 
     @ExceptionHandler(MemberNotFoundException.class)
-    public ResponseEntity<Object> handleMemberNotFoundException(MemberNotFoundException ex, WebRequest request) {
+    public ResponseEntity<Object> handleMemberNotFoundException(MemberNotFoundException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.NOT_FOUND.value());
@@ -58,7 +55,7 @@ public class UserGlobalExceptionHandler {
     }
 
     @ExceptionHandler(UnauthorizedMemberAccessException.class)
-    public ResponseEntity<Object> handleUnauthorizedMemberException(UnauthorizedMemberAccessException ex, WebRequest request) {
+    public ResponseEntity<Object> handleUnauthorizedMemberException(UnauthorizedMemberAccessException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.UNAUTHORIZED.value());
