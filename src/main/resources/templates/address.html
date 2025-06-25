@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주소 검색 및 JSON 저장</title>
+    <!-- Daum Postcode API -->
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        input { margin: 5px 0; width: 300px; }
+        button { margin: 10px 0; }
+        pre { background: #f4f4f4; padding: 10px; }
+    </style>
+</head>
+<body>
+<h1>주소 검색 및 JSON 저장</h1>
+
+<!-- 검색 버튼 및 필드들 -->
+<input type="text" id="sample6_postcode" placeholder="우편번호" readonly><br>
+<input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
+
+<input type="text" id="sample6_address" placeholder="주소" readonly><br>
+<input type="text" id="sample6_extraAddress" placeholder="참고항목" readonly><br>
+<input type="text" id="sample6_detailAddress" placeholder="상세주소"><br>
+
+<!-- JSON 저장 및 출력 -->
+<button type="button" id="saveBtn">주소 JSON으로 저장</button>
+<pre id="jsonOutput"></pre>
+
+<script>
+    function sample6_execDaumPostcode() {
+        new daum.Postcode({
+            // daum api 제공 -> oncomplete => 콜백함수
+            oncomplete: function (data) {
+                var addr = '';
+                var extraAddr = '';
+                if (data.userSelectedType === 'R') {
+                    addr = data.roadAddress;
+                    if (data.bname && /[동|로|가]$/g.test(data.bname)) {
+                        extraAddr += data.bname;
+                    }
+                    if (data.buildingName) {
+                        extraAddr += (extraAddr ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    extraAddr = extraAddr ? '(' + extraAddr + ')' : '';
+                } else {
+                    addr = data.jibunAddress;
+                }
+                document.getElementById('sample6_postcode').value     = data.zonecode;
+                document.getElementById('sample6_address').value      = addr;
+                document.getElementById('sample6_extraAddress').value = extraAddr;
+                document.getElementById('sample6_detailAddress').focus();
+            }
+        }).open();
+    }
+
+    // JSON으로 변환하여 출력
+    // fetch()를 이용해 서버로 전송할 수 있습니다.
+    document.getElementById('saveBtn').addEventListener('click', function() {
+        const payload = {
+            postcode:     document.getElementById('sample6_postcode').value,
+            address:      document.getElementById('sample6_address').value,
+            extraAddress: document.getElementById('sample6_extraAddress').value,
+            detailAddress:document.getElementById('sample6_detailAddress').value
+        };
+        const json = JSON.stringify(payload, null, 2);
+        document.getElementById('jsonOutput').textContent = json;
+        console.log('저장된 JSON:', json);
+    });
+</script>
+</body>
+</html>

@@ -71,7 +71,7 @@ class MemberAddressRepositoryTest {
                 .addressName("우리집")
                 .recipientName("유지민")
                 .recipientContact("010-1234-5678")
-                .roadAddress("서울시 강남구 테헤란로")
+                .address("서울시 강남구 테헤란로")
                 .detailAddress("123")
                 .isDefault(true)
                 .member(testMember)
@@ -80,7 +80,7 @@ class MemberAddressRepositoryTest {
         MemberAddress saved = memberAddressRepository.save(memberAddress);
 
         assertThat(saved.getMemberAddressId()).isPositive();
-        assertThat(saved.getRoadAddress()).contains("테헤란로");
+        assertThat(saved.getAddress()).contains("테헤란로");
         assertThat(saved.getMember()).isEqualTo(testMember);
         assertThat(saved.isDefault()).isTrue();
     }
@@ -92,7 +92,7 @@ class MemberAddressRepositoryTest {
                 .addressName("선배님 댁")
                 .recipientName("장도연")
                 .recipientContact("010-2222-2222")
-                .roadAddress("광주광역시 동구 필문대로")
+                .address("광주광역시 동구 필문대로")
                 .detailAddress("123")
                 .isDefault(false)
                 .member(testMember)
@@ -101,7 +101,7 @@ class MemberAddressRepositoryTest {
         MemberAddress saved = memberAddressRepository.save(memberAddress);
 
         saved.setAddressName("도연언니 댁");
-        saved.setRoadAddress("경기도 고양시 일산동구 월드고양로");
+        saved.setAddress("경기도 고양시 일산동구 월드고양로");
         saved.setDetailAddress("102-65");
 
         MemberAddress updated = memberAddressRepository.save(saved);
@@ -109,7 +109,7 @@ class MemberAddressRepositoryTest {
         assertEquals(saved.getMemberAddressId(), updated.getMemberAddressId());
         assertEquals("도연언니 댁", updated.getAddressName());
         assertEquals("장도연", updated.getRecipientName());
-        assertEquals("경기도 고양시 일산동구 월드고양로", updated.getRoadAddress());
+        assertEquals("경기도 고양시 일산동구 월드고양로", updated.getAddress());
         assertEquals("102-65", updated.getDetailAddress());
     }
 
@@ -120,7 +120,7 @@ class MemberAddressRepositoryTest {
                 .addressName("삭제할 집")
                 .recipientName("김도영")
                 .recipientContact("010-0000-0000")
-                .roadAddress("서울시 강남구 삭제로")
+                .address("서울시 강남구 삭제로")
                 .detailAddress("1")
                 .isDefault(false)
                 .member(testMember)
@@ -142,7 +142,7 @@ class MemberAddressRepositoryTest {
                 .addressName("기본 집")
                 .recipientName("기본 수령인")
                 .recipientContact("010-1111-2222")
-                .roadAddress("서울시 용산구 기본로")
+                .address("서울시 용산구 기본로")
                 .detailAddress("123")
                 .isDefault(true)
                 .member(testMember)
@@ -164,7 +164,7 @@ class MemberAddressRepositoryTest {
                 .addressName("집1")
                 .recipientName("유지민")
                 .recipientContact("010-1111-1111")
-                .roadAddress("서울시 강남구")
+                .address("서울시 강남구")
                 .detailAddress("1번지")
                 .isDefault(false)
                 .member(testMember)
@@ -174,7 +174,7 @@ class MemberAddressRepositoryTest {
                 .addressName("집2")
                 .recipientName("유지민")
                 .recipientContact("010-2222-2222")
-                .roadAddress("서울시 강남구")
+                .address("서울시 강남구")
                 .detailAddress("2번지")
                 .isDefault(false)
                 .member(testMember)
