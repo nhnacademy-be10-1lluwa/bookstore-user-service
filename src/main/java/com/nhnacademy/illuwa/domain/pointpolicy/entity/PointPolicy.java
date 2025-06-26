@@ -22,7 +22,7 @@ public class PointPolicy {
     //join_point 회원가입 포인트
     //review_point 리뷰 포인트
     //photo_review_point 포토리뷰 포인트
-    //book_default_rate 도서 기본 적립율
+    //book_default_rate 도서 기본 적립률
 
     @Column(name = "value", precision = 10, scale = 2, nullable = false)
     private BigDecimal value;

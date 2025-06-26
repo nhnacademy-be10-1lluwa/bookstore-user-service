@@ -43,7 +43,6 @@ public class MemberAddress {
     @Column(name = "recipient_contact", nullable = false)
     private String recipientContact;
 
-
     @Setter
     @ManyToOne
     @JoinColumn(name = "member_id")
