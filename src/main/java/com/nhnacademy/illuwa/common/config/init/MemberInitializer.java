@@ -54,7 +54,7 @@ public class MemberInitializer {
                 .birth("2000-04-11")
                 .email("karina@naver.com")
                 .password("$karinA1234")   //실제론 인코딩 처리
-                .role(Role.ADMIN)
+                .role(Role.USER)
                 .contact("010-1234-5678")
                 .grade(basicGrade)
                 .point(BigDecimal.ZERO)

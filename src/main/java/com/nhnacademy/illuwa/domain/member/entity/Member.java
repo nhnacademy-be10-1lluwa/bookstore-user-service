@@ -75,9 +75,9 @@ public class Member {
         this.birth = birth;
         this.email = email;
         this.password = password;
-        this.role = (role != null) ? role : Role.USER;
         this.contact = contact;
         this.grade = grade;
+        this.role = (role != null) ? role : Role.USER;
         this.point = (point != null) ? point : BigDecimal.ZERO;
         this.status = (status != null) ? status : Status.ACTIVE;
         this.lastLoginAt = (lastLoginAt != null) ? lastLoginAt : LocalDateTime.now();
