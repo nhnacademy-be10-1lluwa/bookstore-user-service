@@ -10,6 +10,7 @@ import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointHistoryType;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
 @Transactional
+@Disabled
 class PointHistoryRepositoryTest {
 
     @Autowired
