@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController("/members/{memberId}/address")
 @RequiredArgsConstructor
+@RestController
+@RequestMapping("/members/{memberId}/address")
 public class MemberAddressController {
     private final MemberAddressService memberAddressService;
 

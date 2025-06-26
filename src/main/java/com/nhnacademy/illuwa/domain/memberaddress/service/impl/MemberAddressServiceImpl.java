@@ -4,6 +4,7 @@ import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressRequest;
 import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressResponse;
 import com.nhnacademy.illuwa.domain.memberaddress.entity.MemberAddress;
 import com.nhnacademy.illuwa.domain.memberaddress.exception.MemberAddressNotFoundException;
+import com.nhnacademy.illuwa.domain.memberaddress.exception.TooManyMemberAddressException;
 import com.nhnacademy.illuwa.domain.memberaddress.repo.MemberAddressRepository;
 import com.nhnacademy.illuwa.domain.memberaddress.service.MemberAddressService;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
@@ -23,16 +24,18 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     private final MemberRepository memberRepository;
     private final MemberAddressRepository addressRepository;
     private final MemberAddressMapper memberAddressMapper;
+    private final MemberAddressRepository memberAddressRepository;
 
     @Override
     public MemberAddressResponse registerMemberAddress(long memberId, MemberAddressRequest request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberNotFoundException(memberId));
 
+        if(memberAddressRepository.countAllByMember_MemberId(memberId) >= 10){
+            throw new TooManyMemberAddressException();
+        }
         if(request.getIsDefault()){
-            MemberAddress orgMemberAddress = addressRepository.findDefaultMemberAddress(memberId)
-                    .orElseThrow(()-> new MemberAddressNotFoundException("기존의 기본배송지가 없습니다."));
-            orgMemberAddress.setDefault(false);
+            addressRepository.unsetAllDefaultForMember(memberId);
         }
         MemberAddress memberAddress = memberAddressMapper.toEntity(request);
         memberAddress.setMember(member);
