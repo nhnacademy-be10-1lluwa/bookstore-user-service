@@ -65,7 +65,8 @@
             flex: 1;
             height: 42px;
             box-sizing: border-box;
-            padding: 10px 12px;
+            padding: 0 12px;
+            margin-bottom: 0;
         }
 
         .postcode-wrapper button {
@@ -89,7 +90,7 @@
 
         .checkbox-label {
             display: flex;
-            align-items: center; /* 수직 가운데 정렬 */
+            align-items: center;
             gap: 8px;
             font-size: 14px;
             margin-top: 10px;
@@ -99,11 +100,15 @@
         .checkbox-label input[type="checkbox"] {
             margin: 0;
             transform: scale(1.2);
-            /* vertical-align 제거하고 위치 직접 조정 */
             position: relative;
             top: 2px;  /* 이 값 조절해서 텍스트랑 수직 중앙 맞춤 */
         }
 
+        .checkbox-label > label {
+            padding-top: 0.4em;
+            margin-bottom: 0;
+            display: inline-block;
+        }
 
         #saveBtn {
             width: 100%;
@@ -126,11 +131,12 @@
 </head>
 <body>
 <div class="form-card">
-    <h1>배송지 등록</h1>
+    <h1>주소지 등록</h1>
 
     <label>우편번호</label>
     <div class="postcode-wrapper">
-        <input type="text" id="sample6_postcode" readonly> <button type="button" onclick="sample6_execDaumPostcode()">우편번호 찾기</button>
+        <input type="text" id="sample6_postcode" readonly>
+        <button type="button" onclick="sample6_execDaumPostcode()">우편번호 찾기</button>
     </div>
 
     <label>주소</label>
@@ -193,27 +199,27 @@
         const memberId = 1; // 임시 memberId, 실제론 서버에서 렌더링해주기
 
         fetch(`/members/${memberId}/address`, {
-            method: 'POST',
+        method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+        .then(res => {
+            if (!res.ok) {
+                return res.text().then(text => {
+                    throw new Error(`서버 오류: ${text}`);
+                });
+            }
+            return res.json();
         })
-            .then(res => {
-                if (!res.ok) {
-                    return res.text().then(text => {
-                        throw new Error(`서버 오류: ${text}`);
-                    });
-                }
-                return res.json();
-            })
-            .then(data => {
-                alert("주소가 성공적으로 저장되었어요! 🎉");
-            })
-            .catch(err => {
-                console.error("오류 발생:", err);
-                alert("주소 저장 실패했어요 😢");
-            });
+        .then(data => {
+            alert("주소가 성공적으로 저장되었어요! 🎉");
+        })
+        .catch(err => {
+            console.error("오류 발생:", err);
+            alert("주소 저장 실패했어요 😢");
+        });
     });
 </script>
 </body>
