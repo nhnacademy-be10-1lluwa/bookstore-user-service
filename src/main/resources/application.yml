@@ -1,3 +1,5 @@
 spring:
-  profiles:
-    active: dev
+  application:
+    name: user-service
+  config:
+    import: optional:configserver:https://book1lluwa.store/config/
