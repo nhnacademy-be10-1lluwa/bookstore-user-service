@@ -3,70 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>주소 검색 및 JSON 저장</title>
-    <!-- Daum Postcode API -->
+    <title>주소 입력</title>
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        input { margin: 5px 0; width: 300px; }
-        button { margin: 10px 0; }
-        pre { background: #f4f4f4; padding: 10px; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f8f9fa;
+            padding: 40px;
+        }
+        .form-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 15px;
+            display: block;
+        }
+
+        input[type="text"], input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        input[type="checkbox"] {
+            transform: scale(1.2);
+            margin-right: 8px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        pre {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
-<h1>주소 검색 및 JSON 저장</h1>
+<div class="form-card">
+    <h1>배송지 등록</h1>
 
-<!-- 검색 버튼 및 필드들 -->
-<input type="text" id="sample6_postcode" placeholder="우편번호" readonly><br>
-<input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
+    <label>우편번호</label>
+    <input type="text" id="sample6_postcode" readonly>
+    <button type="button" onclick="sample6_execDaumPostcode()">우편번호 찾기</button>
 
-<input type="text" id="sample6_address" placeholder="주소" readonly><br>
-<input type="text" id="sample6_extraAddress" placeholder="참고항목" readonly><br>
-<input type="text" id="sample6_detailAddress" placeholder="상세주소"><br>
+    <label>주소</label>
+    <input type="text" id="sample6_address" readonly>
 
-<!-- JSON 저장 및 출력 -->
-<button type="button" id="saveBtn">주소 JSON으로 저장</button>
-<pre id="jsonOutput"></pre>
+    <label>상세주소</label>
+    <input type="text" id="sample6_detailAddress">
+
+    <label>주소 별칭</label>
+    <input type="text" id="address_name" placeholder="예: 집, 회사">
+
+    <label>받는 사람</label>
+    <input type="text" id="recipient_name">
+
+    <label>연락처</label>
+    <input type="tel" id="recipient_contact" placeholder="010-0000-0000">
+
+    <div class="checkbox-label">
+        <input type="checkbox" id="is_default">
+        <label for="is_default" style="margin: 0;">기본 배송지로 설정</label>
+    </div>
+
+    <button type="button" id="saveBtn">주소 저장</button>
+
+    <pre id="jsonOutput"></pre>
+</div>
 
 <script>
     function sample6_execDaumPostcode() {
         new daum.Postcode({
-            // daum api 제공 -> oncomplete => 콜백함수
             oncomplete: function (data) {
-                var addr = '';
-                var extraAddr = '';
-                if (data.userSelectedType === 'R') {
-                    addr = data.roadAddress;
-                    if (data.bname && /[동|로|가]$/g.test(data.bname)) {
-                        extraAddr += data.bname;
-                    }
-                    if (data.buildingName) {
-                        extraAddr += (extraAddr ? ', ' + data.buildingName : data.buildingName);
-                    }
-                    extraAddr = extraAddr ? '(' + extraAddr + ')' : '';
-                } else {
-                    addr = data.jibunAddress;
+                let roadAddress = data.roadAddress;
+                let extraAddr = '';
+
+                if (data.bname && /[동|로|가]$/g.test(data.bname)) {
+                    extraAddr += data.bname;
                 }
-                document.getElementById('sample6_postcode').value     = data.zonecode;
-                document.getElementById('sample6_address').value      = addr;
-                document.getElementById('sample6_extraAddress').value = extraAddr;
+                if (data.buildingName) {
+                    extraAddr += (extraAddr ? ', ' + data.buildingName : data.buildingName);
+                }
+
+                const fullAddress = extraAddr ? `${roadAddress} (${extraAddr})` : roadAddress;
+
+                document.getElementById('sample6_postcode').value = data.zonecode;
+                document.getElementById('sample6_address').value = fullAddress;
                 document.getElementById('sample6_detailAddress').focus();
             }
         }).open();
     }
 
-    // JSON으로 변환하여 출력
-    // fetch()를 이용해 서버로 전송할 수 있습니다.
-    document.getElementById('saveBtn').addEventListener('click', function() {
+    document.getElementById('saveBtn').addEventListener('click', function () {
         const payload = {
-            postcode:     document.getElementById('sample6_postcode').value,
-            address:      document.getElementById('sample6_address').value,
-            extraAddress: document.getElementById('sample6_extraAddress').value,
-            detailAddress:document.getElementById('sample6_detailAddress').value
+            postCode:       document.getElementById('sample6_postcode').value,
+            address:        document.getElementById('sample6_address').value,
+            detailAddress:  document.getElementById('sample6_detailAddress').value,
+            addressName:    document.getElementById('address_name').value,
+            recipientName:  document.getElementById('recipient_name').value,
+            recipientContact: document.getElementById('recipient_contact').value,
+            isDefault:      document.getElementById('is_default').checked
         };
-        const json = JSON.stringify(payload, null, 2);
-        document.getElementById('jsonOutput').textContent = json;
-        console.log('저장된 JSON:', json);
+
+        const memberId = 1; // 임시 memberId, 실제론 서버에서 렌더링해주기
+
+        fetch(`/members/${memberId}/address`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(res => {
+                if (!res.ok) {
+                    return res.text().then(text => {
+                        throw new Error(`서버 오류: ${text}`);
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                alert("주소가 성공적으로 저장되었어요! 🎉");
+                document.getElementById('jsonOutput').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(err => {
+                console.error("오류 발생:", err);
+                alert("주소 저장 실패했어요 😢");
+            });
     });
 </script>
 </body>

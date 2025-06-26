@@ -8,8 +8,10 @@ import lombok.*;
 public class MemberAddressResponse {
     private long addressId;
     private String addressName;
-    private String recipient;
-    private String contact;
-    private String addressDetail;
+    private String recipientName;
+    private String recipientContact;
+    private String postCode;
+    private String address;
+    private String detailAddress;
     private boolean isDefault;
 }
