@@ -26,7 +26,7 @@ public interface MemberService {
 
     void updateMemberPoint(long memberId, BigDecimal point);
 
-    void updateMemberGrade(long memberId, BigDecimal netOrderAmount);
+    boolean updateMemberGrade(long memberId, BigDecimal netOrderAmount);
 
     void checkMemberStatus(long memberId);
 
