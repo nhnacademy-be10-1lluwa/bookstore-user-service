@@ -3,9 +3,11 @@ package com.nhnacademy.illuwa.domain.pointhistory.service.impl;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.grade.service.GradeService;
+import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
-import com.nhnacademy.illuwa.domain.pointhistory.dto.OrderRequest;
+import com.nhnacademy.illuwa.domain.pointhistory.dto.PointAfterOrderRequest;
 import com.nhnacademy.illuwa.domain.pointhistory.dto.PointHistoryResponse;
+import com.nhnacademy.illuwa.domain.pointhistory.dto.UsedPointRequest;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.PointHistory;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointHistoryType;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
@@ -13,7 +15,7 @@ import com.nhnacademy.illuwa.domain.pointhistory.repo.PointHistoryRepository;
 import com.nhnacademy.illuwa.domain.pointhistory.service.PointHistoryService;
 import com.nhnacademy.illuwa.domain.pointhistory.util.PointHistoryMapper;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyResponse;
-import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
+import com.nhnacademy.illuwa.domain.pointpolicy.exception.PointPolicyNotFoundException;
 import com.nhnacademy.illuwa.domain.pointpolicy.service.PointPolicyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -34,66 +37,34 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 
     private static final String BOOK_DEFAULT_RATE = "book_default_rate";
 
-    //pointPolicy 참고해야하는 포인트적립
-    //1. joinPoint
-    //2. reviewPoint
-    //3. photoReviewPoint
-
-    //calculateByOrder
-    // 기본 적립 book_default_rate
-    //구매 후 포인트 적립 (by Grade)
-    //구매 시 사용한 포인트 차감
-
-    //1. 총괄 메서드
-    //memberId + reason + 주문정보로 포인트 처리 후 히스토리 남기는 메서드
     @Override
-    public PointHistoryResponse processPointHistory(long memberId, PointReason reason, OrderRequest request) {
-        BigDecimal point = calculatePoint(memberId, reason, request);
+    public PointHistoryResponse processUsedPoint(UsedPointRequest request){
+        BigDecimal point = request.getUsedPoint().negate();  //음수 전환
+        memberService.updateMemberPoint(request.getMemberId(), point);
+        return recordPointHistory(request.getMemberId(), point, PointReason.USED_IN_ORDER);
+    }
+
+    @Override
+    public PointHistoryResponse processOrderPoint(PointAfterOrderRequest request) {
+        if(memberService.isNotActiveMember(request.getMemberId())){
+            throw new MemberNotFoundException();
+        }
+        BigDecimal point = calculateByOrder(request);
+        memberService.updateMemberPoint(request.getMemberId(), point);
+        return recordPointHistory(request.getMemberId(), point, PointReason.PURCHASE);
+    }
+
+    @Override
+    public PointHistoryResponse processEventPoint(long memberId, PointReason reason) {
+        if(memberService.isNotActiveMember(memberId)){
+            throw new MemberNotFoundException();
+        }
+        PointPolicyResponse policy = pointPolicyService.findByPolicyKey(reason.getPolicyKey().orElseThrow(PointPolicyNotFoundException::new));
+        BigDecimal point = calculatedFromPolicy(policy);
         memberService.updateMemberPoint(memberId, point);
         return recordPointHistory(memberId, point, reason);
     }
 
-    //1-2. 포인트 계산
-    public BigDecimal calculatePoint(long memberId, PointReason reason, OrderRequest request) {
-        return reason.getPolicyKey()
-                .map(key -> calculatedFromPolicy(pointPolicyService.findByPolicyKey(key), request))
-                .orElseGet(() -> calculateByOrder(memberId, reason, request));
-    }
-
-    //2-1. 포인트 정책 기반 포인트 계산
-    private BigDecimal calculatedFromPolicy(PointPolicyResponse policy, OrderRequest request) {
-        if(policy.getValueType().equals(PointValueType.AMOUNT)){
-            return policy.getValue();
-        } else{
-            return request.getNetOrderAmount().multiply(policy.getValue());
-        }
-    }
-
-    //2-2 주문으로 인한 포인트 계산
-    private BigDecimal calculateByOrder(long memberId, PointReason reason, OrderRequest request) {
-        switch (reason) {
-            case PURCHASE :
-                GradeName gradeName = GradeName.valueOf(memberService.getMemberById(memberId).getGradeName());
-                Grade grade = gradeService.getByGradeName(gradeName);
-
-                BigDecimal netOrderAmount = request.getNetOrderAmount();
-                //기본적립
-                BigDecimal defaultRate = pointPolicyService.findByPolicyKey(BOOK_DEFAULT_RATE).getValue();
-                BigDecimal defaultPoint = netOrderAmount.multiply(defaultRate);
-
-                //구매 후 등급별 적립
-                BigDecimal gradePoint = netOrderAmount.multiply(grade.getPointRate());
-                return defaultPoint.add(gradePoint);
-
-            //구매 시 사용한 포인트 차감
-            case USED_IN_ORDER:
-                return request.getUsedPoint();
-            default :
-                throw new UnsupportedOperationException("정책 없이 처리할 수 없는 reason: " + reason);
-        }
-    }
-
-    //3. 포인트 내역 기록
     @Override
     public PointHistoryResponse recordPointHistory(long memberId, BigDecimal point, PointReason reason){
         PointHistory pointHistory = PointHistory.builder()
@@ -103,9 +74,35 @@ public class PointHistoryServiceImpl implements PointHistoryService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        PointHistoryType type = point.compareTo(BigDecimal.ZERO) > 0 ? PointHistoryType.EARN : PointHistoryType.USE;
+        PointHistoryType type = point.compareTo(java.math.BigDecimal.ZERO) > 0 ? PointHistoryType.EARN : PointHistoryType.USE;
         pointHistory.setType(type);
 
         return pointHistoryMapper.toDto(pointHistoryRepository.save(pointHistory));
     }
+
+    @Override
+    public List<PointHistoryResponse> getMemberPointHistories(long memberId){
+        return pointHistoryRepository.findByMemberIdOrderByCreatedAtDesc(memberId)
+                .stream().map(pointHistoryMapper::toDto).toList();
+    }
+
+    private BigDecimal calculatedFromPolicy(PointPolicyResponse policy) {
+        //AMOUNT 타입만 있지만 추후 RATE 타입은 다르게 리턴
+        return policy.getValue();
+    }
+
+    private BigDecimal calculateByOrder(PointAfterOrderRequest request) {
+        GradeName gradeName = GradeName.valueOf(memberService.getMemberById(request.getMemberId()).getGradeName());
+        Grade grade = gradeService.getByGradeName(gradeName);
+
+        BigDecimal netOrderAmount = request.getNetOrderAmount();
+
+        //기본적립
+        BigDecimal defaultRate = pointPolicyService.findByPolicyKey(BOOK_DEFAULT_RATE).getValue();
+        BigDecimal defaultPoint = netOrderAmount.multiply(defaultRate);
+        //구매 후 등급별 적립
+        BigDecimal gradePoint = netOrderAmount.multiply(grade.getPointRate());
+        return defaultPoint.add(gradePoint);
+    }
+
 }

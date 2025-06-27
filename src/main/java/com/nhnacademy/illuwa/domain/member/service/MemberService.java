@@ -1,9 +1,6 @@
 package com.nhnacademy.illuwa.domain.member.service;
 
-import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
-import com.nhnacademy.illuwa.domain.member.dto.MemberRegisterRequest;
-import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
-import com.nhnacademy.illuwa.domain.member.dto.MemberUpdateRequest;
+import com.nhnacademy.illuwa.domain.member.dto.*;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 
 import java.math.BigDecimal;
@@ -22,6 +19,8 @@ public interface MemberService {
 
     MemberResponse getMemberByEmail(String email);
 
+    MemberPointResponse getMemberPoint(long memberId);
+
     MemberResponse updateMember(long memberId, MemberUpdateRequest newMemberRequest);
 
     void updateMemberPoint(long memberId, BigDecimal point);
@@ -33,4 +32,6 @@ public interface MemberService {
     void reactivateMember(long memberId);
 
     void removeMember(long memberId);
+
+    boolean isNotActiveMember(long memberId);
 }

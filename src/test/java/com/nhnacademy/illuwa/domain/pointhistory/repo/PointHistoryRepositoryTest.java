@@ -118,7 +118,7 @@ class PointHistoryRepositoryTest {
     @Test
     @DisplayName("모든 포인트 히스토리 조회")
     void testFindAll() {
-        PointHistory history1 = new PointHistory(new BigDecimal("200"), PointReason.WRITE_REVIEW, PointHistoryType.EARN, LocalDateTime.of(2025,3,19,21,29), member.getMemberId());
+        PointHistory history1 = new PointHistory(new BigDecimal("200"), PointReason.REVIEW, PointHistoryType.EARN, LocalDateTime.of(2025,3,19,21,29), member.getMemberId());
         PointHistory history2 = new PointHistory(new BigDecimal("500"), PointReason.PHOTO_REVIEW, PointHistoryType.EARN, LocalDateTime.now(), member.getMemberId());
 
         pointHistoryRepository.save(history1);

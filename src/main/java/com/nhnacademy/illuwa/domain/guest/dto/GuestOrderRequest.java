@@ -1,25 +1,16 @@
-package com.nhnacademy.illuwa.domain.pointhistory.dto;
+package com.nhnacademy.illuwa.domain.guest.dto;
 
 import lombok.Builder;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 @Data
 @Builder
-public class OrderRequest {
-    long memberId;
+public class GuestOrderRequest {
     long orderId;
-
-    //회원 정보
-    BigDecimal netOrderAmount;
-    BigDecimal usedPoint;
-
     //비회원 개인정보
     String orderNumber;
     String guestName;
     String guestEmail;
     String orderPassword;
     String guestContact;
-
 }
