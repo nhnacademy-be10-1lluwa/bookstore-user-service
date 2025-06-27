@@ -126,11 +126,18 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void updateMemberGrade(long memberId, BigDecimal netOrderAmount) {
+    public boolean updateMemberGrade(long memberId, BigDecimal netOrderAmount) {
         Member orgMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
         Grade newGrade = gradeService.calculateGrade(netOrderAmount);
+        Grade currentGrade = orgMember.getGrade();
+
+        if(!newGrade.equals(currentGrade)){
             orgMember.setGrade(newGrade);
+            memberRepository.save(orgMember);
+            return true;
+        }
+        return false;
     }
 
     @Override
