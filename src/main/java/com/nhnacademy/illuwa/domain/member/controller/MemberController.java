@@ -1,9 +1,6 @@
 package com.nhnacademy.illuwa.domain.member.controller;
 
-import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
-import com.nhnacademy.illuwa.domain.member.dto.MemberRegisterRequest;
-import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
-import com.nhnacademy.illuwa.domain.member.dto.MemberUpdateRequest;
+import com.nhnacademy.illuwa.domain.member.dto.*;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +15,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+
+    // TODO memberId pathVaraiable로 안 받기 고려
 
     // 회원 목록 조회
     @GetMapping
@@ -40,10 +39,15 @@ public class MemberController {
     }
 
     // 회원 단일 조회
-    // TODO memberId pathVaraiable로 안 받기로 고려
     @GetMapping("/{memberId}")
     public ResponseEntity<MemberResponse> getMember(@PathVariable Long memberId){
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberById(memberId));
+    }
+
+    //회원 포인트 조회
+    @GetMapping("/{memberId}/point")
+    public ResponseEntity<MemberPointResponse> getMemberPoint(@PathVariable Long memberId){
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberPoint(memberId));
     }
 
     // 회원 수정

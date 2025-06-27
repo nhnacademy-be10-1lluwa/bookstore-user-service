@@ -3,10 +3,7 @@ package com.nhnacademy.illuwa.domain.member.service.impl;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.grade.service.GradeService;
-import com.nhnacademy.illuwa.domain.member.dto.MemberLoginRequest;
-import com.nhnacademy.illuwa.domain.member.dto.MemberRegisterRequest;
-import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
-import com.nhnacademy.illuwa.domain.member.dto.MemberUpdateRequest;
+import com.nhnacademy.illuwa.domain.member.dto.*;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.exception.DeletedMemberException;
@@ -109,6 +106,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public MemberPointResponse getMemberPoint(long memberId) {
+        return new MemberPointResponse(memberId, memberRepository.findPoint(memberId));
+    }
+
+    @Override
     public MemberResponse updateMember(long memberId, MemberUpdateRequest newMemberRequest) {
         Member orgMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
@@ -154,5 +156,10 @@ public class MemberServiceImpl implements MemberService {
             throw new MemberNotFoundException(memberId);
         }
         memberRepository.deleteById(memberId);
+    }
+
+    @Override
+    public boolean isNotActiveMember(long memberId) {
+        return memberRepository.isNotActiveMember(memberId);
     }
 }
