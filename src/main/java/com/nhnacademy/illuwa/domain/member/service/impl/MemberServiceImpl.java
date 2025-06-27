@@ -17,6 +17,7 @@ import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,8 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final GradeService gradeService;
     private final MemberMapper memberMapper;
+    private final PasswordEncoder passwordEncoder;
+
 
     @Override
     public MemberResponse register(MemberRegisterRequest request) {
@@ -40,6 +43,7 @@ public class MemberServiceImpl implements MemberService {
             request.getBirth() == null || request.getContact() == null || request.getContact().isBlank()) {
             throw new InvalidInputException("가입정보가 제대로 입력되지 않았습니다.");
         }
+
         //기존 존재 || 탈퇴한 회원 이메일인지 체크
         memberRepository.findByEmail(request.getEmail())
                 .ifPresent(member -> {
@@ -48,6 +52,9 @@ public class MemberServiceImpl implements MemberService {
                     }
                     throw new DuplicateMemberException();
                 });
+
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        request.setPassword(encodedPassword);
 
         Grade basicGrade = gradeService.getByGradeName(GradeName.BASIC);
         Member newMember = memberMapper.toEntity(request);
