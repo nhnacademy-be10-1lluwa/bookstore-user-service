@@ -31,7 +31,7 @@ class MemberRepositoryTest {
     GradeRepository gradeRepository;
 
     Grade basicGrade;
-    Grade goldGrade;
+    Grade glodGrade;
     Grade royalGrade;
     Grade platinumGrade;
 
@@ -50,12 +50,53 @@ class MemberRepositoryTest {
     }
 
     @BeforeEach
-    public void setUp(){
-        basicGrade = gradeRepository.findByGradeName(GradeName.BASIC).get();
-        goldGrade = gradeRepository.findByGradeName(GradeName.GOLD).get();
-        royalGrade = gradeRepository.findByGradeName(GradeName.ROYAL).get();
-        platinumGrade = gradeRepository.findByGradeName(GradeName.PLATINUM).get();
+    public void setUp() {
+        if (!gradeRepository.existsByGradeName(GradeName.BASIC)) {
+            gradeRepository.save(Grade.builder()
+                    .gradeName(GradeName.BASIC)
+                    .priority(4)
+                    .pointRate(BigDecimal.valueOf(0.01))
+                    .minAmount(BigDecimal.valueOf(0))
+                    .maxAmount(BigDecimal.valueOf(100_000))
+                    .build());
+        }
+
+        if (!gradeRepository.existsByGradeName(GradeName.GOLD)) {
+            gradeRepository.save(Grade.builder()
+                    .gradeName(GradeName.GOLD)
+                    .priority(3)
+                    .pointRate(BigDecimal.valueOf(0.02))
+                    .minAmount(BigDecimal.valueOf(100_000))
+                    .maxAmount(BigDecimal.valueOf(200_000))
+                    .build());
+        }
+
+        if (!gradeRepository.existsByGradeName(GradeName.ROYAL)) {
+            gradeRepository.save(Grade.builder()
+                    .gradeName(GradeName.ROYAL)
+                    .priority(2)
+                    .pointRate(BigDecimal.valueOf(0.025))
+                    .minAmount(BigDecimal.valueOf(200_000))
+                    .maxAmount(BigDecimal.valueOf(300_000))
+                    .build());
+        }
+
+        if (!gradeRepository.existsByGradeName(GradeName.PLATINUM)) {
+            gradeRepository.save(Grade.builder()
+                    .gradeName(GradeName.PLATINUM)
+                    .priority(1)
+                    .pointRate(BigDecimal.valueOf(0.03))
+                    .minAmount(BigDecimal.valueOf(300_000))
+                    .maxAmount(null)
+                    .build());
+        }
+
+        basicGrade = gradeRepository.findByGradeName(GradeName.BASIC).orElseThrow();
+        glodGrade = gradeRepository.findByGradeName(GradeName.GOLD).orElseThrow();
+        royalGrade = gradeRepository.findByGradeName(GradeName.ROYAL).orElseThrow();
+        platinumGrade = gradeRepository.findByGradeName(GradeName.PLATINUM).orElseThrow();
     }
+
 
     @Test
     @DisplayName("회원 저장 성공 테스트")

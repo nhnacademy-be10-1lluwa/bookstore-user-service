@@ -41,7 +41,16 @@ class PointHistoryRepositoryTest {
 
     @BeforeEach
     void setUp(){
-        basicGrade = gradeRepository.findByGradeName(GradeName.BASIC).get();
+        if (!gradeRepository.existsByGradeName(GradeName.BASIC)) {
+            gradeRepository.save(Grade.builder()
+                    .gradeName(GradeName.BASIC)
+                    .priority(4)
+                    .pointRate(BigDecimal.valueOf(0.01))
+                    .minAmount(BigDecimal.valueOf(0))
+                    .maxAmount(BigDecimal.valueOf(100_000))
+                    .build());
+        }
+        basicGrade = gradeRepository.findByGradeName(GradeName.BASIC).orElseThrow();
 
         member = new Member();
         member.setName("공주님");
