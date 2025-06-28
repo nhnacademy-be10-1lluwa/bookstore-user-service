@@ -1,8 +1,7 @@
 package com.nhnacademy.illuwa.domain.pointhistory.repo;
 
+import com.nhnacademy.illuwa.common.testconfig.GradeTestDataConfig;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
-import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
-import com.nhnacademy.illuwa.domain.grade.repo.GradeRepository;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.PointHistory;
@@ -32,29 +31,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PointHistoryRepositoryTest {
 
     @Autowired
-    MemberRepository memberRepository;
+    GradeTestDataConfig gradeData;
 
     @Autowired
-    GradeRepository gradeRepository;
+    MemberRepository memberRepository;
 
     @Autowired
     PointHistoryRepository pointHistoryRepository;
 
-    Grade basicGrade;
     Member member;
 
     @BeforeEach
     void setUp(){
-        if (!gradeRepository.existsByGradeName(GradeName.BASIC)) {
-            gradeRepository.save(Grade.builder()
-                    .gradeName(GradeName.BASIC)
-                    .priority(4)
-                    .pointRate(BigDecimal.valueOf(0.01))
-                    .minAmount(BigDecimal.valueOf(0))
-                    .maxAmount(BigDecimal.valueOf(100_000))
-                    .build());
-        }
-        basicGrade = gradeRepository.findByGradeName(GradeName.BASIC).orElseThrow();
+        Grade basicGrade = gradeData.getBasicGrade();
 
         member = new Member();
         member.setName("공주님");

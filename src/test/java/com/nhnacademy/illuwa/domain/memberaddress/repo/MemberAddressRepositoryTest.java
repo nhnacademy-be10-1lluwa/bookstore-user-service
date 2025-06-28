@@ -1,8 +1,8 @@
 package com.nhnacademy.illuwa.domain.memberaddress.repo;
 
+import com.nhnacademy.illuwa.common.testconfig.GradeTestDataConfig;
 import com.nhnacademy.illuwa.domain.memberaddress.entity.MemberAddress;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
-import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.grade.repo.GradeRepository;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import({MemberAddressRepositoryImpl.class})
+@Import({MemberAddressRepositoryImpl.class, GradeTestDataConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class MemberAddressRepositoryTest {
@@ -49,28 +48,19 @@ class MemberAddressRepositoryTest {
     }
 
     @Autowired
+    GradeTestDataConfig gradeData;
+
+    @Autowired
     MemberAddressRepository memberAddressRepository;
 
     @Autowired
     MemberRepository memberRepository;
 
-    @Autowired
-    GradeRepository gradeRepository;
-
     Member testMember;
 
     @BeforeEach
     public void setUp() {
-        Grade basicGrade = gradeRepository.findByGradeName(GradeName.BASIC)
-                .orElseGet(() -> gradeRepository.save(
-                        Grade.builder()
-                                .gradeName(GradeName.BASIC)
-                                .priority(4)
-                                .pointRate(new BigDecimal("0.01"))
-                                .minAmount(BigDecimal.ZERO)
-                                .maxAmount(new BigDecimal("100000"))
-                                .build()
-                ));
+        Grade basicGrade = gradeData.getBasicGrade();
 
         Member member = Member.builder()
                 .name("카리나")

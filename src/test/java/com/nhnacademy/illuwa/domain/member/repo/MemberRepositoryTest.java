@@ -1,7 +1,7 @@
 package com.nhnacademy.illuwa.domain.member.repo;
 
+import com.nhnacademy.illuwa.common.testconfig.GradeTestDataConfig;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
-import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.grade.repo.GradeRepository;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(PER_CLASS)
 @DataJpaTest
-@Import({MemberRepositoryImpl.class})
+@Import({MemberRepositoryImpl.class, GradeTestDataConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MemberRepositoryTest {
 
@@ -43,10 +43,10 @@ class MemberRepositoryTest {
     }
 
     @Autowired
-    MemberRepository memberRepository;
+    GradeTestDataConfig gradeData;
 
     @Autowired
-    GradeRepository gradeRepository;
+    MemberRepository memberRepository;
 
     Grade basicGrade;
     Grade goldGrade;
@@ -69,52 +69,11 @@ class MemberRepositoryTest {
 
     @BeforeAll
     void beforeAll() {
-        if (!gradeRepository.existsByGradeName(GradeName.BASIC)) {
-            gradeRepository.save(Grade.builder()
-                    .gradeName(GradeName.BASIC)
-                    .priority(4)
-                    .pointRate(BigDecimal.valueOf(0.01))
-                    .minAmount(BigDecimal.valueOf(0))
-                    .maxAmount(BigDecimal.valueOf(100_000))
-                    .build());
-        }
-
-        if (!gradeRepository.existsByGradeName(GradeName.GOLD)) {
-            gradeRepository.save(Grade.builder()
-                    .gradeName(GradeName.GOLD)
-                    .priority(3)
-                    .pointRate(BigDecimal.valueOf(0.02))
-                    .minAmount(BigDecimal.valueOf(100_000))
-                    .maxAmount(BigDecimal.valueOf(200_000))
-                    .build());
-        }
-
-        if (!gradeRepository.existsByGradeName(GradeName.ROYAL)) {
-            gradeRepository.save(Grade.builder()
-                    .gradeName(GradeName.ROYAL)
-                    .priority(2)
-                    .pointRate(BigDecimal.valueOf(0.025))
-                    .minAmount(BigDecimal.valueOf(200_000))
-                    .maxAmount(BigDecimal.valueOf(300_000))
-                    .build());
-        }
-
-        if (!gradeRepository.existsByGradeName(GradeName.PLATINUM)) {
-            gradeRepository.save(Grade.builder()
-                    .gradeName(GradeName.PLATINUM)
-                    .priority(1)
-                    .pointRate(BigDecimal.valueOf(0.03))
-                    .minAmount(BigDecimal.valueOf(300_000))
-                    .maxAmount(null)
-                    .build());
-        }
-
-        basicGrade = gradeRepository.findByGradeName(GradeName.BASIC).orElseThrow();
-        goldGrade = gradeRepository.findByGradeName(GradeName.GOLD).orElseThrow();
-        royalGrade = gradeRepository.findByGradeName(GradeName.ROYAL).orElseThrow();
-        platinumGrade = gradeRepository.findByGradeName(GradeName.PLATINUM).orElseThrow();
+        basicGrade = gradeData.getBasicGrade();
+        goldGrade = gradeData.getGoldGrade();
+        royalGrade = gradeData.getRoyalGrade();
+        platinumGrade = gradeData.getPlatinumGrade();
     }
-
 
     @Test
     @DisplayName("회원 저장 성공 테스트")
