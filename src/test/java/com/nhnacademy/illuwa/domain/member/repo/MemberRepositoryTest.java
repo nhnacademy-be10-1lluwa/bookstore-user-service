@@ -2,7 +2,6 @@ package com.nhnacademy.illuwa.domain.member.repo;
 
 import com.nhnacademy.illuwa.common.testconfig.GradeTestDataConfig;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
-import com.nhnacademy.illuwa.domain.grade.repo.GradeRepository;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;

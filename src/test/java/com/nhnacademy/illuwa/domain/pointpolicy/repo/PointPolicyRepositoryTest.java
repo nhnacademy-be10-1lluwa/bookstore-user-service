@@ -4,9 +4,9 @@ import com.nhnacademy.illuwa.domain.pointpolicy.entity.PointPolicy;
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Transactional
 class PointPolicyRepositoryTest {
     @Autowired
     PointPolicyRepository pointPolicyRepository;

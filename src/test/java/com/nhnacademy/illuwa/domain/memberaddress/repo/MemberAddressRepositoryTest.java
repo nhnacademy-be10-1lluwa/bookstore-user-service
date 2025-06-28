@@ -3,7 +3,6 @@ package com.nhnacademy.illuwa.domain.memberaddress.repo;
 import com.nhnacademy.illuwa.common.testconfig.GradeTestDataConfig;
 import com.nhnacademy.illuwa.domain.memberaddress.entity.MemberAddress;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
-import com.nhnacademy.illuwa.domain.grade.repo.GradeRepository;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
@@ -19,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @Import({MemberAddressRepositoryImpl.class, GradeTestDataConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class MemberAddressRepositoryTest {
 
     @PersistenceContext

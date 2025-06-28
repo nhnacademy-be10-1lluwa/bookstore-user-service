@@ -7,10 +7,11 @@ import lombok.Data;
 @Builder
 public class GuestOrderRequest {
     long orderId;
-    //비회원 개인정보
+
     String orderNumber;
-    String guestName;
-    String guestEmail;
     String orderPassword;
-    String guestContact;
+
+    String name;
+    String email;
+    String contact;
 }
