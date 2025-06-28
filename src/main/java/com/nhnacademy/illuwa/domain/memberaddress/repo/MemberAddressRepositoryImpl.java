@@ -5,22 +5,25 @@ import com.nhnacademy.illuwa.domain.memberaddress.entity.QMemberAddress;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Repository
+@Transactional
 @RequiredArgsConstructor
 public class MemberAddressRepositoryImpl implements CustomMemberAddressRepository{
     private final JPAQueryFactory queryFactory;
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<MemberAddress> findDefaultMemberAddress(long memberId){
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
         return Optional.ofNullable(
                 queryFactory.selectFrom(memberAddress)
                         .where(
                                 memberAddress.member.memberId.eq(memberId)
-                                .and(memberAddress.isDefault.eq(true))
+                                .and(memberAddress.defaultAddress.eq(true))
                         )
                         .fetchOne()
                 );
@@ -30,9 +33,8 @@ public class MemberAddressRepositoryImpl implements CustomMemberAddressRepositor
     public void unsetAllDefaultForMember(long memberId){
         QMemberAddress memberAddress = QMemberAddress.memberAddress;
         queryFactory.update(memberAddress)
-                .set(memberAddress.isDefault, false)
+                .set(memberAddress.defaultAddress, false)
                 .where(memberAddress.member.memberId.eq(memberId))
                 .execute();
     }
-
 }

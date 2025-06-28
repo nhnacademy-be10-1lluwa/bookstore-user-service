@@ -7,8 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder
 public class MemberAddressRequest {
     //주소 api
     @NotBlank
@@ -34,5 +33,6 @@ public class MemberAddressRequest {
     private String recipientContact;
 
     @NotNull(message = "기본 배송지 여부를 선택해주세요.")
-    private Boolean isDefault;
+    @Builder.Default
+    private boolean defaultAddress = true;
 }

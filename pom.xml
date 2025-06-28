@@ -222,8 +222,12 @@
                         </goals>
                         <configuration>
                             <excludes>
-                                <exclude>**/dto/**</exclude>
-                                <exclude>**/entity/**</exclude>
+                                <!-- DTO 제외 -->
+                                <exclude>com/nhnacademy/illuwa/**/dto/*</exclude>
+                                <!-- Entity 제외 -->
+                                <exclude>com/nhnacademy/illuwa/**/entity/*</exclude>
+                                <!-- Exception 제외 -->
+                                <exclude>com/nhnacademy/illuwa/**/exception/*</exclude>
                             </excludes>
                         </configuration>
                     </execution>

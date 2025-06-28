@@ -8,15 +8,12 @@ import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.PointHistory;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointHistoryType;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,9 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ActiveProfiles("test")
-@Transactional
-@Disabled
 class PointHistoryRepositoryTest {
 
     @Autowired
@@ -47,15 +41,7 @@ class PointHistoryRepositoryTest {
 
     @BeforeEach
     void setUp(){
-        basicGrade = Grade.builder()
-                .gradeName(GradeName.BASIC)
-                .priority(4)
-                .pointRate(new BigDecimal("0.01"))
-                .minAmount(new BigDecimal(0))
-                .maxAmount(new BigDecimal("100000"))
-                .build();
-
-        basicGrade = gradeRepository.save(basicGrade);
+        basicGrade = gradeRepository.findByGradeName(GradeName.BASIC).get();
 
         member = new Member();
         member.setName("공주님");
