@@ -32,7 +32,7 @@ public class MemberAddress {
     private String detailAddress;
 
     @Setter
-    @Column(name = "is_default")
+    @Column(name = "default_address")
     private boolean defaultAddress = true;
 
     @Setter
