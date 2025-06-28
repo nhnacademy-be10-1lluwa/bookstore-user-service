@@ -98,7 +98,7 @@ class MemberAddressControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.memberAddressId").value(100L))
-                .andExpect(jsonPath("$.default").value(true));
+                .andExpect(jsonPath("$.defaultAddress").value(true));
     }
 
     @Test
