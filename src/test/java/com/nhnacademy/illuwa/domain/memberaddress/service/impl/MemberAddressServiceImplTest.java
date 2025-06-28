@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -227,7 +226,7 @@ class MemberAddressServiceImplTest {
     void getAddressList_empty() {
         MemberAddress addr = memberAddressMapper.toEntity(createRequest(true), new Member());
         setAddressId(addr, 7L);
-        when(addressRepository.findAllByMember_MemberId(1L)).thenReturn(Optional.);
+        when(addressRepository.findAllByMember_MemberId(1L)).thenReturn(Collections.EMPTY_LIST);
 
         List<MemberAddressResponse> list = addressService.getMemberAddressList(1L);
 
