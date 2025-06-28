@@ -9,9 +9,7 @@ import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -25,7 +23,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+@TestInstance(PER_CLASS)
 @DataJpaTest
 @Import({MemberRepositoryImpl.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -49,7 +49,7 @@ class MemberRepositoryTest {
     GradeRepository gradeRepository;
 
     Grade basicGrade;
-    Grade glodGrade;
+    Grade goldGrade;
     Grade royalGrade;
     Grade platinumGrade;
 
@@ -67,8 +67,8 @@ class MemberRepositoryTest {
                 .build();
     }
 
-    @BeforeEach
-    public void setUp() {
+    @BeforeAll
+    void beforeAll() {
         if (!gradeRepository.existsByGradeName(GradeName.BASIC)) {
             gradeRepository.save(Grade.builder()
                     .gradeName(GradeName.BASIC)
@@ -110,7 +110,7 @@ class MemberRepositoryTest {
         }
 
         basicGrade = gradeRepository.findByGradeName(GradeName.BASIC).orElseThrow();
-        glodGrade = gradeRepository.findByGradeName(GradeName.GOLD).orElseThrow();
+        goldGrade = gradeRepository.findByGradeName(GradeName.GOLD).orElseThrow();
         royalGrade = gradeRepository.findByGradeName(GradeName.ROYAL).orElseThrow();
         platinumGrade = gradeRepository.findByGradeName(GradeName.PLATINUM).orElseThrow();
     }

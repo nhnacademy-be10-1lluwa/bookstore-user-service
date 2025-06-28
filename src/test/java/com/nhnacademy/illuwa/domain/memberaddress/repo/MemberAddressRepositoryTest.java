@@ -7,13 +7,18 @@ import com.nhnacademy.illuwa.domain.grade.repo.GradeRepository;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,10 +27,24 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@Transactional
+@DataJpaTest
+@Import({MemberAddressRepositoryImpl.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MemberAddressRepositoryTest {
+
+    @PersistenceContext
+    EntityManager em;
+
+    @TestConfiguration
+    static class QueryDslTestConfig {
+        @PersistenceContext
+        EntityManager em;
+
+        @Bean
+        public JPAQueryFactory jpaQueryFactory() {
+            return new JPAQueryFactory(em);
+        }
+    }
 
     @Autowired
     MemberAddressRepository memberAddressRepository;
@@ -229,6 +248,9 @@ class MemberAddressRepositoryTest {
         memberAddressRepository.save(addr3);
 
         memberAddressRepository.unsetAllDefaultForMember(testMember.getMemberId());
+        em.flush();
+        em.clear();
+
         List<MemberAddress> result = memberAddressRepository.findAllByMember_MemberId(testMember.getMemberId());
 
         assertThat(result).isNotEmpty();

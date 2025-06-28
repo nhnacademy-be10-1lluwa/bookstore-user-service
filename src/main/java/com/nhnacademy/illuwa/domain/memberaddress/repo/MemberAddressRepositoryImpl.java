@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Repository
-@Transactional
 @RequiredArgsConstructor
 public class MemberAddressRepositoryImpl implements CustomMemberAddressRepository{
     private final JPAQueryFactory queryFactory;
