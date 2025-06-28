@@ -6,12 +6,18 @@ import com.nhnacademy.illuwa.domain.grade.repo.GradeRepository;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
-import jakarta.transaction.Transactional;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,9 +26,21 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@Transactional
+@DataJpaTest
+@Import({MemberRepositoryImpl.class})
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MemberRepositoryTest {
+
+    @TestConfiguration
+    static class QueryDslTestConfig {
+        @PersistenceContext
+        EntityManager em;
+
+        @Bean
+        public JPAQueryFactory jpaQueryFactory() {
+            return new JPAQueryFactory(em);
+        }
+    }
 
     @Autowired
     MemberRepository memberRepository;
@@ -154,7 +172,7 @@ class MemberRepositoryTest {
 
         List<Member> admins = memberRepository.findByRole(Role.ADMIN);
 
-        assertEquals(3, admins.size());   //초기 데이터 1개 더 포함
+        assertEquals(2, admins.size());
         assertTrue(admins.stream().allMatch(m -> m.getRole() == Role.ADMIN));
     }
 }
