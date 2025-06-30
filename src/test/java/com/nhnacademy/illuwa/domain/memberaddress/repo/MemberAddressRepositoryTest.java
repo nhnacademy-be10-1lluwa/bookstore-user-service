@@ -29,17 +29,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @Import({MemberAddressRepositoryImpl.class, GradeTestDataConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MemberAddressRepositoryTest {
-
     @PersistenceContext
     EntityManager em;
 
     @TestConfiguration
     static class QueryDslTestConfig {
-        @PersistenceContext
-        EntityManager em;
-
         @Bean
-        public JPAQueryFactory jpaQueryFactory() {
+        public JPAQueryFactory jpaQueryFactory(EntityManager em) {
             return new JPAQueryFactory(em);
         }
     }

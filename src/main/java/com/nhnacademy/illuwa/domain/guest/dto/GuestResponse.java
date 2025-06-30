@@ -20,11 +20,12 @@ public class GuestResponse {
 
     public static GuestResponse from(Guest guest){
         return GuestResponse.builder()
+                .orderId(guest.getOrderId())
+                .orderNumber(guest.getOrderNumber())
                 .guestId(guest.getGuestId())
                 .name(guest.getName())
                 .email(guest.getEmail())
                 .contact(guest.getContact())
-                .orderNumber(guest.getOrderNumber())
                 .build();
     }
 }
