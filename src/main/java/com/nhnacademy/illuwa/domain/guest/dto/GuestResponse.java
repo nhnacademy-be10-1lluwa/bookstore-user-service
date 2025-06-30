@@ -12,10 +12,11 @@ import lombok.NoArgsConstructor;
 @Builder
 public class GuestResponse {
     long guestId;
+    long orderId;
+    String orderNumber;
     String name;
     String email;
     String contact;
-    String orderNumber;
 
     public static GuestResponse from(Guest guest){
         return GuestResponse.builder()

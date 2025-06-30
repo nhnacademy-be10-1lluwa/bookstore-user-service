@@ -16,7 +16,7 @@ public class GuestServiceImpl implements GuestService {
     private final GuestRepository guestRepository;
 
     @Override
-    public GuestResponse create(GuestOrderRequest request){
+    public GuestResponse createGuest(GuestOrderRequest request){
         Guest guest = Guest.builder()
                 .orderNumber(request.getOrderNumber())
                 .name(request.getName())
@@ -29,7 +29,7 @@ public class GuestServiceImpl implements GuestService {
     }
 
     @Override
-    public GuestResponse login(GuestLoginRequest request) {
+    public GuestResponse getGuest(GuestLoginRequest request) {
         Guest guest = guestRepository.findGuestByOrderNumberAndOrderPassword(request.getOrderNumber(), request.getOrderPassword())
                 .orElseThrow(GuestNotFoundException::new);
         return GuestResponse.from(guest);
