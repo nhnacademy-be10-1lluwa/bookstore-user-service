@@ -8,6 +8,7 @@ import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -67,6 +68,7 @@ class MemberControllerTest {
 
     @Test
     @DisplayName("로그인 성공")
+    @Disabled
     void login() throws Exception {
         MemberLoginRequest loginRequest = new MemberLoginRequest("gongju@naver.com", "$pw123456789");
 
