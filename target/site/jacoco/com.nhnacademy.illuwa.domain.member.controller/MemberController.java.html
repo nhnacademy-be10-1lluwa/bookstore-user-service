@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">1lluwa-user-service</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.illuwa.domain.member.controller</a> &gt; <span class="el_source">MemberController.java</span></div><h1>MemberController.java</h1><pre class="source lang-java linenums">package com.nhnacademy.illuwa.domain.member.controller;
+
+import com.nhnacademy.illuwa.domain.member.dto.*;
+import com.nhnacademy.illuwa.domain.member.service.MemberService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/members&quot;)
+<span class="fc" id="L15">@RequiredArgsConstructor</span>
+public class MemberController {
+    private final MemberService memberService;
+
+    // TODO memberId pathVaraiable로 안 받기 고려
+
+    // 회원 목록 조회
+    @GetMapping
+    public ResponseEntity&lt;List&lt;MemberResponse&gt;&gt; getAllMembers(){
+<span class="fc" id="L24">        return ResponseEntity.status(HttpStatus.OK).body(memberService.getAllMembers());</span>
+    }
+
+    // 로그인
+    @PostMapping(&quot;/login&quot;)
+    public ResponseEntity&lt;MemberResponse&gt; login(@Valid @RequestBody MemberLoginRequest request){
+<span class="nc" id="L30">        return ResponseEntity.status(HttpStatus.OK).body(memberService.login(request));</span>
+    }
+
+    // 회원가입
+    @PostMapping
+    public ResponseEntity&lt;MemberResponse&gt; register(@Valid @RequestBody MemberRegisterRequest request) {
+<span class="fc" id="L36">        MemberResponse saved = memberService.register(request);</span>
+<span class="fc" id="L37">        return ResponseEntity.status(HttpStatus.CREATED)</span>
+<span class="fc" id="L38">                .body(saved);</span>
+    }
+
+    // 회원 단일 조회
+    @GetMapping(&quot;/{memberId}&quot;)
+    public ResponseEntity&lt;MemberResponse&gt; getMember(@PathVariable Long memberId){
+<span class="fc" id="L44">        return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberById(memberId));</span>
+    }
+
+    //회원 포인트 조회
+    @GetMapping(&quot;/{memberId}/point&quot;)
+    public ResponseEntity&lt;MemberPointResponse&gt; getMemberPoint(@PathVariable Long memberId){
+<span class="nc" id="L50">        return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberPoint(memberId));</span>
+    }
+
+    // 회원 수정
+    @PatchMapping(&quot;/{memberId}&quot;)
+    public ResponseEntity&lt;MemberResponse&gt; updateMember(@PathVariable Long memberId, @Valid @RequestBody MemberUpdateRequest request){
+<span class="fc" id="L56">        MemberResponse updatedMemberDto = memberService.updateMember(memberId, request);</span>
+<span class="fc" id="L57">        return ResponseEntity.status(HttpStatus.OK)</span>
+<span class="fc" id="L58">                .body(updatedMemberDto);</span>
+    }
+
+    //회원 삭제
+    @DeleteMapping(&quot;/{memberId}&quot;)
+    public void deleteMember(@PathVariable Long memberId){
+<span class="fc" id="L64">        memberService.removeMember(memberId);</span>
+<span class="fc" id="L65">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

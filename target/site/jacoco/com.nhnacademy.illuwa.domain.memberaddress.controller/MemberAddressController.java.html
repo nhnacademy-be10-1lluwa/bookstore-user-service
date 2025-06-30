@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberAddressController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">1lluwa-user-service</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.illuwa.domain.memberaddress.controller</a> &gt; <span class="el_source">MemberAddressController.java</span></div><h1>MemberAddressController.java</h1><pre class="source lang-java linenums">package com.nhnacademy.illuwa.domain.memberaddress.controller;
+
+import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressRequest;
+import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressResponse;
+import com.nhnacademy.illuwa.domain.memberaddress.service.MemberAddressService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+<span class="fc" id="L14">@RequiredArgsConstructor</span>
+@RestController
+@RequestMapping(&quot;/members/{memberId}/address&quot;)
+public class MemberAddressController {
+    private final MemberAddressService memberAddressService;
+
+    @GetMapping
+    public ResponseEntity&lt;List&lt;MemberAddressResponse&gt;&gt; getMemberAddressList(@PathVariable long memberId){
+<span class="fc" id="L22">        return ResponseEntity.ok().body(memberAddressService.getMemberAddressList(memberId));</span>
+    }
+
+    @GetMapping(&quot;/{addressId}&quot;)
+    public ResponseEntity&lt;MemberAddressResponse&gt; getMemberAddress(@PathVariable long addressId){
+<span class="fc" id="L27">        return ResponseEntity.ok().body(memberAddressService.getMemberAddress(addressId));</span>
+    }
+
+    @PostMapping
+    public ResponseEntity&lt;MemberAddressResponse&gt; createMemberAddress(@PathVariable long memberId, @Valid @RequestBody MemberAddressRequest request){
+<span class="fc" id="L32">        return ResponseEntity.status(HttpStatus.CREATED).body(memberAddressService.registerMemberAddress(memberId, request));</span>
+    }
+
+    @PatchMapping(&quot;/{addressId}&quot;)
+    public ResponseEntity&lt;MemberAddressResponse&gt; updateMemberAddress(@PathVariable long addressId, @Valid @RequestBody MemberAddressRequest request){
+<span class="fc" id="L37">        return ResponseEntity.ok().body(memberAddressService.updateMemberAddress(addressId, request));</span>
+    }
+
+    @DeleteMapping(&quot;/{addressId}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteMemberAddress(@PathVariable long addressId){
+<span class="fc" id="L42">        memberAddressService.deleteMemberAddress(addressId);</span>
+<span class="fc" id="L43">        return ResponseEntity.ok().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

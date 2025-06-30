@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GuestServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">1lluwa-user-service</a> &gt; <a href="index.source.html" class="el_package">com.nhnacademy.illuwa.domain.guest.service.impl</a> &gt; <span class="el_source">GuestServiceImpl.java</span></div><h1>GuestServiceImpl.java</h1><pre class="source lang-java linenums">package com.nhnacademy.illuwa.domain.guest.service.impl;
+
+import com.nhnacademy.illuwa.domain.guest.dto.GuestLoginRequest;
+import com.nhnacademy.illuwa.domain.guest.dto.GuestOrderRequest;
+import com.nhnacademy.illuwa.domain.guest.dto.GuestResponse;
+import com.nhnacademy.illuwa.domain.guest.entity.Guest;
+import com.nhnacademy.illuwa.domain.guest.exception.GuestNotFoundException;
+import com.nhnacademy.illuwa.domain.guest.repo.GuestRepository;
+import com.nhnacademy.illuwa.domain.guest.service.GuestService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+<span class="fc" id="L14">@RequiredArgsConstructor</span>
+public class GuestServiceImpl implements GuestService {
+    private final GuestRepository guestRepository;
+
+    @Override
+    public GuestResponse create(GuestOrderRequest request){
+<span class="nc" id="L20">        Guest guest = Guest.builder()</span>
+<span class="nc" id="L21">                .orderNumber(request.getOrderNumber())</span>
+<span class="nc" id="L22">                .name(request.getName())</span>
+<span class="nc" id="L23">                .email(request.getEmail())</span>
+<span class="nc" id="L24">                .orderPassword(request.getOrderPassword())</span>
+<span class="nc" id="L25">                .contact(request.getContact())</span>
+<span class="nc" id="L26">                .build();</span>
+
+<span class="nc" id="L28">        return GuestResponse.from(guestRepository.save(guest));</span>
+    }
+
+    @Override
+    public GuestResponse login(GuestLoginRequest request) {
+<span class="nc" id="L33">        Guest guest = guestRepository.findGuestByOrderNumberAndOrderPassword(request.getOrderNumber(), request.getOrderPassword())</span>
+<span class="nc" id="L34">                .orElseThrow(GuestNotFoundException::new);</span>
+<span class="nc" id="L35">        return GuestResponse.from(guest);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

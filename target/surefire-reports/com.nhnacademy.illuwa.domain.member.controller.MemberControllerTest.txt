@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.nhnacademy.illuwa.domain.member.controller.MemberControllerTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 1.553 s -- in com.nhnacademy.illuwa.domain.member.controller.MemberControllerTest
