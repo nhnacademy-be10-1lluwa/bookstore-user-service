@@ -24,22 +24,18 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     private final MemberRepository memberRepository;
     private final MemberAddressRepository addressRepository;
     private final MemberAddressMapper memberAddressMapper;
-    private final MemberAddressRepository memberAddressRepository;
+
+    private static final int MAX_ADDRESS_COUNT = 10;
 
     @Override
     public MemberAddressResponse registerMemberAddress(long memberId, MemberAddressRequest request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberNotFoundException(memberId));
 
-        if(memberAddressRepository.countAllByMember_MemberId(memberId) >= 10){
-            throw new TooManyMemberAddressException();
-        }
-        if(request.getIsDefault()){
-            addressRepository.unsetAllDefaultForMember(memberId);
-        }
-        MemberAddress memberAddress = memberAddressMapper.toEntity(request);
-        memberAddress.setMember(member);
+        validateMemberAddressLimit(memberId);
+        handleDefaultAddressSetting(memberId, request);
 
+        MemberAddress memberAddress = memberAddressMapper.toEntity(request, member);
         return memberAddressMapper.toDto(addressRepository.save(memberAddress));
     }
 
@@ -47,10 +43,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     public MemberAddressResponse updateMemberAddress(long addressId, MemberAddressRequest request) {
         MemberAddress orgMemberAddress = addressRepository.findById(addressId)
                 .orElseThrow(() -> new MemberAddressNotFoundException(addressId));
-
-        MemberAddress newMemberAddress = memberAddressMapper.toEntity(request);
-        newMemberAddress = memberAddressMapper.updateMemberAddress(orgMemberAddress, newMemberAddress);
-
+        MemberAddress newMemberAddress = memberAddressMapper.updateMemberAddress(orgMemberAddress, request);
         return memberAddressMapper.toDto(newMemberAddress);
     }
 
@@ -77,6 +70,24 @@ public class MemberAddressServiceImpl implements MemberAddressService {
                 .stream()
                 .map(memberAddressMapper::toDto)
                 .toList();
+    }
+
+
+    private void validateMemberAddressLimit(long memberId) {
+        if (addressRepository.countAllByMember_MemberId(memberId) >= MAX_ADDRESS_COUNT) {
+            throw new TooManyMemberAddressException();
+        }
+    }
+
+    private void handleDefaultAddressSetting(long memberId, MemberAddressRequest request) {
+        if (Boolean.TRUE.equals(request.isDefaultAddress())) {
+            addressRepository.unsetAllDefaultForMember(memberId);
+        } else {
+            boolean hasDefault = addressRepository.findDefaultMemberAddress(memberId).isPresent();
+            if (!hasDefault) {
+                request.setDefaultAddress(true);
+            }
+        }
     }
 
 }

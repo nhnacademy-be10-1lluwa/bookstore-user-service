@@ -32,8 +32,8 @@ public class MemberAddress {
     private String detailAddress;
 
     @Setter
-    @Column(name = "is_default")
-    private boolean isDefault = true;
+    @Column(name = "default_address")
+    private boolean defaultAddress = true;
 
     @Setter
     @Column(name = "recipient_name", nullable = false)
@@ -53,17 +53,18 @@ public class MemberAddress {
                          String addressName,
                          String address,
                          String detailAddress,
-                         boolean isDefault,
+                         boolean defaultAddress,
                          String recipientName,
                          String recipientContact,
                          Member member) {
 
+        this.postCode = postCode;
         this.addressName = addressName;
         this.recipientName = recipientName;
         this.recipientContact = recipientContact;
         this.address = address;
         this.detailAddress = detailAddress;
-        this.isDefault = isDefault;
+        this.defaultAddress = defaultAddress;
         this.member = member;
     }
 }

@@ -9,7 +9,9 @@ import com.nhnacademy.illuwa.domain.pointpolicy.exception.DuplicatePointPolicyEx
 import com.nhnacademy.illuwa.domain.pointpolicy.exception.PointPolicyNotFoundException;
 import com.nhnacademy.illuwa.domain.pointpolicy.repo.PointPolicyRepository;
 import com.nhnacademy.illuwa.domain.pointpolicy.utils.PointPolicyMapper;
+import com.nhnacademy.illuwa.domain.pointpolicy.utils.PointPolicyMapperImpl;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,18 +34,22 @@ class PointPolicyServiceImplTest {
     @Mock
     private PointPolicyRepository pointPolicyRepository;
 
-    @Mock
-    private PointPolicyMapper pointPolicyMapper;
+    PointPolicyMapper pointPolicyMapper = new PointPolicyMapperImpl();
 
     @InjectMocks
     private PointPolicyServiceImpl pointPolicyService;
 
-    private final List<PointPolicyCreateRequest> requestList = List.of(
+    List<PointPolicyCreateRequest> requestList = List.of(
             new PointPolicyCreateRequest("join_point", new BigDecimal("5000"), PointValueType.AMOUNT, "회원가입 포인트 적립액"),
             new PointPolicyCreateRequest("review_point", new BigDecimal("200"), PointValueType.AMOUNT, "리뷰 포인트 적립액"),
             new PointPolicyCreateRequest("photo_review_point", new BigDecimal("500"), PointValueType.AMOUNT, "포토리뷰 포인트 적립액"),
             new PointPolicyCreateRequest("book_default_rate", new BigDecimal("1.00"), PointValueType.RATE, "도서구매 기본 적립률")
     );
+
+    @BeforeEach
+    void SetUp(){
+        pointPolicyService = new PointPolicyServiceImpl(pointPolicyRepository, pointPolicyMapper);
+    }
 
     @Test
     @DisplayName("포인트 정책 전체등록")
@@ -58,9 +64,6 @@ class PointPolicyServiceImplTest {
         assertEquals(4, saved.size());
 
         verify(pointPolicyRepository).saveAll(any());
-        for (PointPolicyCreateRequest request : requestList) {
-            verify(pointPolicyMapper).dtoToEntity(request);
-        }
     }
 
 
@@ -91,14 +94,6 @@ class PointPolicyServiceImplTest {
         );
 
         when(pointPolicyRepository.findById("join_point")).thenReturn(Optional.of(entity));
-        when(pointPolicyMapper.entityToDto(any(PointPolicy.class))).thenReturn(
-                new PointPolicyResponse(
-                        joinPointRequestDto.getPolicyKey(),
-                        joinPointRequestDto.getValue(),
-                        joinPointRequestDto.getValueType(),
-                        joinPointRequestDto.getDescription()
-                )
-        );
 
         PointPolicyResponse response = pointPolicyService.findByPolicyKey("join_point");
 
@@ -108,7 +103,6 @@ class PointPolicyServiceImplTest {
         Assertions.assertEquals("회원가입 포인트 적립액", response.getDescription());
 
         verify(pointPolicyRepository).findById("join_point");
-        verify(pointPolicyMapper).entityToDto(entity);
     }
 
     @Test
@@ -130,18 +124,11 @@ class PointPolicyServiceImplTest {
                 .toList();
 
         when(pointPolicyRepository.findAll()).thenReturn(entities);
-        when(pointPolicyMapper.entityToDto(any())).thenAnswer(inv -> {
-            PointPolicy p = inv.getArgument(0);
-            return new PointPolicyResponse(p.getPolicyKey(), p.getValue(), p.getValueType(), p.getDescription());
-        });
 
         List<PointPolicyResponse> responses = pointPolicyService.findAllPointPolicy();
         assertEquals(4, responses.size());
 
         verify(pointPolicyRepository).findAll();
-        for (PointPolicy entity : entities) {
-            verify(pointPolicyMapper).entityToDto(entity);
-        }
     }
 
     @Test
@@ -169,9 +156,6 @@ class PointPolicyServiceImplTest {
         PointPolicyResponse updatedDto = new PointPolicyResponse("review_point", request.getValue(), request.getValueType(), request.getDescription());
 
         when(pointPolicyRepository.findById("review_point")).thenReturn(Optional.of(original));
-        when(pointPolicyMapper.entityToDto(updated)).thenReturn(updatedDto);
-        when(pointPolicyMapper.updatePointPolicy(any(PointPolicy.class), any(PointPolicyUpdateRequest.class)))
-                .thenReturn(updated);
 
         PointPolicyResponse result = pointPolicyService.updatePointPolicy("review_point", request);
 
@@ -180,9 +164,7 @@ class PointPolicyServiceImplTest {
         assertEquals("리뷰 포인트 적립률", result.getDescription());
 
         verify(pointPolicyRepository).findById("review_point");
-        verify(pointPolicyMapper).entityToDto(updated);
     }
-
 
     @Test
     @DisplayName("포인트 정책 수정 - 존재하지 않는 policyKey 예외")
@@ -195,6 +177,4 @@ class PointPolicyServiceImplTest {
 
         verify(pointPolicyRepository).findById("unknown");
     }
-
-
 }

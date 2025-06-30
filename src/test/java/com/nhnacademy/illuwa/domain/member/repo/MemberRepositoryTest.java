@@ -1,20 +1,20 @@
 package com.nhnacademy.illuwa.domain.member.repo;
 
+import com.nhnacademy.illuwa.common.testconfig.GradeTestDataConfig;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
-import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
-import com.nhnacademy.illuwa.domain.grade.repo.GradeRepository;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,19 +22,30 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
-@SpringBootTest
+@TestInstance(PER_CLASS)
+@DataJpaTest
+@Import({MemberRepositoryImpl.class, GradeTestDataConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ActiveProfiles("test")
-@Transactional
-@Disabled
 class MemberRepositoryTest {
+
+    @TestConfiguration
+    static class QueryDslTestConfig {
+        @PersistenceContext
+        EntityManager em;
+
+        @Bean
+        public JPAQueryFactory jpaQueryFactory() {
+            return new JPAQueryFactory(em);
+        }
+    }
+
+    @Autowired
+    GradeTestDataConfig gradeData;
 
     @Autowired
     MemberRepository memberRepository;
-
-    @Autowired
-    GradeRepository gradeRepository;
 
     Grade basicGrade;
     Grade goldGrade;
@@ -55,40 +66,12 @@ class MemberRepositoryTest {
                 .build();
     }
 
-    @BeforeEach
-    public void setUp(){
-        basicGrade = Grade.builder()
-                        .gradeName(GradeName.BASIC)
-                .priority(4)
-                .pointRate(new BigDecimal("0.01"))
-                .minAmount(new BigDecimal(0))
-                .maxAmount(new BigDecimal("100000"))
-                .build();
-        goldGrade = Grade.builder()
-                .gradeName(GradeName.GOLD)
-                .priority(3)
-                .pointRate(new BigDecimal("0.02"))
-                .minAmount(new BigDecimal(100000))
-                .maxAmount(new BigDecimal("200000"))
-                .build();
-        royalGrade = Grade.builder()
-                .gradeName(GradeName.ROYAL)
-                .priority(2)
-                .pointRate(new BigDecimal("0.025"))
-                .minAmount(new BigDecimal(200000))
-                .maxAmount(new BigDecimal("300000"))
-                .build();
-        platinumGrade = Grade.builder()
-                .gradeName(GradeName.PLATINUM)
-                .priority(1)
-                .pointRate(new BigDecimal("0.03"))
-                .minAmount(new BigDecimal(300000))
-                .build();
-
-        basicGrade = gradeRepository.save(basicGrade);
-        goldGrade = gradeRepository.save(goldGrade);
-        royalGrade = gradeRepository.save(royalGrade);
-        platinumGrade = gradeRepository.save(platinumGrade);
+    @BeforeAll
+    void beforeAll() {
+        basicGrade = gradeData.getBasicGrade();
+        goldGrade = gradeData.getGoldGrade();
+        royalGrade = gradeData.getRoyalGrade();
+        platinumGrade = gradeData.getPlatinumGrade();
     }
 
     @Test
@@ -99,7 +82,6 @@ class MemberRepositoryTest {
 
         assertEquals("카리나", saved.getName());
     }
-
 
     @Test
     @DisplayName("회원 정보 수정 성공 테스트")

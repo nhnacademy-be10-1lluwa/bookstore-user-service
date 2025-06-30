@@ -1,22 +1,25 @@
 package com.nhnacademy.illuwa.domain.pointhistory.repo;
 
+import com.nhnacademy.illuwa.common.testconfig.GradeTestDataConfig;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
-import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
-import com.nhnacademy.illuwa.domain.grade.repo.GradeRepository;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.PointHistory;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointHistoryType;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
-import jakarta.transaction.Transactional;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,36 +29,38 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ActiveProfiles("test")
+@DataJpaTest
 @Transactional
-@Disabled
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Import({PointHistoryRepositoryImpl.class, GradeTestDataConfig.class})
 class PointHistoryRepositoryTest {
+
+    @TestConfiguration
+    static class TestQueryDslConfig {
+
+        @PersistenceContext
+        private EntityManager entityManager;
+
+        @Bean
+        public JPAQueryFactory jpaQueryFactory() {
+            return new JPAQueryFactory(entityManager);
+        }
+    }
+
+    @Autowired
+    GradeTestDataConfig gradeData;
 
     @Autowired
     MemberRepository memberRepository;
 
     @Autowired
-    GradeRepository gradeRepository;
-
-    @Autowired
     PointHistoryRepository pointHistoryRepository;
 
-    Grade basicGrade;
     Member member;
 
     @BeforeEach
     void setUp(){
-        basicGrade = Grade.builder()
-                .gradeName(GradeName.BASIC)
-                .priority(4)
-                .pointRate(new BigDecimal("0.01"))
-                .minAmount(new BigDecimal(0))
-                .maxAmount(new BigDecimal("100000"))
-                .build();
-
-        basicGrade = gradeRepository.save(basicGrade);
+        Grade basicGrade = gradeData.getBasicGrade();
 
         member = new Member();
         member.setName("공주님");

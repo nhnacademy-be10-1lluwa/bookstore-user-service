@@ -19,10 +19,10 @@ public class GuestServiceImpl implements GuestService {
     public GuestResponse create(GuestOrderRequest request){
         Guest guest = Guest.builder()
                 .orderNumber(request.getOrderNumber())
-                .name(request.getGuestName())
-                .email(request.getGuestEmail())
+                .name(request.getName())
+                .email(request.getEmail())
                 .orderPassword(request.getOrderPassword())
-                .contact(request.getGuestContact())
+                .contact(request.getContact())
                 .build();
 
         return GuestResponse.from(guestRepository.save(guest));

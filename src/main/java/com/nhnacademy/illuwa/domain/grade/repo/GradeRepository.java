@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface GradeRepository extends JpaRepository<Grade, Long> {  //pk 우선 Long
+public interface GradeRepository extends JpaRepository<Grade, Long> {
+    boolean existsByGradeName(GradeName gradeName);
     Optional<Grade> findByGradeName(GradeName gradeName);
 }

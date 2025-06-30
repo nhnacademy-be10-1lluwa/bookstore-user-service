@@ -22,7 +22,6 @@ public class MemberAddressController {
         return ResponseEntity.ok().body(memberAddressService.getMemberAddressList(memberId));
     }
 
-
     @GetMapping("/{addressId}")
     public ResponseEntity<MemberAddressResponse> getMemberAddress(@PathVariable long addressId){
         return ResponseEntity.ok().body(memberAddressService.getMemberAddress(addressId));
