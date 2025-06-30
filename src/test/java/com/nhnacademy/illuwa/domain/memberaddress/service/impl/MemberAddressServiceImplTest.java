@@ -10,14 +10,14 @@ import com.nhnacademy.illuwa.domain.memberaddress.exception.MemberAddressNotFoun
 import com.nhnacademy.illuwa.domain.memberaddress.exception.TooManyMemberAddressException;
 import com.nhnacademy.illuwa.domain.memberaddress.repo.MemberAddressRepository;
 import com.nhnacademy.illuwa.domain.memberaddress.utils.MemberAddressMapper;
+import com.nhnacademy.illuwa.domain.memberaddress.utils.MemberAddressMapperImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -27,23 +27,25 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
-@Transactional
 @ExtendWith(MockitoExtension.class)
 class MemberAddressServiceImplTest {
 
-    @Autowired
-    MemberAddressMapper memberAddressMapper;
+    MemberAddressMapper memberAddressMapper = new MemberAddressMapperImpl();
 
+    @Mock
     MemberRepository memberRepository;
+
+    @Mock
     MemberAddressRepository addressRepository;
+
+    @InjectMocks
     MemberAddressServiceImpl addressService;
 
     @BeforeEach
     void setUp() {
-        memberRepository = mock(MemberRepository.class);
-        addressRepository = mock(MemberAddressRepository.class);
-        addressService = new MemberAddressServiceImpl(memberRepository, addressRepository, memberAddressMapper);
+        addressService = new MemberAddressServiceImpl(
+                memberRepository, addressRepository, memberAddressMapper
+        );
     }
 
     MemberAddressRequest createRequest(boolean isDefault) {

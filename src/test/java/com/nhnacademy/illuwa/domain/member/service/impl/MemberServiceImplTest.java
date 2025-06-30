@@ -10,6 +10,7 @@ import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
+import com.nhnacademy.illuwa.domain.member.utils.MemberMapperImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,9 +33,10 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceImplTest {
+    MemberMapper memberMapper = new MemberMapperImpl();
+
     @Mock MemberRepository memberRepository;
     @Mock GradeService gradeService;
-    @Mock MemberMapper memberMapper;
     @Mock PasswordEncoder passwordEncoder;
     @InjectMocks MemberServiceImpl memberService;
 
@@ -54,6 +56,10 @@ class MemberServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        memberService = new MemberServiceImpl(
+                memberRepository, gradeService, memberMapper, passwordEncoder
+        );
+
         basicGrade = Grade.builder()
                 .gradeName(GradeName.BASIC)
                 .priority(4)
@@ -89,9 +95,7 @@ class MemberServiceImplTest {
     void register_success() {
         when(memberRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(gradeService.getByGradeName(GradeName.BASIC)).thenReturn(basicGrade);
-        when(memberMapper.toEntity(registerRequest)).thenReturn(testMember);
         when(memberRepository.save(any(Member.class))).thenReturn(testMember);
-        when(memberMapper.toDto(any(Member.class))).thenReturn(MemberResponse.builder().memberId(1L).build());
 
         MemberResponse response = memberService.register(registerRequest);
         assertThat(response.getMemberId()).isEqualTo(1L);
@@ -110,7 +114,6 @@ class MemberServiceImplTest {
         when(memberRepository.getMemberByEmailAndPassword(anyString(), anyString())).thenReturn(Optional.of(testMember));
         when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
         when(memberRepository.save(any())).thenReturn(testMember);
-        when(memberMapper.toDto(any())).thenReturn(MemberResponse.builder().email(testMember.getEmail()).build());
 
         MemberLoginRequest loginRequest = new MemberLoginRequest(testMember.getEmail(), testMember.getPassword());
         MemberResponse result = memberService.login(loginRequest);
@@ -122,7 +125,6 @@ class MemberServiceImplTest {
     @DisplayName("전체 회원 조회 성공")
     void getAllMembers_success() {
         when(memberRepository.findAll()).thenReturn(List.of(testMember));
-        when(memberMapper.toDto(testMember)).thenReturn(MemberResponse.builder().email(testMember.getEmail()).build());
         List<MemberResponse> result = memberService.getAllMembers();
         assertThat(result).hasSize(1);
     }
@@ -131,7 +133,6 @@ class MemberServiceImplTest {
     @DisplayName("회원 ID 조회 성공")
     void getMemberById_success() {
         when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
-        when(memberMapper.toDto(any())).thenReturn(MemberResponse.builder().memberId(1L).build());
         MemberResponse result = memberService.getMemberById(1L);
         assertThat(result.getMemberId()).isEqualTo(1L);
     }
@@ -144,8 +145,6 @@ class MemberServiceImplTest {
         updateRequest.setContact("010-9999-8888");
 
         when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
-        when(memberMapper.updateMember(any(), any())).thenReturn(testMember);
-        when(memberMapper.toDto(any())).thenReturn(MemberResponse.builder().name("윈터").contact("010-9999-8888").build());
 
         MemberResponse result = memberService.updateMember(1L, updateRequest);
         assertThat(result.getName()).isEqualTo("윈터");
