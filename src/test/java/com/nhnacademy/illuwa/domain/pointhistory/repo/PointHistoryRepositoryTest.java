@@ -9,7 +9,6 @@ import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointHistoryType;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,13 +36,9 @@ class PointHistoryRepositoryTest {
 
     @TestConfiguration
     static class TestQueryDslConfig {
-
-        @PersistenceContext
-        private EntityManager entityManager;
-
         @Bean
-        public JPAQueryFactory jpaQueryFactory() {
-            return new JPAQueryFactory(entityManager);
+        public JPAQueryFactory jpaQueryFactory(EntityManager em) {
+            return new JPAQueryFactory(em);
         }
     }
 

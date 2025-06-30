@@ -16,7 +16,7 @@ import java.util.List;
 public class MemberController {
     private final MemberService memberService;
 
-    // TODO memberId pathVaraiable로 안 받기 고려
+    // TODO memberId pathVariable 안 받기 추후 수정
 
     // 회원 목록 조회
     @GetMapping

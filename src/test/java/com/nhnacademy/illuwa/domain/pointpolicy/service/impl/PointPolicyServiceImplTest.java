@@ -152,9 +152,6 @@ class PointPolicyServiceImplTest {
         request.setValueType(PointValueType.RATE);
         request.setDescription("리뷰 포인트 적립률");
 
-        PointPolicy updated = new PointPolicy("review_point", request.getValue(), request.getValueType(), request.getDescription());
-        PointPolicyResponse updatedDto = new PointPolicyResponse("review_point", request.getValue(), request.getValueType(), request.getDescription());
-
         when(pointPolicyRepository.findById("review_point")).thenReturn(Optional.of(original));
 
         PointPolicyResponse result = pointPolicyService.updatePointPolicy("review_point", request);

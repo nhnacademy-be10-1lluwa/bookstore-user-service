@@ -7,7 +7,6 @@ import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -32,11 +31,8 @@ class MemberRepositoryTest {
 
     @TestConfiguration
     static class QueryDslTestConfig {
-        @PersistenceContext
-        EntityManager em;
-
         @Bean
-        public JPAQueryFactory jpaQueryFactory() {
+        public JPAQueryFactory jpaQueryFactory(EntityManager em) {
             return new JPAQueryFactory(em);
         }
     }

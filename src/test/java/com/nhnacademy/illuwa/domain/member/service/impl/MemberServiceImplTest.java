@@ -12,7 +12,6 @@ import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapperImpl;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -111,13 +110,13 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("로그인 성공")
-    @Disabled
     void login_success() {
-        when(memberRepository.getMemberByEmailAndPassword(anyString(), anyString())).thenReturn(Optional.of(testMember));
+        when(memberRepository.findByEmail(anyString())).thenReturn(Optional.of(testMember));
         when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
         when(memberRepository.save(any())).thenReturn(testMember);
-
         MemberLoginRequest loginRequest = new MemberLoginRequest(testMember.getEmail(), testMember.getPassword());
+
+        when(passwordEncoder.matches(loginRequest.getPassword(), testMember.getPassword())).thenReturn(true);
         MemberResponse result = memberService.login(loginRequest);
 
         assertThat(result.getEmail()).isEqualTo(testMember.getEmail());
