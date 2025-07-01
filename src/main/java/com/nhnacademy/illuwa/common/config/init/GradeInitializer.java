@@ -3,8 +3,10 @@ package com.nhnacademy.illuwa.common.config.init;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.grade.repo.GradeRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -12,16 +14,14 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class GradeInitializer {
+@Order(1)
+public class GradeInitializer implements ApplicationRunner {
 
     private final GradeRepository gradeRepository;
 
-    @PostConstruct
-    public void init() {
-        // 이미 등급 데이터가 있으면 중복 삽입 방지
-        if (gradeRepository.count() > 0) {
-            return;
-        }
+    @Override
+    public void run(ApplicationArguments args){
+        if(gradeRepository.count() > 0) return;
 
         List<Grade> grades = List.of(
                 Grade.builder()
