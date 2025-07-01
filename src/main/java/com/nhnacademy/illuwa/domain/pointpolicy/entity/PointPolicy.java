@@ -24,7 +24,7 @@ public class PointPolicy {
     //photo_review_point 포토리뷰 포인트
     //book_default_rate 도서 기본 적립률
 
-    @Column(name = "value", precision = 10, scale = 2, nullable = false)
+    @Column(name = "point_value", precision = 10, scale = 2, nullable = false)
     private BigDecimal value;
 
     @Column(name = "value_type", nullable = false)
