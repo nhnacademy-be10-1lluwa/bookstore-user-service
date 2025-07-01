@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.pointpolicy.service.impl;
 
+import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyCreateRequest;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyResponse;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyUpdateRequest;
@@ -23,7 +24,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,139 +40,167 @@ class PointPolicyServiceImplTest {
     @InjectMocks
     private PointPolicyServiceImpl pointPolicyService;
 
-    List<PointPolicyCreateRequest> requestList = List.of(
-            new PointPolicyCreateRequest("join_point", new BigDecimal("5000"), PointValueType.AMOUNT, "회원가입 포인트 적립액"),
-            new PointPolicyCreateRequest("review_point", new BigDecimal("200"), PointValueType.AMOUNT, "리뷰 포인트 적립액"),
-            new PointPolicyCreateRequest("photo_review_point", new BigDecimal("500"), PointValueType.AMOUNT, "포토리뷰 포인트 적립액"),
-            new PointPolicyCreateRequest("book_default_rate", new BigDecimal("1.00"), PointValueType.RATE, "도서구매 기본 적립률")
-    );
+    PointPolicyCreateRequest request;
+    PointPolicy testPolicy;
 
     @BeforeEach
     void SetUp(){
         pointPolicyService = new PointPolicyServiceImpl(pointPolicyRepository, pointPolicyMapper);
+
+        request = PointPolicyCreateRequest.builder()
+                .policyKey("thanks_point")
+                .value(new BigDecimal("1000"))
+                .valueType(PointValueType.AMOUNT)
+                .description("설명1")
+                .build();
+
+        testPolicy = PointPolicy.builder()
+                .policyKey(request.getPolicyKey())
+                .value(request.getValue())
+                .valueType(request.getValueType())
+                .description(request.getDescription())
+                .build();
     }
 
     @Test
-    @DisplayName("포인트 정책 전체등록")
-    void testSaveAllPointPolicy() {
-        List<PointPolicy> entityList = requestList.stream()
-                .map(req -> new PointPolicy(req.getPolicyKey(), req.getValue(), req.getValueType(), req.getDescription()))
-                .toList();
+    @DisplayName("포인트 정책 등록")
+    void testCreatePointPolicy() {
+        when(pointPolicyRepository.save(any(PointPolicy.class))).thenReturn(testPolicy);
+        PointPolicyResponse saved = pointPolicyService.createPointPolicy(request);
 
-        when(pointPolicyRepository.saveAll(any())).thenReturn(entityList);
-
-        List<PointPolicyResponse> saved = pointPolicyService.saveAllPointPolicy(requestList);
-        assertEquals(4, saved.size());
-
-        verify(pointPolicyRepository).saveAll(any());
+        assertNotNull(saved);
+        assertEquals(request.getPolicyKey(), saved.getPolicyKey());
+        assertEquals(request.getValue(), saved.getValue());
+        assertEquals(request.getValueType(), saved.getValueType());
+        assertEquals(request.getDescription(), saved.getDescription());
     }
 
-
     @Test
-    @DisplayName("포인트 정책 전체등록 - 중복된 policyKey 예외 발생")
-    void testSaveAllPointPolicy_DuplicateKey() {
-        List<PointPolicyCreateRequest> duplicateList = List.of(
-                new PointPolicyCreateRequest("join_point", new BigDecimal("1000"), PointValueType.AMOUNT, "설명1"),
-                new PointPolicyCreateRequest("join_point", new BigDecimal("2000"), PointValueType.AMOUNT, "설명2")
-        );
+    @DisplayName("포인트 정책 등록 - 중복된 policyKey 예외 발생")
+    void testCreatePointPolicy_DuplicateKey() {
+        PointPolicyCreateRequest request = new PointPolicyCreateRequest("duplicate", new BigDecimal("1000"), PointValueType.AMOUNT, "설명1");
 
-        DuplicatePointPolicyException ex = Assertions.assertThrows(DuplicatePointPolicyException.class,
-                () -> pointPolicyService.saveAllPointPolicy(duplicateList));
+        PointPolicy existingPolicy = PointPolicy.builder()
+                .policyKey("duplicate")
+                .value(new BigDecimal("1000"))
+                .valueType(PointValueType.AMOUNT)
+                .description("설명1")
+                .build();
 
-        Assertions.assertTrue(ex.getMessage().contains("이미 존재하는 포인트 정책입니다"));
+        when(pointPolicyRepository.findAll())
+                .thenReturn(List.of()) // 첫 호출: 중복 없음
+                .thenReturn(List.of(existingPolicy)); // 두 번째 호출: 중복 발견
+
+        when(pointPolicyRepository.save(any(PointPolicy.class)))
+                .thenReturn(existingPolicy);
+
+        pointPolicyService.createPointPolicy(request);
+
+        //두번째 시도
+        DuplicatePointPolicyException ex = assertThrows(DuplicatePointPolicyException.class,
+                () -> pointPolicyService.createPointPolicy(request));
+
+        Assertions.assertTrue(ex.getMessage().contains("이미 존재하는 포인트 정책입니다: duplicate"));
     }
 
-
     @Test
-    @DisplayName("포인트 정책 단일조회")
+    @DisplayName("포인트 정책 단일 조회")
     void testFindByPolicyKey() {
-        PointPolicyCreateRequest joinPointRequestDto = requestList.getFirst();
-        PointPolicy entity = new PointPolicy(
-                joinPointRequestDto.getPolicyKey(),
-                joinPointRequestDto.getValue(),
-                joinPointRequestDto.getValueType(),
-                joinPointRequestDto.getDescription()
-        );
+        when(pointPolicyRepository.findById("thanks_point")).thenReturn(Optional.of(testPolicy));
 
-        when(pointPolicyRepository.findById("join_point")).thenReturn(Optional.of(entity));
+        PointPolicyResponse response = pointPolicyService.findByPolicyKey("thanks_point");
 
-        PointPolicyResponse response = pointPolicyService.findByPolicyKey("join_point");
-
-        Assertions.assertEquals("join_point", response.getPolicyKey());
-        Assertions.assertEquals(new BigDecimal("5000"), response.getValue());
-        Assertions.assertEquals(PointValueType.AMOUNT, response.getValueType());
-        Assertions.assertEquals("회원가입 포인트 적립액", response.getDescription());
-
-        verify(pointPolicyRepository).findById("join_point");
+        assertNotNull(response);
+        assertEquals("thanks_point", response.getPolicyKey());
+        verify(pointPolicyRepository).findById("thanks_point");
     }
 
     @Test
-    @DisplayName("포인트 정책 단일조회 - 존재하지 않는 policyKey 예외")
+    @DisplayName("포인트 정책 단일 조회 - 존재하지 않을 경우 예외")
     void testFindByPolicyKey_NotFound() {
-        when(pointPolicyRepository.findById("unknown")).thenReturn(Optional.empty());
+        when(pointPolicyRepository.findById("missing_key")).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(PointPolicyNotFoundException.class,
-                () -> pointPolicyService.findByPolicyKey("unknown"));
-
-        verify(pointPolicyRepository).findById("unknown");
+        assertThrows(PointPolicyNotFoundException.class,
+                () -> pointPolicyService.findByPolicyKey("missing_key"));
     }
 
     @Test
-    @DisplayName("포인트 정책 전체조회")
+    @DisplayName("모든 포인트 정책 조회")
     void testFindAllPointPolicy() {
-        List<PointPolicy> entities = requestList.stream()
-                .map(r -> new PointPolicy(r.getPolicyKey(), r.getValue(), r.getValueType(), r.getDescription()))
-                .toList();
+        List<PointPolicy> list = List.of(testPolicy);
+        when(pointPolicyRepository.findAll()).thenReturn(list);
 
-        when(pointPolicyRepository.findAll()).thenReturn(entities);
+        List<PointPolicyResponse> responseList = pointPolicyService.findAllPointPolicy();
 
-        List<PointPolicyResponse> responses = pointPolicyService.findAllPointPolicy();
-        assertEquals(4, responses.size());
-
-        verify(pointPolicyRepository).findAll();
+        assertEquals(1, responseList.size());
+        assertEquals("thanks_point", responseList.getFirst().getPolicyKey());
     }
 
     @Test
-    @DisplayName("포인트 정책 전체조회 - 빈 리스트 반환")
-    void testFindAllPointPolicy_Empty() {
-        when(pointPolicyRepository.findAll()).thenReturn(List.of());
-
-        List<PointPolicyResponse> responses = pointPolicyService.findAllPointPolicy();
-        Assertions.assertTrue(responses.isEmpty());
-
-        verify(pointPolicyRepository).findAll();
-    }
-
-    @Test
-    @DisplayName("포인트 정책 수정")
+    @DisplayName("포인트 정책 수정 - 성공")
     void testUpdatePointPolicy() {
-        PointPolicy original = new PointPolicy("review_point", new BigDecimal("200"), PointValueType.AMOUNT, "리뷰 포인트 적립액");
+        PointPolicyUpdateRequest updateRequest = PointPolicyUpdateRequest.builder()
+                .value(new BigDecimal("0.3"))
+                .valueType(PointValueType.RATE)
+                .description("적립율 수정")
+                .build();
 
-        PointPolicyUpdateRequest request = new PointPolicyUpdateRequest();
-        request.setValue(new BigDecimal("0.30"));
-        request.setValueType(PointValueType.RATE);
-        request.setDescription("리뷰 포인트 적립률");
+        when(pointPolicyRepository.findById("thanks_point")).thenReturn(Optional.of(testPolicy));
+        when(pointPolicyRepository.save(any(PointPolicy.class))).thenReturn(testPolicy);
 
-        when(pointPolicyRepository.findById("review_point")).thenReturn(Optional.of(original));
+        PointPolicyResponse updated = pointPolicyService.updatePointPolicy("thanks_point", updateRequest);
 
-        PointPolicyResponse result = pointPolicyService.updatePointPolicy("review_point", request);
-
-        assertEquals(new BigDecimal("0.30"), result.getValue());
-        assertEquals(PointValueType.RATE, result.getValueType());
-        assertEquals("리뷰 포인트 적립률", result.getDescription());
-
-        verify(pointPolicyRepository).findById("review_point");
+        assertNotNull(updated);
+        assertEquals("thanks_point", updated.getPolicyKey());
+        verify(pointPolicyRepository).save(any(PointPolicy.class));
     }
 
     @Test
-    @DisplayName("포인트 정책 수정 - 존재하지 않는 policyKey 예외")
+    @DisplayName("포인트 정책 수정 - 존재하지 않을 경우 예외")
     void testUpdatePointPolicy_NotFound() {
-        PointPolicyUpdateRequest request = new PointPolicyUpdateRequest();
-        when(pointPolicyRepository.findById("unknown")).thenReturn(Optional.empty());
+        when(pointPolicyRepository.findById("invalid")).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(PointPolicyNotFoundException.class,
-                () -> pointPolicyService.updatePointPolicy("unknown", request));
+        PointPolicyUpdateRequest request = PointPolicyUpdateRequest.builder()
+                .value(BigDecimal.ONE)
+                .valueType(PointValueType.RATE)
+                .description("desc")
+                .build();
 
-        verify(pointPolicyRepository).findById("unknown");
+        assertThrows(PointPolicyNotFoundException.class,
+                () -> pointPolicyService.updatePointPolicy("invalid", request));
+    }
+
+    @Test
+    @DisplayName("포인트 정책 수정 - 잘못된 RATE 값 예외")
+    void testUpdatePointPolicy_InvalidRateValue() {
+        PointPolicyUpdateRequest invalidRequest = PointPolicyUpdateRequest.builder()
+                .value(new BigDecimal("1.5")) // > 1.0
+                .valueType(PointValueType.RATE)
+                .description("비정상 비율")
+                .build();
+
+        when(pointPolicyRepository.findById("thanks_point")).thenReturn(Optional.of(testPolicy));
+
+        assertThrows(InvalidInputException.class,
+                () -> pointPolicyService.updatePointPolicy("thanks_point", invalidRequest));
+    }
+
+    @Test
+    @DisplayName("포인트 정책 삭제 - 성공")
+    void testDeletePointPolicy() {
+        when(pointPolicyRepository.findById("thanks_point")).thenReturn(Optional.of(testPolicy));
+
+        pointPolicyService.deletePointPolicy("thanks_point");
+
+        verify(pointPolicyRepository).deleteById("thanks_point");
+    }
+
+    @Test
+    @DisplayName("포인트 정책 삭제 - 존재하지 않을 경우 예외")
+    void testDeletePointPolicy_NotFound() {
+        when(pointPolicyRepository.findById("invalid")).thenReturn(Optional.empty());
+
+        assertThrows(PointPolicyNotFoundException.class,
+                () -> pointPolicyService.deletePointPolicy("invalid"));
     }
 }

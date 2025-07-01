@@ -16,39 +16,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PointPolicyServiceImpl implements PointPolicyService {
 
     private final PointPolicyRepository pointPolicyRepository;
     private final PointPolicyMapper pointPolicyMapper;
-
-    @Transactional
-    @Override
-    public List<PointPolicyResponse> saveAllPointPolicy(List<PointPolicyCreateRequest> requestList) {
-        Set<String> uniqueKeys = new HashSet<>();
-        for (PointPolicyCreateRequest request : requestList) {
-            if (!uniqueKeys.add(request.getPolicyKey())) {   //false 반환 시 중복
-                throw new DuplicatePointPolicyException(request.getPolicyKey());
-            }
-        }
-
-        List<PointPolicy> pointPolicyList = requestList.stream()
-                .map(pointPolicyMapper::dtoToEntity)
-                .collect(Collectors.toList());
-
-        pointPolicyRepository.saveAll(pointPolicyList);
-
-        return pointPolicyList.stream()
-                .map(pointPolicyMapper::entityToDto)
-                .collect(Collectors.toList());
-    }
-
 
     @Transactional(readOnly = true)
     @Override
@@ -56,7 +32,7 @@ public class PointPolicyServiceImpl implements PointPolicyService {
         PointPolicy pointPolicy = pointPolicyRepository.findById(policyKey)
                 .orElseThrow(() -> new PointPolicyNotFoundException(policyKey));
 
-        return pointPolicyMapper.entityToDto(pointPolicy);
+        return pointPolicyMapper.toDto(pointPolicy);
     }
 
     @Transactional(readOnly = true)
@@ -65,11 +41,22 @@ public class PointPolicyServiceImpl implements PointPolicyService {
         List<PointPolicy> pointPolicyList = pointPolicyRepository.findAll();
 
         return pointPolicyList.stream()
-                .map(pointPolicyMapper::entityToDto)
+                .map(pointPolicyMapper::toDto)
                 .toList();
     }
 
-    @Transactional
+    @Override
+    public PointPolicyResponse createPointPolicy(PointPolicyCreateRequest request) {
+        List<PointPolicy> pointPolicyList = pointPolicyRepository.findAll();
+        for (PointPolicy pointPolicy : pointPolicyList) {
+            if (pointPolicy.getPolicyKey().equals(request.getPolicyKey())) {   //false 반환 시 중복
+                throw new DuplicatePointPolicyException(request.getPolicyKey());
+            }
+        }
+        PointPolicy saved = pointPolicyRepository.save(pointPolicyMapper.toEntity(request));
+        return pointPolicyMapper.toDto(saved);
+    }
+
     @Override
     public PointPolicyResponse updatePointPolicy(String policyKey, PointPolicyUpdateRequest request) {
         PointPolicy pointPolicy = pointPolicyRepository.findById(policyKey)
@@ -79,8 +66,18 @@ public class PointPolicyServiceImpl implements PointPolicyService {
         validatePointPolicyValue(request);
 
         PointPolicy updatedPolicy = pointPolicyMapper.updatePointPolicy(pointPolicy, request);
+        pointPolicyRepository.save(updatedPolicy);
 
-        return pointPolicyMapper.entityToDto(updatedPolicy);
+        return pointPolicyMapper.toDto(updatedPolicy);
+    }
+
+    @Override
+    public void deletePointPolicy(String policyKey){
+        PointPolicy pointPolicy = pointPolicyRepository.findById(policyKey)
+                .orElseThrow(()->
+                new PointPolicyNotFoundException(policyKey)
+        );
+        pointPolicyRepository.deleteById(pointPolicy.getPolicyKey());
     }
 
     private void validatePointPolicyValue(PointPolicyUpdateRequest request) {
@@ -107,5 +104,4 @@ public class PointPolicyServiceImpl implements PointPolicyService {
             default -> throw new InvalidInputException("알 수 없는 valueType이에요.");
         }
     }
-
 }
