@@ -8,8 +8,10 @@ import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -17,14 +19,14 @@ import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
-public class MemberInitializer {
+@Order(2)
+public class MemberInitializer implements ApplicationRunner {
 
     private final MemberRepository memberRepository;
     private final GradeRepository gradeRepository;
 
-    @PostConstruct
-    public void init() {
-        // 이미 초기 멤버가 존재하면 중복 삽입 방지
+    @Override
+    public void run(ApplicationArguments args){
         if (memberRepository.findByEmail("admin@1lluwa.com").isPresent()) {
             return;
         }
