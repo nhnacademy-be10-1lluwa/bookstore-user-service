@@ -85,7 +85,6 @@ class MemberServiceImplTest {
                 .grade(basicGrade)
                 .point(BigDecimal.ZERO)
                 .status(Status.ACTIVE)
-                .lastLoginAt(LocalDateTime.now())
                 .build();
         setMemberId(testMember);
     }

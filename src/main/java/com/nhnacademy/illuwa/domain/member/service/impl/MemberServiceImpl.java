@@ -150,8 +150,9 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
         LocalDateTime threeMonthsAgo  = LocalDateTime.now().minusMonths(3);
-        if(member.getLastLoginAt().isBefore(threeMonthsAgo)){
-            member.setStatus(Status.INACTIVE);
+        if((member.getLastLoginAt() != null && member.getLastLoginAt().isBefore(threeMonthsAgo)) ||
+            (member.getLastLoginAt() == null && member.getCreatedAt().isBefore(threeMonthsAgo))){
+                member.setStatus(Status.INACTIVE);
         }
     }
 

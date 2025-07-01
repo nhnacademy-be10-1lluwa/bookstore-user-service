@@ -18,4 +18,9 @@ public interface MemberRepository extends JpaRepository<Member, Long>, CustomMem
     Optional<Member> getMemberByEmailAndPassword(String email, String password);
 
     boolean existsByEmail(String email);
+
+    boolean existsByPaycoId(String paycoId);
+
+    Optional<Member> findByPaycoId(String paycoId);
+
 }

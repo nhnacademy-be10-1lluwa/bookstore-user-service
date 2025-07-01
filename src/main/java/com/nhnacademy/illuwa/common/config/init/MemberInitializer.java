@@ -15,7 +15,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -44,7 +43,6 @@ public class MemberInitializer implements ApplicationRunner {
                 .grade(basicGrade)
                 .point(BigDecimal.ZERO)
                 .status(Status.ACTIVE)
-                .lastLoginAt(LocalDateTime.now())
                 .build();
 
         if (memberRepository.findByEmail("karina@naver.com").isPresent()) {
@@ -61,7 +59,6 @@ public class MemberInitializer implements ApplicationRunner {
                 .grade(basicGrade)
                 .point(BigDecimal.ZERO)
                 .status(Status.ACTIVE)
-                .lastLoginAt(LocalDateTime.now())
                 .build();
 
         memberRepository.save(admin);
