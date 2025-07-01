@@ -20,7 +20,6 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 @Order(2)
 public class MemberInitializer implements ApplicationRunner {
-
     private final MemberRepository memberRepository;
     private final GradeRepository gradeRepository;
 

@@ -2,22 +2,32 @@ package com.nhnacademy.illuwa.domain.pointpolicy.repo;
 
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.PointPolicy;
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.annotation.Commit;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@SpringBootTest
-@Transactional
+@DataJpaTest
 class PointPolicyRepositoryTest {
+
+    @TestConfiguration
+    static class TestQueryDslConfig {
+        @Bean
+        public JPAQueryFactory jpaQueryFactory(EntityManager em) {
+            return new JPAQueryFactory(em);
+        }
+    }
+
     @Autowired
     PointPolicyRepository pointPolicyRepository;
 
@@ -26,40 +36,16 @@ class PointPolicyRepositoryTest {
     @Commit
     @DisplayName("포인트 정책 등록")
     void testSavePointPolicy(){
-        PointPolicy joinPoint = PointPolicy.builder()
-                .policyKey("join_point")
-                .value(new BigDecimal("5000"))
+        PointPolicy newPolicy = PointPolicy.builder()
+                .policyKey("winter_event")
+                .value(new BigDecimal("2025"))
                 .valueType(PointValueType.AMOUNT)
-                .description("회원가입 포인트 적립액")
+                .description("2025 겨울 이벤트 적립")
                 .build();
+        PointPolicy saved = pointPolicyRepository.save(newPolicy);
 
-        PointPolicy reviewPoint = PointPolicy.builder()
-                .policyKey("review_point")
-                .value(new BigDecimal("200"))
-                .valueType(PointValueType.AMOUNT)
-                .description("리뷰 포인트 적립액")
-                .build();
-
-        PointPolicy photoReviewPoint = PointPolicy.builder()
-                .policyKey("photo_review_point")
-                .value(new BigDecimal("500"))
-                .valueType(PointValueType.AMOUNT)
-                .description("포토리뷰 포인트 적립액")
-                .build();
-
-        PointPolicy bookDefaultRate = PointPolicy.builder()
-                .policyKey("book_default_rate")
-                .value(new BigDecimal("1.00"))
-                .valueType(PointValueType.RATE)
-                .description("도서구매 기본 적립률")
-                .build();
-
-        pointPolicyRepository.save(joinPoint);
-        pointPolicyRepository.save(reviewPoint);
-        pointPolicyRepository.save(photoReviewPoint);
-        pointPolicyRepository.save(bookDefaultRate);
-
-        assertEquals(4, Arrays.stream(pointPolicyRepository.findAll().toArray()).count());
+        assertNotNull(saved);
+        assertEquals(new BigDecimal("2025"), saved.getValue());
     }
 
     @Order(2)
@@ -67,14 +53,14 @@ class PointPolicyRepositoryTest {
     @Commit
     @DisplayName("포인트 정책 조회")
     void testFindPointPolicy(){
-        Optional<PointPolicy> joinPointPolicy = pointPolicyRepository.findById("join_point");
+        Optional<PointPolicy> optional = pointPolicyRepository.findById("winter_event");
 
-        assertNotNull(joinPointPolicy);
+        assertNotNull(optional);
 
-        PointPolicy joinPoint = joinPointPolicy.get();
-        assertEquals(0,joinPoint.getValue().compareTo(new BigDecimal("5000")));
-        assertEquals(PointValueType.AMOUNT, joinPoint.getValueType());
-        assertEquals("회원가입 포인트 적립액", joinPoint.getDescription());
+        PointPolicy winterPointPolicy = optional.orElseThrow();
+        assertEquals(0,winterPointPolicy.getValue().compareTo(new BigDecimal("2025")));
+        assertEquals(PointValueType.AMOUNT, winterPointPolicy.getValueType());
+        assertEquals("2025 겨울 이벤트 적립", winterPointPolicy.getDescription());
     }
 
     @Order(3)
@@ -82,20 +68,30 @@ class PointPolicyRepositoryTest {
     @Commit
     @DisplayName("포인트 정책 수정")
     void testUpdatePointPolicy() {
-        Optional<PointPolicy> optional = pointPolicyRepository.findById("join_point");
-        assertTrue(optional.isPresent(), "join_point 정책이 존재해야 합니다");
+        Optional<PointPolicy> optional = pointPolicyRepository.findById("winter_event");
+        assertTrue(optional.isPresent(), "winter_event 정책이 존재해야 합니다");
 
-        PointPolicy joinPoint = optional.get();
+        PointPolicy winterPolicy = optional.get();
 
-        joinPoint.setValue(new BigDecimal("6000"));
-        joinPoint.setDescription("회원가입 포인트 적립액 수정됨");
+        winterPolicy.setValue(new BigDecimal("2026"));
+        winterPolicy.setDescription("새해의 기대를 담아 2026포인트 적립");
 
-        pointPolicyRepository.save(joinPoint);
+        pointPolicyRepository.save(winterPolicy);
 
-        PointPolicy updated = pointPolicyRepository.findById("join_point").orElseThrow();
-        assertEquals(0, updated.getValue().compareTo(new BigDecimal("6000")));
-        assertEquals("회원가입 포인트 적립액 수정됨", updated.getDescription());
+        PointPolicy updated = pointPolicyRepository.findById("winter_event").orElseThrow();
+        assertEquals(0, updated.getValue().compareTo(new BigDecimal("2026")));
+        assertEquals("새해의 기대를 담아 2026포인트 적립", updated.getDescription());
         assertEquals(PointValueType.AMOUNT, updated.getValueType());
     }
 
+    @Order(4)
+    @Test
+    @Commit
+    @DisplayName("포인트 정책 삭제")
+    void testDeletePointPolicy() {
+        PointPolicy policy = pointPolicyRepository.findById("winter_event").get();
+        pointPolicyRepository.deleteById(policy.getPolicyKey());
+
+        assertFalse(pointPolicyRepository.existsById(policy.getPolicyKey()));
+    }
 }

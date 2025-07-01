@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 @Table(name = "point_policy")
 public class PointPolicy {
     @Id
-    @Column(name = "policy_key")
+    @Column(name = "policy_key", unique = true)
     private String policyKey;
     //join_point 회원가입 포인트
     //review_point 리뷰 포인트
