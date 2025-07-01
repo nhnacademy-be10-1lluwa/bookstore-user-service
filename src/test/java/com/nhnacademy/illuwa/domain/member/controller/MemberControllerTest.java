@@ -8,7 +8,6 @@ import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,9 +21,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -43,45 +40,47 @@ class MemberControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    MemberResponse dummyResponse = MemberResponse.builder()
-            .memberId(1L)
-            .name("최길동")
-            .birth(LocalDate.of(2000, 1, 1))
-            .email("gongju@naver.com")
-            .contact("010-1234-5678")
-            .point(BigDecimal.ZERO)
-            .status(Status.ACTIVE)
-            .role(Role.USER)
-            .gradeName(GradeName.GOLD.toString())
-            .lastLoginAt(null)
-            .build();
-
     @Test
     @DisplayName("회원 전체 목록 조회")
     void getAllMembers() throws Exception {
-        Mockito.when(memberService.getAllMembers()).thenReturn(List.of(dummyResponse));
+        MemberResponse response = MemberResponse.builder()
+                .memberId(1L)
+                .name("최길동")
+                .email("gongju@naver.com")
+                .build();
+
+        Mockito.when(memberService.getAllMembers()).thenReturn(List.of(response));
 
         mockMvc.perform(get("/members"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].memberId").value(1L));
+                .andExpect(jsonPath("$[0].memberId").value(1L))
+                .andExpect(jsonPath("$[0].name").value("최길동"))
+                .andExpect(jsonPath("$[0].email").value("gongju@naver.com"));
     }
 
     @Test
     @DisplayName("로그인 성공")
-    @Disabled
     void login() throws Exception {
         MemberLoginRequest loginRequest = new MemberLoginRequest("gongju@naver.com", "$pw123456789");
 
-        Mockito.when(memberService.login(any(MemberLoginRequest.class))).thenReturn(dummyResponse);
+        MemberResponse loginResponse = MemberResponse.builder()
+                .memberId(1L)
+                .email(loginRequest.getEmail())
+                .name("공주님")
+                .build();
+
+        Mockito.when(memberService.login(any(MemberLoginRequest.class)))
+                .thenReturn(loginResponse);
 
         mockMvc.perform(post("/members/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("gongju@naver.com"));
+                .andExpect(jsonPath("$.memberId").value(1L))
+                .andExpect(jsonPath("$.email").value("gongju@naver.com"))
+                .andExpect(jsonPath("$.name").value("공주님"));
 
-        assertEquals("gongju@naver.com", loginRequest.getEmail());
-        assertEquals("$pw123456789", loginRequest.getPassword());
+        Mockito.verify(memberService).login(any(MemberLoginRequest.class));
     }
 
     @Test
@@ -95,47 +94,58 @@ class MemberControllerTest {
                 .contact("010-1234-5678")
                 .build();
 
-        Member dummyEntity = Member.builder()
-                .name(registerRequest.getName())
-                .email(registerRequest.getEmail())
-                .password(registerRequest.getPassword())
-                .birth(registerRequest.getBirth())
-                .contact(registerRequest.getContact())
+        Member memberEntity = Member.builder()
+                .name("최길동")
+                .email("gongju@naver.com")
+                .password("$pw123456789")
+                .birth(LocalDate.of(2000, 1, 1))
+                .contact("010-1234-5678")
                 .build();
 
-        Mockito.when(memberMapper.toEntity(any(MemberRegisterRequest.class))).thenReturn(dummyEntity);
-        Mockito.when(memberService.register(any(MemberRegisterRequest.class))).thenReturn(dummyResponse);
+        MemberResponse registerResponse = MemberResponse.builder()
+                .memberId(1L)
+                .name("최길동")
+                .email("gongju@naver.com")
+                .build();
+
+        Mockito.when(memberMapper.toEntity(any(MemberRegisterRequest.class))).thenReturn(memberEntity);
+        Mockito.when(memberService.register(any(MemberRegisterRequest.class))).thenReturn(registerResponse);
 
         mockMvc.perform(post("/members")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("최길동"));
-
-        assertEquals("최길동", registerRequest.getName());
-        assertEquals("gongju@naver.com", registerRequest.getEmail());
-        assertEquals("$pw123456789", registerRequest.getPassword());
-        assertEquals("010-1234-5678", registerRequest.getContact());
-        assertEquals(LocalDate.of(2000, 1, 1), registerRequest.getBirth());
+                .andExpect(jsonPath("$.memberId").value(1L))
+                .andExpect(jsonPath("$.name").value("최길동"))
+                .andExpect(jsonPath("$.email").value("gongju@naver.com"));
     }
 
     @Test
     @DisplayName("회원 단건 조회")
     void getMember() throws Exception {
-        Mockito.when(memberService.getMemberById(1L)).thenReturn(dummyResponse);
+        MemberResponse response = MemberResponse.builder()
+                .memberId(1L)
+                .name("최길동")
+                .email("gongju@naver.com")
+                .contact("010-1234-5678")
+                .gradeName(GradeName.GOLD.toString())
+                .role(Role.USER)
+                .status(Status.ACTIVE)
+                .point(BigDecimal.ZERO)
+                .build();
+
+        Mockito.when(memberService.getMemberById(1L)).thenReturn(response);
 
         mockMvc.perform(get("/members/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.memberId").value(1L));
-
-        assertEquals(1L, dummyResponse.getMemberId());
-        assertEquals("최길동", dummyResponse.getName());
-        assertEquals("gongju@naver.com", dummyResponse.getEmail());
-        assertEquals("010-1234-5678", dummyResponse.getContact());
-        assertEquals(GradeName.GOLD.toString(), dummyResponse.getGradeName());
-        assertEquals(Role.USER, dummyResponse.getRole());
-        assertEquals(Status.ACTIVE, dummyResponse.getStatus());
-        assertEquals(BigDecimal.ZERO, dummyResponse.getPoint());
+                .andExpect(jsonPath("$.memberId").value(1L))
+                .andExpect(jsonPath("$.name").value("최길동"))
+                .andExpect(jsonPath("$.email").value("gongju@naver.com"))
+                .andExpect(jsonPath("$.contact").value("010-1234-5678"))
+                .andExpect(jsonPath("$.gradeName").value("GOLD"))
+                .andExpect(jsonPath("$.role").value("USER"))
+                .andExpect(jsonPath("$.status").value("ACTIVE"))
+                .andExpect(jsonPath("$.point").value(0));
     }
 
     @Test
@@ -146,24 +156,23 @@ class MemberControllerTest {
                 .contact("010-9999-8888")
                 .build();
 
-        MemberResponse updatedResponse = MemberResponse.builder()
+        MemberResponse response = MemberResponse.builder()
                 .memberId(1L)
-                .name(updateRequest.getName())
-                .contact(updateRequest.getContact())
+                .name("업데이트된 회원명")
+                .contact("010-9999-8888")
                 .email("gongju@naver.com")
                 .build();
 
         Mockito.when(memberService.updateMember(eq(1L), any(MemberUpdateRequest.class)))
-                .thenReturn(updatedResponse);
+                .thenReturn(response);
 
         mockMvc.perform(patch("/members/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("업데이트된 회원명"));
-
-        assertEquals("업데이트된 회원명", updateRequest.getName());
-        assertEquals("010-9999-8888", updateRequest.getContact());
+                .andExpect(jsonPath("$.name").value("업데이트된 회원명"))
+                .andExpect(jsonPath("$.contact").value("010-9999-8888"))
+                .andExpect(jsonPath("$.email").value("gongju@naver.com"));
     }
 
     @Test

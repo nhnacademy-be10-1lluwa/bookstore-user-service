@@ -62,13 +62,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberResponse login(MemberLoginRequest request) {
-//        Member loginMember = memberRepository.getMemberByEmailAndPassword(request.getEmail(), passwordEncoder.encode(request.getPassword()))
-//                .orElseThrow(MemberNotFoundException::new);
         Member loginMember = memberRepository.findByEmail(request.getEmail())
                         .orElseThrow(MemberNotFoundException::new);
 
         if(!passwordEncoder.matches(request.getPassword(), loginMember.getPassword())) {
-            throw new InvalidInputException();
+            throw new InvalidInputException("비밀번호가 틀렸습니다.");
         }
 
         checkMemberStatus(loginMember.getMemberId());
