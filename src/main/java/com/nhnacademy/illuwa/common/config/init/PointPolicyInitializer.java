@@ -14,7 +14,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-@Order(3)
+@Order(2)
 public class PointPolicyInitializer implements ApplicationRunner {
 
     private final PointPolicyRepository pointPolicyRepository;
