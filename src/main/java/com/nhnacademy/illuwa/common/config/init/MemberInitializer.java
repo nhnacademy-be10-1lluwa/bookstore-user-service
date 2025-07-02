@@ -54,11 +54,11 @@ public class MemberInitializer implements ApplicationRunner {
                 .name("관리자")
                 .birth("1990-01-01")
                 .email("admin@1lluwa.com")
-                .password("Admin1234$")
+                .password(passwordEncoder.encode("Admin1234$"))
                 .role(Role.ADMIN)
                 .contact("010-1234-5678")
                 .grade(basicGrade)
-                .point(BigDecimal.ZERO)
+                .point(joinPolicy.getValue())
                 .status(Status.ACTIVE)
                 .build();
 
