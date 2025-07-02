@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/members/{memberId}/inactive/verification")
+@RequestMapping("/members/inactive/verification")
 public class InactiveVerificationController {
 
     private final MemberService memberService;
@@ -25,7 +25,7 @@ public class InactiveVerificationController {
 
     //인증번호 전송 api
     @PostMapping
-    public ResponseEntity<SendMessageResponse> sendVerificationCode(@PathVariable long memberId) {
+    public ResponseEntity<SendMessageResponse> sendVerificationCode(@RequestHeader("X-USER-ID") long memberId) {
         MemberResponse member = getMemberOrThrow(memberId);
 
         SendMessageRequest request = new SendMessageRequest();
@@ -40,7 +40,7 @@ public class InactiveVerificationController {
 
     //인증번호 검증 api
     @PostMapping("/verify")
-    public ResponseEntity<VerifyCodeResponse> receiveVerificationCode(@PathVariable long memberId,
+    public ResponseEntity<VerifyCodeResponse> receiveVerificationCode(@RequestHeader("X-USER-ID") long memberId,
                                                                       @RequestBody VerifyCodeRequest request) {
         MemberResponse member = getMemberOrThrow(memberId);
         String email = member.getEmail();

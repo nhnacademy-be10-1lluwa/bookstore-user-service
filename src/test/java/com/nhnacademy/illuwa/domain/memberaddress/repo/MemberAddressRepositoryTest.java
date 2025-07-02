@@ -1,6 +1,7 @@
 package com.nhnacademy.illuwa.domain.memberaddress.repo;
 
 import com.nhnacademy.illuwa.common.testconfig.GradeTestDataConfig;
+import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressRequest;
 import com.nhnacademy.illuwa.domain.memberaddress.entity.MemberAddress;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
@@ -104,10 +105,14 @@ class MemberAddressRepositoryTest {
 
         MemberAddress saved = memberAddressRepository.save(memberAddress);
 
-        saved.setAddressName("도연언니 댁");
-        saved.setAddress("경기도 고양시 일산동구 월드고양로");
-        saved.setDetailAddress("102-65");
+        MemberAddressRequest request = MemberAddressRequest
+                                    .builder()
+                                    .addressName("도연언니 댁")
+                                    .address("경기도 고양시 일산동구 월드고양로")
+                                    .detailAddress("102-65")
+                                    .build();
 
+        saved.updateMemberAddress(request);
         MemberAddress updated = memberAddressRepository.save(saved);
 
         assertEquals(saved.getMemberAddressId(), updated.getMemberAddressId());

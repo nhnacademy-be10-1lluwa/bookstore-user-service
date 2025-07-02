@@ -43,8 +43,9 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     public MemberAddressResponse updateMemberAddress(long addressId, MemberAddressRequest request) {
         MemberAddress orgMemberAddress = addressRepository.findById(addressId)
                 .orElseThrow(() -> new MemberAddressNotFoundException(addressId));
-        MemberAddress newMemberAddress = memberAddressMapper.updateMemberAddress(orgMemberAddress, request);
-        return memberAddressMapper.toDto(newMemberAddress);
+
+        orgMemberAddress.updateMemberAddress(request);
+        return memberAddressMapper.toDto(orgMemberAddress);
     }
 
     @Override
@@ -72,7 +73,6 @@ public class MemberAddressServiceImpl implements MemberAddressService {
                 .toList();
     }
 
-
     private void validateMemberAddressLimit(long memberId) {
         if (addressRepository.countAllByMember_MemberId(memberId) >= MAX_ADDRESS_COUNT) {
             throw new TooManyMemberAddressException();
@@ -89,5 +89,4 @@ public class MemberAddressServiceImpl implements MemberAddressService {
             }
         }
     }
-
 }

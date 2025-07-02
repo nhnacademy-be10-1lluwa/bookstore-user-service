@@ -153,7 +153,6 @@ class MemberAddressServiceImplTest {
         updateReq.setRecipientName("테스트공주");
 
         when(addressRepository.findById(3L)).thenReturn(Optional.of(old));
-
         MemberAddressResponse response = addressService.updateMemberAddress(3L, updateReq);
 
         assertThat(response.getPostCode()).isEqualTo("99999");
