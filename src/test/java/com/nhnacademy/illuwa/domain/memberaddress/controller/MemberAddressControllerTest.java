@@ -64,7 +64,8 @@ class MemberAddressControllerTest {
         given(memberAddressService.getMemberAddressList(memberId))
                 .willReturn(List.of(createResponse(1L, true)));
 
-        mockMvc.perform(get("/members/{memberId}/address", memberId))
+        mockMvc.perform(get("/members/address", memberId)
+                .header("X-USER_ID", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].memberAddressId").value(1L))
                 .andExpect(jsonPath("$[0].recipientName").value("공주님"));
@@ -77,7 +78,8 @@ class MemberAddressControllerTest {
         given(memberAddressService.getMemberAddress(addressId))
                 .willReturn(createResponse(addressId, true));
 
-        mockMvc.perform(get("/members/1/address/{addressId}", addressId))
+        mockMvc.perform(get("/members/address/{addressId}", addressId)
+                        .header("X-USER_ID", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.memberAddressId").value(addressId))
                 .andExpect(jsonPath("$.recipientName").value("공주님"));
@@ -93,7 +95,8 @@ class MemberAddressControllerTest {
         given(memberAddressService.registerMemberAddress(eq(memberId), any()))
                 .willReturn(response);
 
-        mockMvc.perform(post("/members/{memberId}/address", memberId)
+        mockMvc.perform(post("/members/address", memberId)
+                        .header("X-USER_ID", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -111,7 +114,8 @@ class MemberAddressControllerTest {
         given(memberAddressService.updateMemberAddress(eq(addressId), any()))
                 .willReturn(response);
 
-        mockMvc.perform(patch("/members/1/address/{addressId}", addressId)
+        mockMvc.perform(patch("/members/address/{addressId}", addressId)
+                        .header("X-USER_ID", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -125,7 +129,8 @@ class MemberAddressControllerTest {
 
         willDoNothing().given(memberAddressService).deleteMemberAddress(addressId);
 
-        mockMvc.perform(delete("/members/1/address/{addressId}", addressId))
+        mockMvc.perform(delete("/members/address/{addressId}", addressId)
+                .header("X-USER_ID", 1L))
                 .andExpect(status().isOk());
     }
 }

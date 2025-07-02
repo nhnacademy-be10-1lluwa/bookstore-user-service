@@ -13,23 +13,23 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/members/{memberId}/address")
+@RequestMapping("/members/address")
 public class MemberAddressController {
     private final MemberAddressService memberAddressService;
 
     @GetMapping
-    public ResponseEntity<List<MemberAddressResponse>> getMemberAddressList(@PathVariable long memberId){
+    public ResponseEntity<List<MemberAddressResponse>> getMemberAddressList(@RequestHeader("X-USER_ID") long memberId){
         return ResponseEntity.ok().body(memberAddressService.getMemberAddressList(memberId));
     }
 
-    @GetMapping("/{addressId}")
-    public ResponseEntity<MemberAddressResponse> getMemberAddress(@PathVariable long addressId){
-        return ResponseEntity.ok().body(memberAddressService.getMemberAddress(addressId));
+    @PostMapping
+    public ResponseEntity<MemberAddressResponse> createMemberAddress(@RequestHeader("X-USER_ID") long memberId, @Valid @RequestBody MemberAddressRequest request){
+        return ResponseEntity.status(HttpStatus.CREATED).body(memberAddressService.registerMemberAddress(memberId, request));
     }
 
-    @PostMapping
-    public ResponseEntity<MemberAddressResponse> createMemberAddress(@PathVariable long memberId, @Valid @RequestBody MemberAddressRequest request){
-        return ResponseEntity.status(HttpStatus.CREATED).body(memberAddressService.registerMemberAddress(memberId, request));
+    @GetMapping("/{addressId}")
+    public ResponseEntity<MemberAddressResponse> getMemberAddress(@RequestHeader("X-USER_ID") long addressId){
+        return ResponseEntity.ok().body(memberAddressService.getMemberAddress(addressId));
     }
 
     @PatchMapping("/{addressId}")
