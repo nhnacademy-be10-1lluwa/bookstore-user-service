@@ -33,10 +33,6 @@ public class PointManager {
 
     private static final String BOOK_DEFAULT_RATE = "book_default_rate";
 
-    /**
-     * 단순 포인트 업데이트 수행
-     */
-
     public MemberPointResponse getMemberPoint(long memberId){
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
@@ -44,6 +40,7 @@ public class PointManager {
 
     }
 
+    //단순 포인트 업데이트 수행
     private void updateMemberPoint(long memberId, BigDecimal point) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));

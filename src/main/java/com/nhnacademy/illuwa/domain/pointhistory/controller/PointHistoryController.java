@@ -21,7 +21,6 @@ public class PointHistoryController {
 
     private final PointManager pointManager;
     private final PointHistoryService pointHistoryService;
-
     /**
      * 포인트 조회
      */
@@ -29,7 +28,6 @@ public class PointHistoryController {
     public ResponseEntity<MemberPointResponse> getMemberPoint(@RequestHeader("X-USER-ID") long memberId) {
         return ResponseEntity.ok(pointManager.getMemberPoint(memberId));
     }
-
     /**
      * 포인트 내역 조회
      */
@@ -37,7 +35,6 @@ public class PointHistoryController {
     public ResponseEntity<List<PointHistoryResponse>> getMemberPointHistories(@RequestHeader("X-USER-ID") long memberId) {
         return ResponseEntity.ok(pointHistoryService.getMemberPointHistories(memberId));
     }
-
     /**
      * 이벤트 포인트 지급
      */
@@ -46,7 +43,6 @@ public class PointHistoryController {
                                                @RequestParam("reason") PointReason reason) {
         return ResponseEntity.status(HttpStatus.CREATED).body(pointManager.processEventPoint(memberId, reason));
     }
-
     /**
      * 주문에 의한 포인트 적립
      */
@@ -54,7 +50,6 @@ public class PointHistoryController {
     public ResponseEntity<PointHistoryResponse> earnPointAfterOrder(@RequestBody PointAfterOrderRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(pointManager.processOrderPoint(request));
     }
-
     /**
      * 주문에 의한 포인트 사용
      */
