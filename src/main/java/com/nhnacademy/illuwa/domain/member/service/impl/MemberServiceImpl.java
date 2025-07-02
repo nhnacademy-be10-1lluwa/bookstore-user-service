@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.member.service.impl;
 
+import com.nhnacademy.illuwa.common.client.MemberEventPublisher;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.grade.service.GradeService;
@@ -15,6 +16,7 @@ import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
 import com.nhnacademy.illuwa.domain.point.util.PointManager;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +29,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@Builder
 @Transactional
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
@@ -35,6 +38,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberMapper memberMapper;
     private final PasswordEncoder passwordEncoder;
     private final PointManager pointManager;
+    private final MemberEventPublisher memberEventPublisher;
 
     @Override
     public MemberResponse register(MemberRegisterRequest request) {
@@ -67,6 +71,12 @@ public class MemberServiceImpl implements MemberService {
             pointManager.processEventPoint(saved.getMemberId(), PointReason.JOIN);
         } catch (Exception e) {
             log.warn("회원가입 포인트 적립 실패: memberId={}, reason={}", saved.getMemberId(), e.getMessage());
+        }
+
+        try {
+            memberEventPublisher.sendMemberCreateEvent(new MemberEventDto(saved.getEmail(), saved.getName()));
+        } catch (Exception e) {
+            log.error("회원 생성 이벤트 발송 실패 -> "+ e.getMessage());
         }
 
         return memberMapper.toDto(saved);
