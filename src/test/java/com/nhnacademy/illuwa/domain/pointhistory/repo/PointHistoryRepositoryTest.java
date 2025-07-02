@@ -57,13 +57,14 @@ class PointHistoryRepositoryTest {
     void setUp(){
         Grade basicGrade = gradeData.getBasicGrade();
 
-        member = new Member();
-        member.setName("공주님");
-        member.setBirth(LocalDate.of(2002,2,19));
-        member.setEmail("gongju@illuwa.com");
-        member.setPassword("1234");
-        member.setContact("010-1111-2222");
-        member.setGrade(basicGrade);
+        member = Member.builder()
+                .name("공주님")
+                .birth(LocalDate.of(2002,2,19))
+                .email("gongju@illuwa.com")
+                .password("Pwd12345678!*")
+                .contact("010-1111-2222")
+                .grade(basicGrade)
+                .build();
 
         member = memberRepository.save(member);
 

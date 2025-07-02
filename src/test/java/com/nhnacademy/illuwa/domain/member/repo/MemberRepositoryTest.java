@@ -84,8 +84,8 @@ class MemberRepositoryTest {
     void testUpdate() {
         Member member = memberRepository.save(createMember("윈터", "winter@naver.com", basicGrade, Role.USER));
 
-        member.setName("윈터수정");
-        member.setPoint(new BigDecimal("5000"));
+        member.changeName("윈터수정");
+        member.changePoint(new BigDecimal("5000"));
         Member updated = memberRepository.save(member);
 
         assertEquals("윈터수정", updated.getName());
