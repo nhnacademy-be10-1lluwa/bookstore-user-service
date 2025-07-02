@@ -65,10 +65,16 @@ public class PointPolicyServiceImpl implements PointPolicyService {
         //타입 검증
         validatePointPolicyValue(request);
 
-        PointPolicy updatedPolicy = pointPolicyMapper.updatePointPolicy(pointPolicy, request);
-        pointPolicyRepository.save(updatedPolicy);
-
-        return pointPolicyMapper.toDto(updatedPolicy);
+        if(request.getValue() != null){
+            pointPolicy.changeValue(request.getValue());
+        }
+        if(request.getValueType() != null){
+            pointPolicy.changeValueType(request.getValueType());
+        }
+        if(request.getDescription() != null){
+            pointPolicy.changeDescription(request.getDescription());
+        }
+        return pointPolicyMapper.toDto(pointPolicyRepository.save(pointPolicy));
     }
 
     @Override

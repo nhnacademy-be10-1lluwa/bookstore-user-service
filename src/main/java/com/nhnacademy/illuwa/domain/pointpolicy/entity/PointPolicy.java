@@ -9,7 +9,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
 @NoArgsConstructor
 @Entity
 @Builder
@@ -32,5 +32,17 @@ public class PointPolicy {
 
     @Column(name = "description", nullable = false)
     private String description;
+
+    public void changeValue(BigDecimal value) {
+        this.value = value;
+    }
+
+    public void changeValueType(PointValueType valueType) {
+        this.valueType = valueType;
+    }
+
+    public void changeDescription(String description) {
+        this.description = description;
+    }
 }
 
