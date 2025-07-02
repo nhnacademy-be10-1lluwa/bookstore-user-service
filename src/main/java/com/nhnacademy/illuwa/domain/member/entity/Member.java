@@ -24,6 +24,10 @@ public class Member {
     private long memberId;
 
     @Setter
+    @Column(name = "payco_id")
+    private String paycoId;
+
+    @Setter
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -56,21 +60,24 @@ public class Member {
 
     @Setter
     @Column(name = "point", nullable = false)
-    private BigDecimal point = BigDecimal.ZERO;
+    private BigDecimal point = BigDecimal.ZERO;   //회원가입 포인트는 포인트정책 반영하여 넣어줄 거라 기본값 ZERO
 
     @Setter
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
     @Setter
-    @Column(name = "last_login_at", nullable = false)
-    private LocalDateTime lastLoginAt = LocalDateTime.now();
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
 
     @Builder
     public Member(String name, LocalDate birth, String email, String password,
                   Role role, String contact, Grade grade, BigDecimal point,
-                  Status status, LocalDateTime lastLoginAt) {
+                  Status status) {
         this.name = name;
         this.birth = birth;
         this.email = email;
@@ -80,7 +87,7 @@ public class Member {
         this.role = (role != null) ? role : Role.USER;
         this.point = (point != null) ? point : BigDecimal.ZERO;
         this.status = (status != null) ? status : Status.ACTIVE;
-        this.lastLoginAt = (lastLoginAt != null) ? lastLoginAt : LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
     }
 
     // LocalDate 값 편하게 넣기 위한 커스텀 Builder

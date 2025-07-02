@@ -17,14 +17,14 @@ import java.math.BigDecimal;
 @Table(name = "point_policy")
 public class PointPolicy {
     @Id
-    @Column(name = "policy_key")
+    @Column(name = "policy_key", unique = true)
     private String policyKey;
     //join_point 회원가입 포인트
     //review_point 리뷰 포인트
     //photo_review_point 포토리뷰 포인트
     //book_default_rate 도서 기본 적립률
 
-    @Column(name = "value", precision = 10, scale = 2, nullable = false)
+    @Column(name = "point_value", precision = 10, scale = 2, nullable = false)
     private BigDecimal value;
 
     @Column(name = "value_type", nullable = false)

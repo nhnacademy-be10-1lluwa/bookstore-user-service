@@ -14,15 +14,14 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/members/admin/point-policies")
+@RequestMapping("/admin/point-policies")
 public class PointPolicyController {
 
     private final PointPolicyService pointPolicyService;
 
     @PostMapping
-    public ResponseEntity<List<PointPolicyResponse>> createPointPolicies(@RequestBody List<PointPolicyCreateRequest> dtoList) {
-        List<PointPolicyResponse> pointPolicyResponseList = pointPolicyService.saveAllPointPolicy(dtoList);
-        return ResponseEntity.ok().body(pointPolicyResponseList);
+    public ResponseEntity<PointPolicyResponse> createPointPolicy(@Valid @RequestBody PointPolicyCreateRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(pointPolicyService.createPointPolicy(request));
     }
 
     @GetMapping
@@ -39,5 +38,11 @@ public class PointPolicyController {
     public ResponseEntity<PointPolicyResponse> updatePointPolicy(@PathVariable String policyKey, @Valid @RequestBody PointPolicyUpdateRequest request){
         PointPolicyResponse response = pointPolicyService.updatePointPolicy(policyKey, request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @DeleteMapping("/{policyKey}")
+    public ResponseEntity<Void> deletePointPolicy(@PathVariable String policyKey){
+        pointPolicyService.deletePointPolicy(policyKey);
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,7 +1,6 @@
 package com.nhnacademy.illuwa.domain.pointpolicy.dto;
 
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -10,6 +9,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PointPolicyUpdateRequest {
     @NotNull(message = "포인트 값은 필수입니다.")
     private BigDecimal value;

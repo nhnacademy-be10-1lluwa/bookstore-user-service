@@ -16,6 +16,7 @@ public interface MemberMapper {
     @Mapping(source = "email", target = "email")
     @Mapping(source = "password", target = "password")
     @Mapping(source = "contact", target = "contact")
+    @Mapping(source = "role", target = "role")
     Member toEntity(MemberRegisterRequest request);
 
     @Mapping(source = "grade.gradeName", target = "gradeName")
