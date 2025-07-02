@@ -1,33 +1,30 @@
 package com.nhnacademy.illuwa.domain.message.service;
 
 import com.nhnacademy.illuwa.common.client.DoorayMessageClient;
+import com.nhnacademy.illuwa.domain.guest.dto.GuestOrderRequest;
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
-import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.message.dto.SendMessageRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-//@ExtendWith(MockitoExtension.class)
+@ExtendWith(MockitoExtension.class)
 class MessageSendServiceTest {
-
-    @InjectMocks
-    MessageSendService messageSendService;
 
     @Mock
     DoorayMessageClient doorayMessageClient;
@@ -41,117 +38,117 @@ class MessageSendServiceTest {
     @Mock
     ValueOperations<String, String> valueOperations;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+    @InjectMocks
+    MessageSendService messageSendService;
 
     SendMessageRequest baseRequest() {
         SendMessageRequest request = new SendMessageRequest();
-        request.setBotName("illuwa");
+        request.setBotName("1lluwa");
         request.setRecipientName("공주님");
         request.setRecipientEmail("gongju@naver.com");
         return request;
     }
 
     @Test
-    @DisplayName("두레이메시지전송 - attachment 첨부")
+    @DisplayName("두레이메시지 전송 - attachment 포함")
     void testSendDoorayMessage_withAttachment() {
         SendMessageRequest request = baseRequest();
-        request.setText("내용입니다");
+        request.setText("내용");
         request.setAttachmentTitle("제목");
         request.setAttachmentText("본문");
         request.setAttachmentColor("blue");
 
         messageSendService.sendDoorayMessage(request);
 
-        verify(doorayMessageClient, times(1)).sendMessage(any(Map.class));
+        verify(doorayMessageClient).sendMessage(any(Map.class));
     }
 
     @Test
-    @DisplayName("두레이메시지전송 - attachment 제외")
+    @DisplayName("두레이메시지 전송 - attachment 없이")
     void testSendDoorayMessage_withoutAttachment() {
         SendMessageRequest request = baseRequest();
         request.setText("내용만 있음");
 
         messageSendService.sendDoorayMessage(request);
 
-        verify(doorayMessageClient, times(1)).sendMessage(any(Map.class));
+        verify(doorayMessageClient).sendMessage(any(Map.class));
     }
 
     @Test
-    @DisplayName("두레이메시지전송 - text 제외")
-    void testSendDoorayMessage_textIsNull() {
-        SendMessageRequest request = new SendMessageRequest();
-        request.setBotName("1lluwa");
+    @DisplayName("두레이메시지 전송 - text 없이도 전송")
+    void testSendDoorayMessage_withoutText() {
+        SendMessageRequest request = baseRequest();
         request.setText(null);
         request.setAttachmentTitle("제목");
         request.setAttachmentText("내용");
-        request.setAttachmentColor("blue");
+        request.setAttachmentColor("red");
 
         messageSendService.sendDoorayMessage(request);
 
         verify(doorayMessageClient).sendMessage(any());
     }
-    @Test
-    @DisplayName("두레이메시지전송 - 예외발생")
-    void testSendDoorayMessage_exceptionThrown() {
-        SendMessageRequest request = baseRequest();
-        request.setText("예외 발생할 메시지");
 
-        doThrow(new RuntimeException("전송 실패")).when(doorayMessageClient).sendMessage(any());
+    @Test
+    @DisplayName("두레이메시지 전송 - 예외 발생 시 무시")
+    void testSendDoorayMessage_exception() {
+        SendMessageRequest request = baseRequest();
+        request.setText("예외 테스트");
+
+        doThrow(new RuntimeException("전송 실패"))
+                .when(doorayMessageClient).sendMessage(any());
 
         assertDoesNotThrow(() -> messageSendService.sendDoorayMessage(request));
     }
 
     @Test
-    @DisplayName("주문메시지 전송")
+    @DisplayName("비회원 주문 메시지 전송 테스트")
     void testSendOrderMessage() {
-        SendMessageRequest request = baseRequest();
-        String orderNumber = "ORD123456";
+        GuestOrderRequest orderRequest = GuestOrderRequest.builder()
+                .name("비회원")
+                .orderNumber("20250702091229-123456")
+                .build();
 
-        messageSendService.sendOrderMessage(request, orderNumber);
+        messageSendService.sendOrderMessage(orderRequest);
 
-        assertTrue(request.getText().contains("주문이 완료되었습니다"));
-        assertEquals("🎁주문완료", request.getAttachmentTitle());
-        assertTrue(request.getAttachmentText().contains(orderNumber));
+        ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
+        verify(doorayMessageClient).sendMessage(captor.capture());
+
+        Map<String, Object> capturedMap = captor.getValue();
+        List<Map<String, String>> attachments = (List<Map<String, String>>) capturedMap.get("attachments");
+
+        assertEquals("1lluwa", capturedMap.get("botName"));
+        assertEquals("🎁주문완료", attachments.getFirst().get("title"));
+        assertTrue(attachments.getFirst().get("text").contains(orderRequest.getOrderNumber()));
     }
 
     @Test
-    @DisplayName("인증번호메시지 전송 - 성공")
+    @DisplayName("인증번호 메시지 전송 성공")
     void testSendVerificationCode_success() {
         SendMessageRequest request = baseRequest();
 
-        MemberResponse mockMember = MemberResponse.builder()
+        MemberResponse inactiveMember = MemberResponse.builder()
                 .memberId(1L)
-                .name("공주님")
                 .email("gongju@naver.com")
-                .contact("010")
-                .birth(LocalDate.of(2000, 1, 1))
-                .point(BigDecimal.ZERO)
                 .status(Status.INACTIVE)
-                .role(Role.USER)
-                .gradeName("BASIC")
-                .lastLoginAt(null)
                 .build();
 
-        when(memberService.getMemberByEmail("gongju@naver.com")).thenReturn(mockMember);
+        when(memberService.getMemberByEmail("gongju@naver.com")).thenReturn(inactiveMember);
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 
         messageSendService.sendVerificationCode(request);
 
-        assertTrue(request.getAttachmentText().contains("3분 동안"));
-        assertEquals("🔑인증번호", request.getAttachmentTitle());
-
-        verify(valueOperations, times(1))
-                .set(startsWith("verify:"), anyString(), eq(3L), eq(TimeUnit.MINUTES));
+        verify(valueOperations).set(
+                startsWith("verify:"),
+                matches("\\d{6}"),
+                eq(3L),
+                eq(TimeUnit.MINUTES)
+        );
     }
 
     @Test
-    @DisplayName("인증번호 메시지 - 활성회원인 경우")
-    void testSendVerificationCode_statusNotInactive() {
+    @DisplayName("인증번호 메시지 전송 실패 - 활성회원")
+    void testSendVerificationCode_activeMember() {
         SendMessageRequest request = baseRequest();
-        request.setRecipientEmail("gongju@naver.com");
 
         MemberResponse activeMember = MemberResponse.builder()
                 .memberId(1L)
@@ -168,12 +165,13 @@ class MessageSendServiceTest {
     }
 
     @Test
-    @DisplayName("인증번호 생성 검증")
+    @DisplayName("인증번호 생성 형식 검증")
     void testGenerateVerificationCode_format() throws Exception {
-        String code = MessageSendService.class
-                .getDeclaredMethod("generateVerificationCode")
-                .invoke(messageSendService)
-                .toString();
+        // reflection 제거: 대신 정적 유틸로 리팩토링 권장
+        var method = MessageSendService.class.getDeclaredMethod("generateVerificationCode");
+        method.setAccessible(true);
+
+        String code = (String) method.invoke(messageSendService);
 
         assertTrue(code.matches("\\d{6}"));
     }

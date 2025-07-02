@@ -1,6 +1,7 @@
 package com.nhnacademy.illuwa.domain.message.service;
 
 import com.nhnacademy.illuwa.common.client.DoorayMessageClient;
+import com.nhnacademy.illuwa.domain.guest.dto.GuestOrderRequest;
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
@@ -45,24 +46,25 @@ public class MessageSendService {
             doorayMessageClient.sendMessage(body);
             String message = "두레이 메시지 전송 성공!";
             log.debug(message);
-            return new SendMessageResponse(request.getRecipientEmail(), message);
+            return new SendMessageResponse(request.getRecipientEmail(), message, request.getText());
         } catch (Exception e) {
             String message = "두레이 메시지 전송 실패!";
             log.error(message + "{}", e.getMessage());
-            return new SendMessageResponse(request.getRecipientEmail(), message);
+            return new SendMessageResponse(request.getRecipientEmail(), message, null);
         }
     }
 
-    //주문완료 메시지
-    public void sendOrderMessage(SendMessageRequest request, String orderNumber) {
+    //비회원 주문완료 메시지
+    public SendMessageResponse sendOrderMessage(GuestOrderRequest guestOrderRequest) {
+        SendMessageRequest request = new SendMessageRequest();
         request.setText(request.getRecipientName() + "님의 소중한 주문이 완료되었습니다!😎");
         request.setAttachmentTitle("🎁주문완료");
-        request.setAttachmentText("주문번호: " + "[" + orderNumber + "]");
-        sendDoorayMessage(request);
+        request.setAttachmentText("주문번호: " + "[" + guestOrderRequest.getOrderNumber() + "]");
+        return sendDoorayMessage(request);
     }
 
     //인증번호 메시지
-    public void sendVerificationCode(SendMessageRequest request) {
+    public SendMessageResponse sendVerificationCode(SendMessageRequest request) {
         MemberResponse memberDto = memberService.getMemberByEmail(request.getRecipientEmail());
         if (!memberDto.getStatus().equals(Status.INACTIVE)) {
             throw new IllegalStateException("휴면 회원만 인증이 필요합니다!");
@@ -79,7 +81,7 @@ public class MessageSendService {
         request.setAttachmentTitle("🔑인증번호");
         request.setAttachmentText("[" + code + "]" + "\n3분 동안 유효합니다.");
         request.setAttachmentColor("red");
-        sendDoorayMessage(request);
+        return sendDoorayMessage(request);
     }
 
     //인증번호 생성

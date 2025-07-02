@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.message.controller;
 
+import com.nhnacademy.illuwa.domain.guest.dto.GuestOrderRequest;
 import com.nhnacademy.illuwa.domain.message.dto.*;
 import com.nhnacademy.illuwa.domain.message.service.MessageSendService;
 import lombok.RequiredArgsConstructor;
@@ -10,20 +11,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/messages")
 @RequiredArgsConstructor
 public class MessageController {
-
     private final MessageSendService messageSendService;
 
-/*    //주문완료 메시지  _ TODO 주문번호 받아오는 것,,
+    //비회원 주문완료 메시지
     @PostMapping("/order")
-    public ResponseEntity<Void> sendOrderMessage(@RequestBody SendMessageRequest request) {
-        messageSendService.sendOrderMessage(request);
-        return ResponseEntity.ok().build();
-    }*/
+    public ResponseEntity<SendMessageResponse> sendOrderMessage(@RequestBody GuestOrderRequest request) {
+        return ResponseEntity.ok().body(messageSendService.sendOrderMessage(request));
+    }
 
     //커스텀 메시지
     @PostMapping("/custom")
     public ResponseEntity<SendMessageResponse> sendCustomMessage(@RequestBody SendMessageRequest request) {
-        messageSendService.sendDoorayMessage(request);
-        return ResponseEntity.ok().body(new SendMessageResponse(request.getRecipientEmail(), "두레이 메시지 전송 성공!"));
+        return ResponseEntity.ok().body(messageSendService.sendDoorayMessage(request));
     }
 }

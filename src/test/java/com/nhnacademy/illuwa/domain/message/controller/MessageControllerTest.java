@@ -36,7 +36,7 @@ class MessageControllerTest {
         request.setText("테스트 메시지입니다~");
 
         SendMessageResponse mockResponse =
-                new SendMessageResponse(request.getRecipientEmail(), "두레이 메시지 전송 성공!");
+                new SendMessageResponse(request.getRecipientEmail(), "두레이 메시지 전송 성공!", request.getText());
 
         when(messageSendService.sendDoorayMessage(any(SendMessageRequest.class)))
                 .thenReturn(mockResponse);
