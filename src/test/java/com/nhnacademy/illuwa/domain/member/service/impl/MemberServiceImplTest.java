@@ -11,6 +11,8 @@ import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapperImpl;
+import com.nhnacademy.illuwa.domain.pointhistory.service.PointHistoryService;
+import com.nhnacademy.illuwa.domain.pointpolicy.service.PointPolicyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,6 +40,8 @@ class MemberServiceImplTest {
     @Mock MemberRepository memberRepository;
     @Mock GradeService gradeService;
     @Mock PasswordEncoder passwordEncoder;
+    @Mock PointPolicyService pointPolicyService;
+    @Mock PointHistoryService pointHistoryService;
     @InjectMocks MemberServiceImpl memberService;
 
     MemberRegisterRequest registerRequest;
@@ -57,7 +61,7 @@ class MemberServiceImplTest {
     @BeforeEach
     void setUp() {
         memberService = new MemberServiceImpl(
-                memberRepository, gradeService, memberMapper, passwordEncoder
+                memberRepository, gradeService, memberMapper, passwordEncoder, pointPolicyService, pointHistoryService
         );
 
         basicGrade = Grade.builder()
@@ -145,6 +149,9 @@ class MemberServiceImplTest {
         updateRequest.setContact("010-9999-8888");
 
         when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
+        testMember.changeName("윈터");
+        testMember.changeContact("010-9999-8888");
+        when(memberRepository.save(any(Member.class))).thenReturn(testMember);
 
         MemberResponse result = memberService.updateMember(1L, updateRequest);
         assertThat(result.getName()).isEqualTo("윈터");
@@ -171,7 +178,7 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("회원 상태 체크 - 비활성화")
     void checkMemberStatus_inactive() {
-        testMember.setLastLoginAt(LocalDateTime.now().minusMonths(4));
+        testMember.changeLastLoginAt(LocalDateTime.now().minusMonths(4));
         when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
         memberService.checkMemberStatus(1L);
         assertThat(testMember.getStatus()).isEqualTo(Status.INACTIVE);
@@ -180,7 +187,7 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("회원 재활성화 성공")
     void reactivateMember_success() {
-        testMember.setStatus(Status.INACTIVE);
+        testMember.changeStatus(Status.INACTIVE);
         when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
         memberService.reactivateMember(1L);
         assertThat(testMember.getStatus()).isEqualTo(Status.ACTIVE);

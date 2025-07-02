@@ -30,7 +30,7 @@ public class SocialMemberService {
         return memberRepository.findByPaycoId(paycoId)
                 .map(member -> {
                     memberService.checkMemberStatus(member.getMemberId());
-                    member.setLastLoginAt(LocalDateTime.now());
+                    member.changeLastLoginAt(LocalDateTime.now());
                     Member saved = memberRepository.save(member);
                     return memberMapper.toDto(saved);
                 });

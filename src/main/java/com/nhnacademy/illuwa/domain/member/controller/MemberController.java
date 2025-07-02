@@ -16,8 +16,6 @@ import java.util.List;
 public class MemberController {
     private final MemberService memberService;
 
-    // TODO memberId pathVariable 안 받기 추후 수정
-
     // 회원 목록 조회
     @GetMapping
     public ResponseEntity<List<MemberResponse>> getAllMembers(){
@@ -39,28 +37,28 @@ public class MemberController {
     }
 
     // 회원 단일 조회
-    @GetMapping("/{memberId}")
-    public ResponseEntity<MemberResponse> getMember(@PathVariable Long memberId){
+    @GetMapping
+    public ResponseEntity<MemberResponse> getMember(@RequestHeader(name = "X-USER_ID") long memberId){
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberById(memberId));
     }
 
     //회원 포인트 조회
-    @GetMapping("/{memberId}/point")
-    public ResponseEntity<MemberPointResponse> getMemberPoint(@PathVariable Long memberId){
+    @GetMapping("/point")
+    public ResponseEntity<MemberPointResponse> getMemberPoint(@RequestHeader(name = "X-USER_ID") long memberId){
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberPoint(memberId));
     }
 
     // 회원 수정
-    @PatchMapping("/{memberId}")
-    public ResponseEntity<MemberResponse> updateMember(@PathVariable Long memberId, @Valid @RequestBody MemberUpdateRequest request){
+    @PatchMapping
+    public ResponseEntity<MemberResponse> updateMember(@RequestHeader(name = "X-USER_ID") long memberId, @Valid @RequestBody MemberUpdateRequest request){
         MemberResponse updatedMemberDto = memberService.updateMember(memberId, request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(updatedMemberDto);
     }
 
     //회원 삭제
-    @DeleteMapping("/{memberId}")
-    public void deleteMember(@PathVariable Long memberId){
+    @DeleteMapping
+    public void deleteMember(@RequestHeader(name = "X-USER_ID") long memberId){
         memberService.removeMember(memberId);
     }
 

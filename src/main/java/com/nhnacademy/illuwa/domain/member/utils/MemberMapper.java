@@ -2,11 +2,9 @@ package com.nhnacademy.illuwa.domain.member.utils;
 
 import com.nhnacademy.illuwa.domain.member.dto.MemberRegisterRequest;
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
-import com.nhnacademy.illuwa.domain.member.dto.MemberUpdateRequest;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -21,6 +19,4 @@ public interface MemberMapper {
 
     @Mapping(source = "grade.gradeName", target = "gradeName")
     MemberResponse toDto(Member member);
-
-    Member updateMember(@MappingTarget Member target, MemberUpdateRequest source);
 }
