@@ -41,6 +41,13 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberById(memberId));
     }
 
+    // 회원 단일 조회(Email)
+    @GetMapping(value = "/members", params = "memberEmail")
+    public ResponseEntity<MemberResponse> getMemberByEmail(@RequestParam String memberEmail) {
+        MemberResponse response = memberService.getMemberByEmail(memberEmail);
+        return ResponseEntity.ok(response);
+    }
+
     // 회원 수정
     @PatchMapping("/members")
     public ResponseEntity<MemberResponse> updateMember(@RequestHeader("X-USER_ID") long memberId, @Valid @RequestBody MemberUpdateRequest request){
