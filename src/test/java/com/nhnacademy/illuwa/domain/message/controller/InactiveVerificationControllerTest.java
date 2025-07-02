@@ -49,7 +49,13 @@ class InactiveVerificationControllerTest {
                 .email("princess@example.com")
                 .build();
 
+        SendMessageResponse mockResponse = new SendMessageResponse(
+                member.getEmail(), "두레이 메시지 전송 성공!", "휴면해제를 위해 아래 인증번호를 입력해주세요."
+        );
+
         when(memberService.getMemberById(memberId)).thenReturn(member);
+        when(messageSendService.sendVerificationCode(any(SendMessageRequest.class)))
+                .thenReturn(mockResponse);
 
         ResponseEntity<SendMessageResponse> response = controller.sendVerificationCode(memberId);
 
@@ -59,9 +65,10 @@ class InactiveVerificationControllerTest {
         ));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody())
-                .extracting( "email", "message")
-                .containsExactly( member.getEmail(), "인증번호를 발송했습니다!");
+                .extracting( "email", "message", "text" )
+                .containsExactly( mockResponse.getEmail(), mockResponse.getMessage(), mockResponse.getText());
     }
 
     @Test

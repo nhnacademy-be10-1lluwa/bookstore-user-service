@@ -32,10 +32,8 @@ public class InactiveVerificationController {
         request.setRecipientName(member.getName());
         request.setRecipientEmail(member.getEmail());
 
-        messageSendService.sendVerificationCode(request);
-        return ResponseEntity.ok(
-                new SendMessageResponse(member.getEmail(), "인증번호를 발송했습니다!")
-        );
+        SendMessageResponse response = messageSendService.sendVerificationCode(request);
+        return ResponseEntity.ok().body(response);
     }
 
     //인증번호 검증 api
