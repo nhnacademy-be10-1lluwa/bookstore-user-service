@@ -13,9 +13,8 @@ import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
+import com.nhnacademy.illuwa.domain.point.util.PointManager;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
-import com.nhnacademy.illuwa.domain.pointhistory.service.PointHistoryService;
-import com.nhnacademy.illuwa.domain.pointpolicy.service.PointPolicyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,10 +34,7 @@ public class MemberServiceImpl implements MemberService {
     private final GradeService gradeService;
     private final MemberMapper memberMapper;
     private final PasswordEncoder passwordEncoder;
-
-    private final PointPolicyService pointPolicyService;
-    private final PointHistoryService pointHistoryService;
-
+    private final PointManager pointManager;
 
     @Override
     public MemberResponse register(MemberRegisterRequest request) {
@@ -68,7 +64,7 @@ public class MemberServiceImpl implements MemberService {
         Member saved = memberRepository.save(newMember);
 
         try {
-            earnJoinPoint(saved.getMemberId());
+            pointManager.processEventPoint(saved.getMemberId(), PointReason.JOIN);
         } catch (Exception e) {
             log.warn("회원가입 포인트 적립 실패: memberId={}, reason={}", saved.getMemberId(), e.getMessage());
         }
@@ -127,11 +123,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberPointResponse getMemberPoint(long memberId) {
-        return new MemberPointResponse(memberId, memberRepository.findPoint(memberId));
-    }
-
-    @Override
     public MemberResponse updateMember(long memberId, MemberUpdateRequest newMemberRequest) {
         Member orgMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
@@ -146,19 +137,6 @@ public class MemberServiceImpl implements MemberService {
         }
         memberRepository.save(orgMember);
         return memberMapper.toDto(orgMember);
-    }
-
-    public void earnJoinPoint(long memberId){
-        BigDecimal joinPoint = pointPolicyService.findByPolicyKey("join_point").getValue();
-        updateMemberPoint(memberId, joinPoint);
-        pointHistoryService.processEventPoint(memberId, PointReason.JOIN);
-    }
-
-    @Override
-    public void updateMemberPoint(long memberId, BigDecimal point) {
-        Member orgMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
-        orgMember.changePoint(orgMember.getPoint().add(point));
     }
 
     @Override

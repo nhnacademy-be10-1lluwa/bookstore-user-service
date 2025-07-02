@@ -19,11 +19,7 @@ public interface MemberService {
 
     MemberResponse getMemberByEmail(String email);
 
-    MemberPointResponse getMemberPoint(long memberId);
-
     MemberResponse updateMember(long memberId, MemberUpdateRequest newMemberRequest);
-
-    void updateMemberPoint(long memberId, BigDecimal point);
 
     boolean updateMemberGrade(long memberId, BigDecimal netOrderAmount);
 

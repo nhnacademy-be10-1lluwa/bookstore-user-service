@@ -11,8 +11,7 @@ import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapperImpl;
-import com.nhnacademy.illuwa.domain.pointhistory.service.PointHistoryService;
-import com.nhnacademy.illuwa.domain.pointpolicy.service.PointPolicyService;
+import com.nhnacademy.illuwa.domain.point.util.PointManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,8 +39,7 @@ class MemberServiceImplTest {
     @Mock MemberRepository memberRepository;
     @Mock GradeService gradeService;
     @Mock PasswordEncoder passwordEncoder;
-    @Mock PointPolicyService pointPolicyService;
-    @Mock PointHistoryService pointHistoryService;
+    @Mock PointManager pointManager;
     @InjectMocks MemberServiceImpl memberService;
 
     MemberRegisterRequest registerRequest;
@@ -61,7 +59,7 @@ class MemberServiceImplTest {
     @BeforeEach
     void setUp() {
         memberService = new MemberServiceImpl(
-                memberRepository, gradeService, memberMapper, passwordEncoder, pointPolicyService, pointHistoryService
+                memberRepository, gradeService, memberMapper, passwordEncoder, pointManager
         );
 
         basicGrade = Grade.builder()
@@ -155,14 +153,6 @@ class MemberServiceImplTest {
 
         MemberResponse result = memberService.updateMember(1L, updateRequest);
         assertThat(result.getName()).isEqualTo("윈터");
-    }
-
-    @Test
-    @DisplayName("회원 포인트 수정 성공")
-    void updateMemberPoint_success() {
-        when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
-        memberService.updateMemberPoint(1L, BigDecimal.valueOf(1000));
-        assertThat(testMember.getPoint()).isEqualByComparingTo("1000");
     }
 
     @Test
