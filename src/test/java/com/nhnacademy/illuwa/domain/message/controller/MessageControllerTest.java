@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,7 +46,7 @@ class MessageControllerTest {
 
         verify(messageSendService, times(1)).sendDoorayMessage(request);
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getEmail()).isEqualTo(request.getRecipientEmail());
         assertThat(response.getBody().getMessage()).isEqualTo("두레이 메시지 전송 성공!");
