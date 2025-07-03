@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.memberaddress.controller;
 
+import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressLimitResponse;
 import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressRequest;
 import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressResponse;
 import com.nhnacademy.illuwa.domain.memberaddress.service.MemberAddressService;
@@ -9,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,15 +19,16 @@ public class MemberAddressController {
     private final MemberAddressService memberAddressService;
 
     @GetMapping("/check-limit")
-    public ResponseEntity<Map<String, Object>> checkAddressLimit(@RequestHeader("X-USER-ID") long memberId){
+    public ResponseEntity<MemberAddressLimitResponse> checkAddressLimit(@RequestHeader("X-USER-ID") long memberId){
         int count = memberAddressService.countMemberAddress(memberId);
         boolean canAdd = count < 10;
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("canAdd", canAdd);
-        response.put("currentCount", count);
-        response.put("maxLimit", 10);
-        return ResponseEntity.ok(response);
+        MemberAddressLimitResponse response = MemberAddressLimitResponse.builder()
+                .canAdd(canAdd)
+                .currentCount(count)
+                .maxLimit(10)
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping
