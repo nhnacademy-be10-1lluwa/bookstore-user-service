@@ -9,27 +9,41 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/members/{memberId}/address")
+@RequestMapping("/members/address")
 public class MemberAddressController {
     private final MemberAddressService memberAddressService;
 
+    @GetMapping("/check-limit")
+    public ResponseEntity<Map<String, Object>> checkAddressLimit(@RequestHeader("X-USER-ID") long memberId){
+        int count = memberAddressService.countMemberAddress(memberId);
+        boolean canAdd = count < 10;
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("canAdd", canAdd);
+        response.put("currentCount", count);
+        response.put("maxLimit", 10);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping
-    public ResponseEntity<List<MemberAddressResponse>> getMemberAddressList(@PathVariable long memberId){
+    public ResponseEntity<List<MemberAddressResponse>> getMemberAddressList(@RequestHeader("X-USER-ID") long memberId){
         return ResponseEntity.ok().body(memberAddressService.getMemberAddressList(memberId));
     }
 
-    @GetMapping("/{addressId}")
-    public ResponseEntity<MemberAddressResponse> getMemberAddress(@PathVariable long addressId){
-        return ResponseEntity.ok().body(memberAddressService.getMemberAddress(addressId));
+    @PostMapping
+    public ResponseEntity<MemberAddressResponse> createMemberAddress(@RequestHeader("X-USER-ID") long memberId, @Valid @RequestBody MemberAddressRequest request){
+        return ResponseEntity.status(HttpStatus.CREATED).body(memberAddressService.registerMemberAddress(memberId, request));
     }
 
-    @PostMapping
-    public ResponseEntity<MemberAddressResponse> createMemberAddress(@PathVariable long memberId, @Valid @RequestBody MemberAddressRequest request){
-        return ResponseEntity.status(HttpStatus.CREATED).body(memberAddressService.registerMemberAddress(memberId, request));
+    @GetMapping("/{addressId}")
+    public ResponseEntity<MemberAddressResponse> getMemberAddress(@RequestHeader("X-USER-ID") long addressId){
+        return ResponseEntity.ok().body(memberAddressService.getMemberAddress(addressId));
     }
 
     @PatchMapping("/{addressId}")

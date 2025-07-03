@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.member.service.impl;
 
+import com.nhnacademy.illuwa.common.client.MemberEventPublisher;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.grade.service.GradeService;
@@ -13,7 +14,11 @@ import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
+import com.nhnacademy.illuwa.domain.point.util.PointManager;
+import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
@@ -22,7 +27,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
+@Builder
 @Transactional
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
@@ -30,7 +37,8 @@ public class MemberServiceImpl implements MemberService {
     private final GradeService gradeService;
     private final MemberMapper memberMapper;
     private final PasswordEncoder passwordEncoder;
-
+    private final PointManager pointManager;
+    private final MemberEventPublisher memberEventPublisher;
 
     @Override
     public MemberResponse register(MemberRegisterRequest request) {
@@ -55,9 +63,23 @@ public class MemberServiceImpl implements MemberService {
 
         Grade basicGrade = gradeService.getByGradeName(GradeName.BASIC);
         Member newMember = memberMapper.toEntity(request);
-        newMember.setGrade(basicGrade);
+        newMember.changeGrade(basicGrade);
 
-        return memberMapper.toDto(memberRepository.save(newMember));
+        Member saved = memberRepository.save(newMember);
+
+        try {
+            pointManager.processEventPoint(saved.getMemberId(), PointReason.JOIN);
+        } catch (Exception e) {
+            log.warn("회원가입 포인트 적립 실패: memberId={}, reason={}", saved.getMemberId(), e.getMessage());
+        }
+
+        try {
+            memberEventPublisher.sendMemberCreateEvent(new MemberEventDto(saved.getEmail(), saved.getName()));
+        } catch (Exception e) {
+            log.error("회원 생성 이벤트 발송 실패 -> "+ e.getMessage());
+        }
+
+        return memberMapper.toDto(saved);
     }
 
     @Override
@@ -70,7 +92,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         checkMemberStatus(loginMember.getMemberId());
-        loginMember.setLastLoginAt(LocalDateTime.now());
+        loginMember.changeLastLoginAt(LocalDateTime.now());
 
         memberRepository.save(loginMember);  //바로 DB 반영
         return memberMapper.toDto(loginMember);
@@ -111,23 +133,20 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberPointResponse getMemberPoint(long memberId) {
-        return new MemberPointResponse(memberId, memberRepository.findPoint(memberId));
-    }
-
-    @Override
     public MemberResponse updateMember(long memberId, MemberUpdateRequest newMemberRequest) {
         Member orgMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
-        Member updatedMember = memberMapper.updateMember(orgMember, newMemberRequest);
-        return memberMapper.toDto(updatedMember);
-    }
-
-    @Override
-    public void updateMemberPoint(long memberId, BigDecimal point) {
-        Member orgMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
-        orgMember.setPoint(orgMember.getPoint().add(point));
+        if(newMemberRequest.getContact() != null){
+            orgMember.changeContact(newMemberRequest.getContact());
+        }
+        if(newMemberRequest.getName() != null){
+            orgMember.changeContact(newMemberRequest.getName());
+        }
+        if(newMemberRequest.getPassword() != null){
+            orgMember.changeContact(newMemberRequest.getPassword());
+        }
+        memberRepository.save(orgMember);
+        return memberMapper.toDto(orgMember);
     }
 
     @Override
@@ -138,7 +157,7 @@ public class MemberServiceImpl implements MemberService {
         Grade currentGrade = orgMember.getGrade();
 
         if(!newGrade.equals(currentGrade)){
-            orgMember.setGrade(newGrade);
+            orgMember.changeGrade(newGrade);
             memberRepository.save(orgMember);
             return true;
         }
@@ -152,7 +171,7 @@ public class MemberServiceImpl implements MemberService {
         LocalDateTime threeMonthsAgo  = LocalDateTime.now().minusMonths(3);
         if((member.getLastLoginAt() != null && member.getLastLoginAt().isBefore(threeMonthsAgo)) ||
             (member.getLastLoginAt() == null && member.getCreatedAt().isBefore(threeMonthsAgo))){
-                member.setStatus(Status.INACTIVE);
+                member.changeStatus(Status.INACTIVE);
         }
     }
 
@@ -160,19 +179,15 @@ public class MemberServiceImpl implements MemberService {
     public void reactivateMember(long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
-        member.setStatus(Status.ACTIVE);
+        member.changeStatus(Status.ACTIVE);
     }
 
     @Override
     public void removeMember(long memberId) {
-        if(!memberRepository.existsById(memberId)){
-            throw new MemberNotFoundException(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        if(!memberRepository.isNotActiveMember(memberId)){
+            member.changeStatus(Status.DELETED);
         }
-        memberRepository.deleteById(memberId);
-    }
-
-    @Override
-    public boolean isNotActiveMember(long memberId) {
-        return memberRepository.isNotActiveMember(memberId);
     }
 }

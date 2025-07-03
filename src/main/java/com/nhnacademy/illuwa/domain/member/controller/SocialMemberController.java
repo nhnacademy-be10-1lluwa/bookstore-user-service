@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/internal/members/social")
+@RequestMapping("/internal/social-members")
 @RequiredArgsConstructor
 public class SocialMemberController {
     private final SocialMemberService socialMemberService;
@@ -19,9 +19,10 @@ public class SocialMemberController {
         return socialMemberService.findByPaycoId(request.getIdNo())
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        //notfound 말고 boolean(isExist) 값 리턴 --!
     }
 
-    @PostMapping("/register")
+    @PostMapping
     public ResponseEntity<MemberResponse> registerSocialUser(@RequestBody PaycoMemberRequest request) {
         MemberResponse response = socialMemberService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

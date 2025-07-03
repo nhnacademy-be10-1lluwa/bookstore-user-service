@@ -11,56 +11,54 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/members")
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
 
-    // TODO memberId pathVariable 안 받기 추후 수정
-
     // 회원 목록 조회
-    @GetMapping
+    @GetMapping("/admin/members")
     public ResponseEntity<List<MemberResponse>> getAllMembers(){
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getAllMembers());
     }
 
-    // 로그인
-    @PostMapping("/login")
-    public ResponseEntity<MemberResponse> login(@Valid @RequestBody MemberLoginRequest request){
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.login(request));
-    }
-
     // 회원가입
-    @PostMapping
+    @PostMapping("/members")
     public ResponseEntity<MemberResponse> register(@Valid @RequestBody MemberRegisterRequest request) {
         MemberResponse saved = memberService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(saved);
     }
 
+    // 로그인
+    @PostMapping("/members/login")
+    public ResponseEntity<MemberResponse> login(@Valid @RequestBody MemberLoginRequest request){
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.login(request));
+    }
+
     // 회원 단일 조회
-    @GetMapping("/{memberId}")
-    public ResponseEntity<MemberResponse> getMember(@PathVariable Long memberId){
+    @GetMapping("/members")
+    public ResponseEntity<MemberResponse> getMember(@RequestHeader("X-USER-ID") long memberId){
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberById(memberId));
     }
 
-    //회원 포인트 조회
-    @GetMapping("/{memberId}/point")
-    public ResponseEntity<MemberPointResponse> getMemberPoint(@PathVariable Long memberId){
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberPoint(memberId));
+    // 회원 단일 조회(Email)
+    @GetMapping(value = "/members", params = "memberEmail")
+    public ResponseEntity<MemberResponse> getMemberByEmail(@RequestParam String memberEmail) {
+        MemberResponse response = memberService.getMemberByEmail(memberEmail);
+        return ResponseEntity.ok(response);
     }
 
     // 회원 수정
-    @PatchMapping("/{memberId}")
-    public ResponseEntity<MemberResponse> updateMember(@PathVariable Long memberId, @Valid @RequestBody MemberUpdateRequest request){
+    @PatchMapping("/members")
+    public ResponseEntity<MemberResponse> updateMember(@RequestHeader("X-USER-ID") long memberId, @Valid @RequestBody MemberUpdateRequest request){
         MemberResponse updatedMemberDto = memberService.updateMember(memberId, request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(updatedMemberDto);
     }
 
     //회원 삭제
-    @DeleteMapping("/{memberId}")
-    public void deleteMember(@PathVariable Long memberId){
+    @DeleteMapping("/members")
+    public void deleteMember(@RequestHeader("X-USER-ID") long memberId){
         memberService.removeMember(memberId);
     }
 

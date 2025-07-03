@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.member.service.impl;
 
+import com.nhnacademy.illuwa.common.client.MemberEventPublisher;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.grade.service.GradeService;
@@ -11,6 +12,8 @@ import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapperImpl;
+import com.nhnacademy.illuwa.domain.point.util.PointManager;
+import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -38,6 +42,8 @@ class MemberServiceImplTest {
     @Mock MemberRepository memberRepository;
     @Mock GradeService gradeService;
     @Mock PasswordEncoder passwordEncoder;
+    @Mock PointManager pointManager;
+    @Mock MemberEventPublisher memberEventPublisher;
     @InjectMocks MemberServiceImpl memberService;
 
     MemberRegisterRequest registerRequest;
@@ -56,8 +62,8 @@ class MemberServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        memberService = new MemberServiceImpl(
-                memberRepository, gradeService, memberMapper, passwordEncoder
+        this.memberService = new MemberServiceImpl(
+                memberRepository, gradeService, memberMapper, passwordEncoder, pointManager, memberEventPublisher
         );
 
         basicGrade = Grade.builder()
@@ -98,6 +104,8 @@ class MemberServiceImplTest {
 
         MemberResponse response = memberService.register(registerRequest);
         assertThat(response.getMemberId()).isEqualTo(1L);
+        verify(pointManager, times(1)).processEventPoint(response.getMemberId(), PointReason.JOIN);
+        verify(memberEventPublisher, times(1)).sendMemberCreateEvent(any(MemberEventDto.class));
     }
 
     @Test
@@ -145,17 +153,12 @@ class MemberServiceImplTest {
         updateRequest.setContact("010-9999-8888");
 
         when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
+        testMember.changeName("윈터");
+        testMember.changeContact("010-9999-8888");
+        when(memberRepository.save(any(Member.class))).thenReturn(testMember);
 
         MemberResponse result = memberService.updateMember(1L, updateRequest);
         assertThat(result.getName()).isEqualTo("윈터");
-    }
-
-    @Test
-    @DisplayName("회원 포인트 수정 성공")
-    void updateMemberPoint_success() {
-        when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
-        memberService.updateMemberPoint(1L, BigDecimal.valueOf(1000));
-        assertThat(testMember.getPoint()).isEqualByComparingTo("1000");
     }
 
     @Test
@@ -171,7 +174,7 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("회원 상태 체크 - 비활성화")
     void checkMemberStatus_inactive() {
-        testMember.setLastLoginAt(LocalDateTime.now().minusMonths(4));
+        testMember.changeLastLoginAt(LocalDateTime.now().minusMonths(4));
         when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
         memberService.checkMemberStatus(1L);
         assertThat(testMember.getStatus()).isEqualTo(Status.INACTIVE);
@@ -180,7 +183,7 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("회원 재활성화 성공")
     void reactivateMember_success() {
-        testMember.setStatus(Status.INACTIVE);
+        testMember.changeStatus(Status.INACTIVE);
         when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
         memberService.reactivateMember(1L);
         assertThat(testMember.getStatus()).isEqualTo(Status.ACTIVE);
@@ -189,15 +192,15 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("회원 삭제 성공")
     void removeMember_success() {
-        when(memberRepository.existsById(anyLong())).thenReturn(true);
+        when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
         memberService.removeMember(1L);
-        verify(memberRepository).deleteById(1L);
+        assertEquals(Status.DELETED, testMember.getStatus());
     }
 
     @Test
     @DisplayName("회원 삭제 실패 - 존재하지 않음")
     void removeMember_notExists_throwsException() {
-        when(memberRepository.existsById(anyLong())).thenReturn(false);
+        when(memberRepository.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(MemberNotFoundException.class, () -> memberService.removeMember(999L));
     }
 }

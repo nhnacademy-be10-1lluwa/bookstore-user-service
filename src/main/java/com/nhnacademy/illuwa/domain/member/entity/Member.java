@@ -23,46 +23,36 @@ public class Member {
     @Column(name = "member_id")
     private long memberId;
 
-    @Setter
     @Column(name = "payco_id")
     private String paycoId;
 
-    @Setter
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Setter
     @Column(name = "birth", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birth;
 
-    @Setter
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Setter
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Setter
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
 
-    @Setter
     @Column(name = "contact", nullable = false)
     private String contact;
 
-    @Setter
     @ManyToOne
     @JoinColumn(name = "grade_id", nullable = false)
     private Grade grade;
 
-    @Setter
     @Column(name = "point", nullable = false)
     private BigDecimal point = BigDecimal.ZERO;   //회원가입 포인트는 포인트정책 반영하여 넣어줄 거라 기본값 ZERO
 
-    @Setter
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
@@ -70,7 +60,6 @@ public class Member {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Setter
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
 
@@ -100,6 +89,73 @@ public class Member {
         public MemberBuilder birth(LocalDate birth) {
             this.birth = birth;
             return this;
+        }
+    }
+
+    public void changePaycoId(String paycoId) {
+        if (paycoId != null) {
+            this.paycoId = paycoId;
+        }
+    }
+
+    public void changeName(String name) {
+        if (name != null) {
+            this.name = name;
+        }
+    }
+
+    public void changeBirth(LocalDate birth) {
+        if (birth != null) {
+            this.birth = birth;
+        }
+    }
+
+    public void changeEmail(String email) {
+        if (email != null) {
+            this.email = email;
+        }
+    }
+
+    public void changePassword(String encodedPassword) {
+        if (password != null) {
+            this.password = encodedPassword;
+        }
+    }
+
+    public void changeRole(Role role) {
+        if (role != null) {
+            this.role = role;
+        }
+    }
+
+    public void changeContact(String contact) {
+        if (contact != null) {
+            this.contact = contact;
+        }
+    }
+
+    public void changeGrade(Grade grade) {
+        if (grade != null) {
+            this.grade = grade;
+        }
+    }
+
+    public void changePoint(BigDecimal point) {
+        if (point == null || point.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("포인트는 0 이상이어야 합니다.");
+        }
+        this.point = point;
+    }
+
+    public void changeStatus(Status status) {
+        if (status != null) {
+            this.status = status;
+        }
+    }
+
+    public void changeLastLoginAt(LocalDateTime lastLoginAt) {
+        if (lastLoginAt != null) {
+            this.lastLoginAt = lastLoginAt;
         }
     }
 

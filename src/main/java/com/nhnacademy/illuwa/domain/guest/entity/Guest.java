@@ -13,30 +13,23 @@ public class Guest {
     @Column(name = "guest_id")
     private long guestId;
 
-    @Setter
     @Column(name = "order_id",nullable = false)
     private long orderId;
 
-    @Setter
     @Column(name = "order_number", nullable = false)
     private String orderNumber;
 
-    @Setter
     @Column(name = "order_password",nullable = false)
     private String orderPassword;
 
-    @Setter
     @Column(name = "name",nullable = false)
     private String name;
 
-    @Setter
     @Column(name = "email",nullable = false)
     private String email;
 
-    @Setter
     @Column(name = "contact",nullable = false)
     private String contact;
-
 
     @Builder
     public Guest(long orderId, String orderNumber, String orderPassword, String name, String email, String contact) {

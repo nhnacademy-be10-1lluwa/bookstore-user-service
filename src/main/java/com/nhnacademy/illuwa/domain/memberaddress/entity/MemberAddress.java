@@ -1,6 +1,7 @@
 package com.nhnacademy.illuwa.domain.memberaddress.entity;
 
 import com.nhnacademy.illuwa.domain.member.entity.Member;
+import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,35 +16,27 @@ public class MemberAddress {
     @Column(name = "member_address_id")
     private long memberAddressId;
 
-    @Setter
     @Column(name = "post_code")
     private String postCode;
 
-    @Setter
     @Column(name = "address_name")
     private String addressName;
 
-    @Setter
     @Column(name = "address", nullable = false)
     private String address;
 
-    @Setter
     @Column(name = "detail_address", nullable = false)
     private String detailAddress;
 
-    @Setter
     @Column(name = "default_address")
     private boolean defaultAddress = true;
 
-    @Setter
     @Column(name = "recipient_name", nullable = false)
     private String recipientName;
 
-    @Setter
     @Column(name = "recipient_contact", nullable = false)
     private String recipientContact;
 
-    @Setter
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
@@ -66,5 +59,37 @@ public class MemberAddress {
         this.detailAddress = detailAddress;
         this.defaultAddress = defaultAddress;
         this.member = member;
+    }
+
+    public void changeAddressName(String addressName){
+        this.addressName = addressName;
+    }
+
+    public void changeDefaultAddress(boolean defaultAddress){
+        this.defaultAddress = defaultAddress;
+    }
+
+    public void updateMemberAddress(MemberAddressRequest request) {
+        if (request.getPostCode() != null) {
+            this.postCode = request.getPostCode();
+        }
+        if (request.getAddressName() != null) {
+            this.addressName = request.getAddressName();
+        }
+        if (request.getAddress() != null) {
+            this.address = request.getAddress();
+        }
+        if (request.getDetailAddress() != null) {
+            this.detailAddress = request.getDetailAddress();
+        }
+        if (this.defaultAddress != request.isDefaultAddress()) {
+            this.defaultAddress = request.isDefaultAddress();
+        }
+        if (request.getRecipientName() != null) {
+            this.recipientName = request.getRecipientName();
+        }
+        if (request.getRecipientContact() != null) {
+            this.recipientContact = request.getRecipientContact();
+        }
     }
 }
