@@ -18,17 +18,17 @@ public class MemberAddressController {
     private final MemberAddressService memberAddressService;
 
     @GetMapping
-    public ResponseEntity<List<MemberAddressResponse>> getMemberAddressList(@RequestHeader("X-USER_ID") long memberId){
+    public ResponseEntity<List<MemberAddressResponse>> getMemberAddressList(@RequestHeader("X-USER-ID") long memberId){
         return ResponseEntity.ok().body(memberAddressService.getMemberAddressList(memberId));
     }
 
     @PostMapping
-    public ResponseEntity<MemberAddressResponse> createMemberAddress(@RequestHeader("X-USER_ID") long memberId, @Valid @RequestBody MemberAddressRequest request){
+    public ResponseEntity<MemberAddressResponse> createMemberAddress(@RequestHeader("X-USER-ID") long memberId, @Valid @RequestBody MemberAddressRequest request){
         return ResponseEntity.status(HttpStatus.CREATED).body(memberAddressService.registerMemberAddress(memberId, request));
     }
 
     @GetMapping("/{addressId}")
-    public ResponseEntity<MemberAddressResponse> getMemberAddress(@RequestHeader("X-USER_ID") long addressId){
+    public ResponseEntity<MemberAddressResponse> getMemberAddress(@RequestHeader("X-USER-ID") long addressId){
         return ResponseEntity.ok().body(memberAddressService.getMemberAddress(addressId));
     }
 
