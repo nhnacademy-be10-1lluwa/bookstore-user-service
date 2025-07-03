@@ -1,6 +1,7 @@
 package com.nhnacademy.illuwa.domain.pointpolicy.entity;
 
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
+import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PolicyStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -33,6 +34,10 @@ public class PointPolicy {
     @Column(name = "description", nullable = false)
     private String description;
 
+    @Builder.Default
+    @Column(name = "status", nullable = false)
+    private PolicyStatus status = PolicyStatus.ACTIVE;
+
     public void changeValue(BigDecimal value) {
         this.value = value;
     }
@@ -44,5 +49,10 @@ public class PointPolicy {
     public void changeDescription(String description) {
         this.description = description;
     }
+
+    public void changeStatus(PolicyStatus status) {
+        this.status = status;
+    }
+
 }
 

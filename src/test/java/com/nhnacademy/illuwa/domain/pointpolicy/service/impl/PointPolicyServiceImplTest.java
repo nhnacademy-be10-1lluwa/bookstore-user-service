@@ -6,6 +6,7 @@ import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyResponse;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyUpdateRequest;
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.PointPolicy;
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
+import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PolicyStatus;
 import com.nhnacademy.illuwa.domain.pointpolicy.exception.DuplicatePointPolicyException;
 import com.nhnacademy.illuwa.domain.pointpolicy.exception.PointPolicyNotFoundException;
 import com.nhnacademy.illuwa.domain.pointpolicy.repo.PointPolicyRepository;
@@ -78,7 +79,13 @@ class PointPolicyServiceImplTest {
     @Test
     @DisplayName("포인트 정책 등록 - 중복된 policyKey 예외 발생")
     void testCreatePointPolicy_DuplicateKey() {
-        PointPolicyCreateRequest request = new PointPolicyCreateRequest("duplicate", new BigDecimal("1000"), PointValueType.AMOUNT, "설명1");
+        PointPolicyCreateRequest request = PointPolicyCreateRequest
+                .builder()
+                .policyKey("duplicate")
+                .value(new BigDecimal("1000"))
+                .valueType(PointValueType.AMOUNT)
+                .description("설명1")
+                .build();
 
         PointPolicy existingPolicy = PointPolicy.builder()
                 .policyKey("duplicate")
@@ -189,10 +196,8 @@ class PointPolicyServiceImplTest {
     @DisplayName("포인트 정책 삭제 - 성공")
     void testDeletePointPolicy() {
         when(pointPolicyRepository.findById("thanks_point")).thenReturn(Optional.of(testPolicy));
-
         pointPolicyService.deletePointPolicy("thanks_point");
-
-        verify(pointPolicyRepository).deleteById("thanks_point");
+        assertEquals(PolicyStatus.INACTIVE, testPolicy.getStatus());
     }
 
     @Test
