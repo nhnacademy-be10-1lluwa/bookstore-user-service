@@ -110,7 +110,7 @@ class MemberControllerTest {
     }
 
     @Test
-    @DisplayName("회원 단건 조회 - X-USER_ID 헤더")
+    @DisplayName("회원 단건 조회 - X-USER-ID 헤더")
     void getMember() throws Exception {
         MemberResponse response = MemberResponse.builder()
                 .memberId(1L)
@@ -126,7 +126,7 @@ class MemberControllerTest {
         Mockito.when(memberService.getMemberById(1L)).thenReturn(response);
 
         mockMvc.perform(get("/members")
-                        .header("X-USER_ID", 1L))
+                        .header("X-USER-ID", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.memberId").value(1L))
                 .andExpect(jsonPath("$.name").value("최길동"))
@@ -157,7 +157,7 @@ class MemberControllerTest {
                 .thenReturn(response);
 
         mockMvc.perform(patch("/members")
-                        .header("X-USER_ID", 1L)
+                        .header("X-USER-ID", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk())
@@ -170,7 +170,7 @@ class MemberControllerTest {
     @DisplayName("회원 삭제")
     void deleteMember() throws Exception {
         mockMvc.perform(delete("/members")
-                        .header("X-USER_ID", 1L))
+                        .header("X-USER-ID", 1L))
                 .andExpect(status().isOk());
 
         Mockito.verify(memberService).removeMember(1L);
