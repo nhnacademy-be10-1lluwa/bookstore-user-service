@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -191,15 +192,15 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("회원 삭제 성공")
     void removeMember_success() {
-        when(memberRepository.existsById(anyLong())).thenReturn(true);
+        when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
         memberService.removeMember(1L);
-        verify(memberRepository).deleteById(1L);
+        assertEquals(Status.DELETED, testMember.getStatus());
     }
 
     @Test
     @DisplayName("회원 삭제 실패 - 존재하지 않음")
     void removeMember_notExists_throwsException() {
-        when(memberRepository.existsById(anyLong())).thenReturn(false);
+        when(memberRepository.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(MemberNotFoundException.class, () -> memberService.removeMember(999L));
     }
 }

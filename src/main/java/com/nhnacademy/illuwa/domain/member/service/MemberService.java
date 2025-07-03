@@ -28,6 +28,4 @@ public interface MemberService {
     void reactivateMember(long memberId);
 
     void removeMember(long memberId);
-
-    boolean isNotActiveMember(long memberId);
 }

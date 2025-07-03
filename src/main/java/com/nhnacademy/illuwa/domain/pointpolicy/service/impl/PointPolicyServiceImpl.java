@@ -6,6 +6,7 @@ import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyResponse;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyUpdateRequest;
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.PointPolicy;
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
+import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PolicyStatus;
 import com.nhnacademy.illuwa.domain.pointpolicy.exception.DuplicatePointPolicyException;
 import com.nhnacademy.illuwa.domain.pointpolicy.exception.PointPolicyNotFoundException;
 import com.nhnacademy.illuwa.domain.pointpolicy.repo.PointPolicyRepository;
@@ -53,6 +54,7 @@ public class PointPolicyServiceImpl implements PointPolicyService {
                 throw new DuplicatePointPolicyException(request.getPolicyKey());
             }
         }
+        validatePointPolicyValue(request.getValue(), request.getValueType());
         PointPolicy saved = pointPolicyRepository.save(pointPolicyMapper.toEntity(request));
         return pointPolicyMapper.toDto(saved);
     }
@@ -63,7 +65,7 @@ public class PointPolicyServiceImpl implements PointPolicyService {
                 .orElseThrow(() -> new PointPolicyNotFoundException(policyKey));
 
         //타입 검증
-        validatePointPolicyValue(request);
+        validatePointPolicyValue(request.getValue(), request.getValueType());
 
         if(request.getValue() != null){
             pointPolicy.changeValue(request.getValue());
@@ -83,13 +85,12 @@ public class PointPolicyServiceImpl implements PointPolicyService {
                 .orElseThrow(()->
                 new PointPolicyNotFoundException(policyKey)
         );
-        pointPolicyRepository.deleteById(pointPolicy.getPolicyKey());
+        if(pointPolicy.getStatus().equals(PolicyStatus.ACTIVE)){
+            pointPolicy.changeStatus(PolicyStatus.INACTIVE);
+        }
     }
 
-    private void validatePointPolicyValue(PointPolicyUpdateRequest request) {
-        BigDecimal value = request.getValue();
-        PointValueType type = request.getValueType();
-
+    private void validatePointPolicyValue(BigDecimal value, PointValueType type) {
         if (value == null || type == null) {
             throw new InvalidInputException("value와 valueType은 빈 값일 수 없습니다.");
         }
