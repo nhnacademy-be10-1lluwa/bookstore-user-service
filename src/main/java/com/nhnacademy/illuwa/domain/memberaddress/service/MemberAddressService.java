@@ -34,4 +34,5 @@ public interface MemberAddressService {
      */
     List<MemberAddressResponse> getMemberAddressList(long memberId);
 
+    int countMemberAddress(long memberId);
 }

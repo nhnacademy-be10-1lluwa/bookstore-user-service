@@ -73,6 +73,11 @@ public class MemberAddressServiceImpl implements MemberAddressService {
                 .toList();
     }
 
+    @Override
+    public int countMemberAddress(long memberId) {
+        return addressRepository.countAllByMember_MemberId(memberId);
+    }
+
     private void validateMemberAddressLimit(long memberId) {
         if (addressRepository.countAllByMember_MemberId(memberId) >= MAX_ADDRESS_COUNT) {
             throw new TooManyMemberAddressException();
