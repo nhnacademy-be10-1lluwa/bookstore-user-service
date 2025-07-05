@@ -1,6 +1,5 @@
 package com.nhnacademy.illuwa.domain.memberaddress.controller;
 
-import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressLimitResponse;
 import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressRequest;
 import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressResponse;
 import com.nhnacademy.illuwa.domain.memberaddress.service.MemberAddressService;
@@ -18,19 +17,6 @@ import java.util.List;
 public class MemberAddressController {
     private final MemberAddressService memberAddressService;
 
-    @GetMapping("/check-limit")
-    public ResponseEntity<MemberAddressLimitResponse> checkAddressLimit(@RequestHeader("X-USER-ID") long memberId){
-        int count = memberAddressService.countMemberAddress(memberId);
-        boolean canAdd = count < 10;
-
-        MemberAddressLimitResponse response = MemberAddressLimitResponse.builder()
-                .canAdd(canAdd)
-                .currentCount(count)
-                .maxLimit(10)
-                .build();
-        return ResponseEntity.ok().body(response);
-    }
-
     @GetMapping
     public ResponseEntity<List<MemberAddressResponse>> getMemberAddressList(@RequestHeader("X-USER-ID") long memberId){
         return ResponseEntity.ok().body(memberAddressService.getMemberAddressList(memberId));
@@ -42,7 +28,7 @@ public class MemberAddressController {
     }
 
     @GetMapping("/{addressId}")
-    public ResponseEntity<MemberAddressResponse> getMemberAddress(@RequestHeader("X-USER-ID") long addressId){
+    public ResponseEntity<MemberAddressResponse> getMemberAddress(@PathVariable long addressId){
         return ResponseEntity.ok().body(memberAddressService.getMemberAddress(addressId));
     }
 
@@ -52,8 +38,8 @@ public class MemberAddressController {
     }
 
     @DeleteMapping("/{addressId}")
-    public ResponseEntity<Void> deleteMemberAddress(@PathVariable long addressId){
-        memberAddressService.deleteMemberAddress(addressId);
+    public ResponseEntity<Void> deleteMemberAddress(@RequestHeader("X-USER-ID") long memberId, @PathVariable long addressId){
+        memberAddressService.deleteMemberAddress(memberId, addressId);
         return ResponseEntity.ok().build();
     }
 }

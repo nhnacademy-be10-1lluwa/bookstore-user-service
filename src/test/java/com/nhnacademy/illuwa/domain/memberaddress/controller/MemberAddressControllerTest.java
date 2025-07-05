@@ -22,7 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(MemberAddressController.class)
 class MemberAddressControllerTest {
-
     @Autowired
     MockMvc mockMvc;
 
@@ -125,9 +124,9 @@ class MemberAddressControllerTest {
     @Test
     @DisplayName("회원 주소 삭제")
     void deleteAddress() throws Exception {
+        long memberId = 1L;
         long addressId = 1L;
-
-        willDoNothing().given(memberAddressService).deleteMemberAddress(addressId);
+        willDoNothing().given(memberAddressService).deleteMemberAddress(memberId, addressId);
 
         mockMvc.perform(delete("/members/addresses/{addressId}", addressId)
                 .header("X-USER-ID", 1L))
