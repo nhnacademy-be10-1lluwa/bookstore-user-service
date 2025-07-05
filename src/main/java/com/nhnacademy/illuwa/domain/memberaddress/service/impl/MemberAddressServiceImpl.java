@@ -11,12 +11,15 @@ import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.memberaddress.utils.MemberAddressMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -31,7 +34,6 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     public MemberAddressResponse registerMemberAddress(long memberId, MemberAddressRequest request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberNotFoundException(memberId));
-
         validateMemberAddressLimit(memberId);
         handleDefaultAddressSetting(memberId, request);
 
@@ -49,11 +51,22 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     }
 
     @Override
-    public void deleteMemberAddress(long addressId) {
-        if(!addressRepository.existsById(addressId)){
-            throw new MemberAddressNotFoundException();
+    public void deleteMemberAddress(long memberId, long addressId) {
+        if(!memberRepository.existsById(memberId)){
+            throw new MemberNotFoundException(memberId);
         }
-        addressRepository.deleteById(addressId);
+        MemberAddress address = addressRepository.findById(addressId)
+                .orElseThrow(MemberAddressNotFoundException::new);
+        boolean wasDefault = address.isDefaultAddress();
+        addressRepository.delete(address);
+
+        if (wasDefault) {
+            List<MemberAddress> remains = addressRepository.findAllByMember_MemberId(memberId);
+            if (!remains.isEmpty()) {
+                remains.getFirst().changeDefaultAddress(true);
+            }
+        }
+
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.memberaddress.repo;
 
+import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.memberaddress.entity.MemberAddress;
 import org.springframework.data.jpa.repository.JpaRepository;
 
