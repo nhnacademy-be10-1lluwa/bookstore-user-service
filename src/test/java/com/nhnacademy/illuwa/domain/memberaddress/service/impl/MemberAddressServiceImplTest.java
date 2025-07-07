@@ -293,7 +293,7 @@ class MemberAddressServiceImplTest {
         List<MemberAddressResponse> list = addressService.getMemberAddressList(1L);
 
         assertThat(list).hasSize(1);
-        assertThat(list.get(0).getMemberAddressId()).isEqualTo(7L);
+        assertThat(list.getFirst().getMemberAddressId()).isEqualTo(7L);
     }
 
     @Test
