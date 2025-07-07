@@ -74,7 +74,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         try {
-            memberEventPublisher.sendMemberCreateEvent(new MemberEventDto(saved.getEmail(), saved.getName()));
+            memberEventPublisher.sendMemberCreateEvent(new MemberEventDto(saved.getMemberId(), saved.getEmail(), saved.getName(), saved.getBirth()));
         } catch (Exception e) {
             log.error("회원 생성 이벤트 발송 실패 -> "+ e.getMessage());
         }
@@ -189,5 +189,15 @@ public class MemberServiceImpl implements MemberService {
         if(!memberRepository.isNotActiveMember(memberId)){
             member.changeStatus(Status.DELETED);
         }
+    }
+
+    // 생일자 조회 서비스
+    @Transactional(readOnly = true)
+    @Override
+    public List<MemberResponse> getMembersByBirthMonth(int month) {
+        return memberRepository.findMemberByBirthMonth(month)
+                .stream()
+                .map(memberMapper::toDto)
+                .toList();
     }
 }
