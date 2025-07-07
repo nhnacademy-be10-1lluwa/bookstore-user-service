@@ -90,6 +90,12 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         return addressRepository.countAllByMember_MemberId(memberId);
     }
 
+    @Override
+    public void setDefaultAddress(long memberId, long addressId) {
+        addressRepository.unsetAllDefaultForMember(memberId);
+        addressRepository.setDefaultAddress(addressId);
+    }
+
     private void validateMemberAddressLimit(long memberId) {
         if (addressRepository.countAllByMember_MemberId(memberId) >= MAX_ADDRESS_COUNT) {
             throw new TooManyMemberAddressException();

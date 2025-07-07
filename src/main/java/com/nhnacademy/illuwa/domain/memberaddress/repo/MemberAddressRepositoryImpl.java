@@ -36,4 +36,13 @@ public class MemberAddressRepositoryImpl implements CustomMemberAddressRepositor
                 .where(memberAddress.member.memberId.eq(memberId))
                 .execute();
     }
+
+    @Override
+    public void setDefaultAddress(long addressId) {
+        QMemberAddress memberAddress = QMemberAddress.memberAddress;
+        queryFactory.update(memberAddress)
+                .set(memberAddress.defaultAddress, true)
+                .where(memberAddress.memberAddressId.eq(addressId))
+                .execute();
+    }
 }
