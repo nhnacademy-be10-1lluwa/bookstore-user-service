@@ -14,4 +14,5 @@ public interface MemberAddressRepository extends JpaRepository<MemberAddress, Lo
 
     Page<MemberAddress> findAllByMember_MemberId(Long memberId, Pageable pageable);
 
+    List<MemberAddress> findAllByMember_MemberIdOrderByCreatedAtAsc(long memberId);
 }
