@@ -42,6 +42,9 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 
         updateDefaultAddressIfNeeded(memberId, savedAddress.getMemberAddressId(), request.isDefaultAddress());
 
+        // TODO flush 사용 지양, 영속성 컨텍스트 사이 동기화 문제 해결
+        // 객체 상태를 변경하려면 리팩토링 필요
+//        addressRepository.flush();
         return memberAddressMapper.toDto(savedAddress);
     }
 
@@ -53,6 +56,8 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 
         updateDefaultAddressIfNeeded(memberId, addressId, request.isDefaultAddress());
 
+        // TODO flush 사용 지양, 영속성 컨텍스트 사이 동기화 문제 해결
+//        addressRepository.flush();
         return memberAddressMapper.toDto(orgMemberAddress);
     }
 
@@ -121,11 +126,9 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 
     private void updateDefaultAddressIfNeeded(long memberId, long addressId, Boolean isDefaultRequested) {
         if (Boolean.TRUE.equals(isDefaultRequested)) {
-            // 요청이 기본 주소지라면 모든 기본 주소 해제 후 해당 주소를 기본으로 설정
             addressRepository.unsetAllDefaultForMember(memberId);
             addressRepository.setDefaultAddress(memberId, addressId);
         } else {
-            // 기본 주소지가 없으면 자동 설정
             boolean hasDefault = addressRepository.findDefaultMemberAddress(memberId).isPresent();
             if (!hasDefault) {
                 addressRepository.setDefaultAddress(memberId, addressId);

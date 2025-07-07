@@ -110,11 +110,12 @@ class MemberAddressControllerTest {
     @Test
     @DisplayName("회원 주소 수정")
     void updateAddress() throws Exception {
+        long memberId = 1L;
         long addressId = 1L;
         MemberAddressRequest request = createRequest(false);
         MemberAddressResponse response = createResponse(addressId, false);
 
-        given(memberAddressService.updateMemberAddress(eq(addressId), any()))
+        given(memberAddressService.updateMemberAddress(eq(memberId), eq(addressId), any()))
                 .willReturn(response);
 
         mockMvc.perform(post("/members/addresses/{addressId}", addressId)

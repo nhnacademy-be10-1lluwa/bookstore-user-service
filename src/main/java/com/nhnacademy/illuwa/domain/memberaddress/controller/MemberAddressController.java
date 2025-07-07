@@ -21,6 +21,12 @@ import java.util.List;
 public class MemberAddressController {
     private final MemberAddressService memberAddressService;
 
+    @GetMapping("/count")
+    public ResponseEntity<Integer> getMemberAddressCount(@RequestHeader("X-USER-ID") long memberId){
+        int count = memberAddressService.countMemberAddress(memberId);
+        return ResponseEntity.ok().body(count);
+    }
+
     @GetMapping
     public ResponseEntity<List<MemberAddressResponse>> getMemberAddressList(@RequestHeader("X-USER-ID") long memberId){
         return ResponseEntity.ok().body(memberAddressService.getMemberAddressList(memberId));
