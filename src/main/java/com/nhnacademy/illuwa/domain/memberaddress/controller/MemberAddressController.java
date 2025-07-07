@@ -49,8 +49,8 @@ public class MemberAddressController {
     }
 
     @PostMapping("/{addressId}")
-    public ResponseEntity<MemberAddressResponse> updateMemberAddress(@PathVariable long addressId, @Valid @RequestBody MemberAddressRequest request){
-        return ResponseEntity.ok().body(memberAddressService.updateMemberAddress(addressId, request));
+    public ResponseEntity<MemberAddressResponse> updateMemberAddress(@RequestHeader("X-USER-ID") long memberId, @PathVariable long addressId, @Valid @RequestBody MemberAddressRequest request){
+        return ResponseEntity.ok().body(memberAddressService.updateMemberAddress(memberId, addressId, request));
     }
 
     @DeleteMapping("/{addressId}")
