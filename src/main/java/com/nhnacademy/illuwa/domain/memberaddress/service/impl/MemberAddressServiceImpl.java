@@ -11,12 +11,14 @@ import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.memberaddress.utils.MemberAddressMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -31,7 +33,6 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     public MemberAddressResponse registerMemberAddress(long memberId, MemberAddressRequest request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberNotFoundException(memberId));
-
         validateMemberAddressLimit(memberId);
         handleDefaultAddressSetting(memberId, request);
 
@@ -49,11 +50,22 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     }
 
     @Override
-    public void deleteMemberAddress(long addressId) {
-        if(!addressRepository.existsById(addressId)){
-            throw new MemberAddressNotFoundException();
+    public void deleteMemberAddress(long memberId, long addressId) {
+        if(!memberRepository.existsById(memberId)){
+            throw new MemberNotFoundException(memberId);
         }
-        addressRepository.deleteById(addressId);
+        MemberAddress address = addressRepository.findById(addressId)
+                .orElseThrow(MemberAddressNotFoundException::new);
+        boolean wasDefault = address.isDefaultAddress();
+        addressRepository.delete(address);
+
+        if (wasDefault) {
+            List<MemberAddress> remains = addressRepository.findAllByMember_MemberId(memberId);
+            if (!remains.isEmpty()) {
+                remains.getFirst().changeDefaultAddress(true);
+            }
+        }
+
     }
 
     @Override
@@ -71,6 +83,17 @@ public class MemberAddressServiceImpl implements MemberAddressService {
                 .stream()
                 .map(memberAddressMapper::toDto)
                 .toList();
+    }
+
+    @Override
+    public int countMemberAddress(long memberId) {
+        return addressRepository.countAllByMember_MemberId(memberId);
+    }
+
+    @Override
+    public void setDefaultAddress(long memberId, long addressId) {
+        addressRepository.unsetAllDefaultForMember(memberId);
+        addressRepository.setDefaultAddress(addressId);
     }
 
     private void validateMemberAddressLimit(long memberId) {

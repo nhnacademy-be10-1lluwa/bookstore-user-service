@@ -32,6 +32,5 @@ public interface MemberService {
 
     boolean isNotActiveMember(long memberId);
 
-    // 생일자 조회
     List<MemberResponse> getMembersByBirthMonth(int month);
 }

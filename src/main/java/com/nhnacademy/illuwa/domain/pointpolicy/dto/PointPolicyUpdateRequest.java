@@ -7,8 +7,6 @@ import lombok.*;
 import java.math.BigDecimal;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class PointPolicyUpdateRequest {
     @NotNull(message = "포인트 값은 필수입니다.")

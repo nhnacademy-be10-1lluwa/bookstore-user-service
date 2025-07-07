@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -169,21 +171,82 @@ class MemberAddressServiceImplTest {
     }
 
     @Test
-    @DisplayName("회원 주소 삭제 성공")
-    void deleteAddress_success() {
-        when(addressRepository.existsById(5L)).thenReturn(true);
+    @DisplayName("회원 주소 삭제 성공 - 기본주소지, 남은 주소 있는 경우")
+    void deleteAddress_defaultAddressDeleted_shouldAssignNewDefault() {
+        long memberId = 1L;
+        long addressId = 100L;
 
-        addressService.deleteMemberAddress(5L);
+        MemberAddress address = mock(MemberAddress.class);
+        when(address.isDefaultAddress()).thenReturn(true);
 
-        verify(addressRepository).deleteById(5L);
+        when(memberRepository.existsById(memberId)).thenReturn(true);
+        when(addressRepository.findById(addressId)).thenReturn(Optional.of(address));
+
+        MemberAddress another = mock(MemberAddress.class);
+        List<MemberAddress> remaining = List.of(another);
+        when(addressRepository.findAllByMember_MemberId(memberId)).thenReturn(remaining);
+        addressService.deleteMemberAddress(memberId, addressId);
+
+        verify(addressRepository).delete(address);
+        verify(addressRepository).findAllByMember_MemberId(memberId);
+        verify(another).changeDefaultAddress(true);
+    }
+
+    @Test
+    @DisplayName("회원 주소 삭제 성공 - 기본주소지, 남은 주소 없는 경우")
+    void deleteAddress_defaultAddressDeleted_butNoRemainingAddress() {
+        long memberId = 1L;
+        long addressId = 100L;
+
+        MemberAddress address = mock(MemberAddress.class);
+        when(address.isDefaultAddress()).thenReturn(true);
+        when(memberRepository.existsById(memberId)).thenReturn(true);
+        when(addressRepository.findById(addressId)).thenReturn(Optional.of(address));
+        when(addressRepository.findAllByMember_MemberId(memberId)).thenReturn(List.of()); // ✨ remains 비어 있음
+
+        addressService.deleteMemberAddress(memberId, addressId);
+
+        verify(addressRepository).delete(address);
+    }
+
+
+    @Test
+    @DisplayName("회원 주소 삭제 성공 - 기본주소지 아니었던 경우")
+    void deleteAddress_nonDefaultAddressDeleted_shouldNotAssignNewDefault() {
+        long memberId = 1L;
+        long addressId = 100L;
+
+        MemberAddress address = mock(MemberAddress.class);
+        when(address.isDefaultAddress()).thenReturn(false);
+        when(memberRepository.existsById(memberId)).thenReturn(true);
+        when(addressRepository.findById(addressId)).thenReturn(Optional.of(address));
+
+        addressService.deleteMemberAddress(memberId, addressId);
+
+        verify(addressRepository).delete(address);
+        verify(addressRepository, never()).findAllByMember_MemberId(anyLong());
+    }
+
+    @Test
+    @DisplayName("회원 주소 삭제 실패 - 회원 없음")
+    void deleteAddress_memberNotFound_shouldThrowException() {
+        long memberId = 1L;
+        long addressId = 100L;
+        when(memberRepository.existsById(memberId)).thenReturn(false);
+
+        assertThrows(MemberNotFoundException.class,
+                () -> addressService.deleteMemberAddress(memberId, addressId));
     }
 
     @Test
     @DisplayName("회원 주소 삭제 실패 - 주소 없음")
     void deleteAddress_notFound() {
-        when(addressRepository.existsById(5L)).thenReturn(false);
+        long memberId = 1L;
+        long addressId = 100L;
+        when(memberRepository.existsById(memberId)).thenReturn(true);
+        when(addressRepository.findById(addressId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> addressService.deleteMemberAddress(5L))
+        assertThatThrownBy(() -> addressService.deleteMemberAddress(memberId, addressId))
                 .isInstanceOf(MemberAddressNotFoundException.class);
     }
 
@@ -233,4 +296,18 @@ class MemberAddressServiceImplTest {
 
         assertThat(list).hasSize(0);
     }
+
+    @Test
+    @DisplayName("회원 주소 카운트")
+    void countMemberAddress_shouldReturnCorrectCount() {
+        long memberId = 1L;
+        int expectedCount = 3;
+        when(addressRepository.countAllByMember_MemberId(memberId)).thenReturn(expectedCount);
+
+        int actualCount = addressService.countMemberAddress(memberId);
+
+        assertEquals(expectedCount, actualCount);
+        verify(addressRepository).countAllByMember_MemberId(memberId);
+    }
+
 }

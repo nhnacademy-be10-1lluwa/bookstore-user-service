@@ -22,7 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(MemberAddressController.class)
 class MemberAddressControllerTest {
-
     @Autowired
     MockMvc mockMvc;
 
@@ -64,8 +63,8 @@ class MemberAddressControllerTest {
         given(memberAddressService.getMemberAddressList(memberId))
                 .willReturn(List.of(createResponse(1L, true)));
 
-        mockMvc.perform(get("/members/address", memberId)
-                .header("X-USER_ID", 1L))
+        mockMvc.perform(get("/members/addresses", memberId)
+                .header("X-USER-ID", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].memberAddressId").value(1L))
                 .andExpect(jsonPath("$[0].recipientName").value("공주님"));
@@ -78,8 +77,8 @@ class MemberAddressControllerTest {
         given(memberAddressService.getMemberAddress(addressId))
                 .willReturn(createResponse(addressId, true));
 
-        mockMvc.perform(get("/members/address/{addressId}", addressId)
-                        .header("X-USER_ID", 1L))
+        mockMvc.perform(get("/members/addresses/{addressId}", addressId)
+                        .header("X-USER-ID", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.memberAddressId").value(addressId))
                 .andExpect(jsonPath("$.recipientName").value("공주님"));
@@ -95,8 +94,8 @@ class MemberAddressControllerTest {
         given(memberAddressService.registerMemberAddress(eq(memberId), any()))
                 .willReturn(response);
 
-        mockMvc.perform(post("/members/address", memberId)
-                        .header("X-USER_ID", 1L)
+        mockMvc.perform(post("/members/addresses", memberId)
+                        .header("X-USER-ID", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -114,8 +113,8 @@ class MemberAddressControllerTest {
         given(memberAddressService.updateMemberAddress(eq(addressId), any()))
                 .willReturn(response);
 
-        mockMvc.perform(patch("/members/address/{addressId}", addressId)
-                        .header("X-USER_ID", 1L)
+        mockMvc.perform(patch("/members/addresses/{addressId}", addressId)
+                        .header("X-USER-ID", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -125,12 +124,12 @@ class MemberAddressControllerTest {
     @Test
     @DisplayName("회원 주소 삭제")
     void deleteAddress() throws Exception {
+        long memberId = 1L;
         long addressId = 1L;
+        willDoNothing().given(memberAddressService).deleteMemberAddress(memberId, addressId);
 
-        willDoNothing().given(memberAddressService).deleteMemberAddress(addressId);
-
-        mockMvc.perform(delete("/members/address/{addressId}", addressId)
-                .header("X-USER_ID", 1L))
+        mockMvc.perform(delete("/members/addresses/{addressId}", addressId)
+                .header("X-USER-ID", 1L))
                 .andExpect(status().isOk());
     }
 }

@@ -184,15 +184,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void removeMember(long memberId) {
-        if(!memberRepository.existsById(memberId)){
-            throw new MemberNotFoundException(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        if(!memberRepository.isNotActiveMember(memberId)){
+            member.changeStatus(Status.DELETED);
         }
-        memberRepository.deleteById(memberId);
-    }
-
-    @Override
-    public boolean isNotActiveMember(long memberId) {
-        return memberRepository.isNotActiveMember(memberId);
     }
 
     // 생일자 조회 서비스
