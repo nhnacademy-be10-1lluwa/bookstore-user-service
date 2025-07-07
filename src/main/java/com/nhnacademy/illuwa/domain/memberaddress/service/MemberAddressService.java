@@ -3,6 +3,8 @@ package com.nhnacademy.illuwa.domain.memberaddress.service;
 
 import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressRequest;
 import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -33,6 +35,8 @@ public interface MemberAddressService {
      * member 주소 전체 조회
      */
     List<MemberAddressResponse> getMemberAddressList(long memberId);
+
+    Page<MemberAddressResponse> getPagedMemberAddressList(long memberId, Pageable pageable);
 
     int countMemberAddress(long memberId);
 

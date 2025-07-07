@@ -5,6 +5,10 @@ import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressResponse;
 import com.nhnacademy.illuwa.domain.memberaddress.service.MemberAddressService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +24,18 @@ public class MemberAddressController {
     @GetMapping
     public ResponseEntity<List<MemberAddressResponse>> getMemberAddressList(@RequestHeader("X-USER-ID") long memberId){
         return ResponseEntity.ok().body(memberAddressService.getMemberAddressList(memberId));
+    }
+
+    @GetMapping("/paged")
+    public ResponseEntity<Page<MemberAddressResponse>> getPagedMemberAddressList(
+            @RequestHeader("X-USER-ID") long memberId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size){
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("defaultAddress").descending());
+        Page<MemberAddressResponse> addressPage = memberAddressService.getPagedMemberAddressList(memberId, pageable);
+
+        return ResponseEntity.ok(addressPage);
     }
 
     @PostMapping
