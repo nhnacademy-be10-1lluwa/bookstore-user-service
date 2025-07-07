@@ -110,11 +110,12 @@ class MemberControllerTest {
     }
 
     @Test
-    @DisplayName("회원 단건 조회 - X-USER-ID 헤더")
+    @DisplayName("회원 단일 조회 - X-USER-ID 헤더")
     void getMember() throws Exception {
         MemberResponse response = MemberResponse.builder()
                 .memberId(1L)
                 .name("최길동")
+                .birth(LocalDate.of(2000, 1, 1))
                 .email("gongju@naver.com")
                 .contact("010-1234-5678")
                 .gradeName(GradeName.GOLD.toString())
@@ -130,6 +131,7 @@ class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.memberId").value(1L))
                 .andExpect(jsonPath("$.name").value("최길동"))
+                .andExpect(jsonPath("$.birth").value("2000-01-01"))
                 .andExpect(jsonPath("$.email").value("gongju@naver.com"))
                 .andExpect(jsonPath("$.contact").value("010-1234-5678"))
                 .andExpect(jsonPath("$.gradeName").value("GOLD"))
@@ -175,4 +177,43 @@ class MemberControllerTest {
 
         Mockito.verify(memberService).removeMember(1L);
     }
+
+    @Test
+    @DisplayName("이번 달 생일 회원 조회")
+    void getMembersByBirthMonth() throws Exception {
+        List<MemberResponse> responseList = List.of(
+                MemberResponse.builder()
+                        .memberId(1L)
+                        .name("홍길동")
+                        .birth(LocalDate.of(1990, 7, 15))
+                        .email("hong@example.com")
+                        .contact("010-1234-5678")
+                        .gradeName(GradeName.GOLD.toString())
+                        .role(Role.USER)
+                        .status(Status.ACTIVE)
+                        .point(BigDecimal.ZERO)
+                        .build(),
+                MemberResponse.builder()
+                        .memberId(2L)
+                        .name("이순신")
+                        .birth(LocalDate.of(1985, 7, 5))
+                        .email("lee@example.com")
+                        .contact("010-5678-1234")
+                        .gradeName(GradeName.ROYAL.toString())
+                        .role(Role.USER)
+                        .status(Status.ACTIVE)
+                        .point(BigDecimal.valueOf(1000))
+                        .build()
+        );
+
+        Mockito.when(memberService.getMembersByBirthMonth(7)).thenReturn(responseList);
+
+        mockMvc.perform(get("/members/birth-month")
+                        .param("month", "7"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].name").value("홍길동"))
+                .andExpect(jsonPath("$[1].name").value("이순신"));
+    }
+
 }

@@ -37,13 +37,13 @@ public class MemberController {
 
     // 회원 단일 조회
     @GetMapping("/members")
-    public ResponseEntity<MemberResponse> getMember(@RequestHeader("X-USER_ID") long memberId) {
+    public ResponseEntity<MemberResponse> getMember(@RequestHeader("X-USER-ID") long memberId) {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberById(memberId));
     }
 
     // 회원 수정
     @PatchMapping("/members")
-    public ResponseEntity<MemberResponse> updateMember(@RequestHeader("X-USER_ID") long memberId, @Valid @RequestBody MemberUpdateRequest request) {
+    public ResponseEntity<MemberResponse> updateMember(@RequestHeader("X-USER-ID") long memberId, @Valid @RequestBody MemberUpdateRequest request) {
         MemberResponse updatedMemberDto = memberService.updateMember(memberId, request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(updatedMemberDto);
@@ -51,7 +51,7 @@ public class MemberController {
 
     //회원 삭제
     @DeleteMapping("/members")
-    public void deleteMember(@RequestHeader("X-USER_ID") long memberId) {
+    public void deleteMember(@RequestHeader("X-USER-ID") long memberId) {
         memberService.removeMember(memberId);
     }
 
