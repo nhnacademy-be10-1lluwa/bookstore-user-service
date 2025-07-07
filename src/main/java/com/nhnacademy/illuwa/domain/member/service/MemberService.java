@@ -30,7 +30,5 @@ public interface MemberService {
 
     void removeMember(long memberId);
 
-    boolean isNotActiveMember(long memberId);
-
     List<MemberResponse> getMembersByBirthMonth(int month);
 }
