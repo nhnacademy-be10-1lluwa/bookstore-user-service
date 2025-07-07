@@ -32,7 +32,7 @@ public class MemberAddressController {
         return ResponseEntity.ok().body(memberAddressService.getMemberAddress(addressId));
     }
 
-    @PatchMapping("/{addressId}")
+    @PostMapping("/{addressId}")
     public ResponseEntity<MemberAddressResponse> updateMemberAddress(@PathVariable long addressId, @Valid @RequestBody MemberAddressRequest request){
         return ResponseEntity.ok().body(memberAddressService.updateMemberAddress(addressId, request));
     }
@@ -40,6 +40,12 @@ public class MemberAddressController {
     @DeleteMapping("/{addressId}")
     public ResponseEntity<Void> deleteMemberAddress(@RequestHeader("X-USER-ID") long memberId, @PathVariable long addressId){
         memberAddressService.deleteMemberAddress(memberId, addressId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/set-default/{addressId}")
+    public ResponseEntity<Void> setDefaultAddress(@RequestHeader("X-USER-ID") long memberId, @PathVariable long addressId){
+        memberAddressService.setDefaultAddress(memberId, addressId);
         return ResponseEntity.ok().build();
     }
 }

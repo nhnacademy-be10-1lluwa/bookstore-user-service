@@ -12,7 +12,7 @@ import lombok.*;
 @EqualsAndHashCode
 public class MemberAddress {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_address_id")
     private long memberAddressId;
 
