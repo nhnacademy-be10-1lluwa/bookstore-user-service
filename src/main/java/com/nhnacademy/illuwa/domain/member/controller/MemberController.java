@@ -17,7 +17,7 @@ public class MemberController {
 
     // 회원 목록 조회
     @GetMapping("/admin/members")
-    public ResponseEntity<List<MemberResponse>> getAllMembers(){
+    public ResponseEntity<List<MemberResponse>> getAllMembers() {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getAllMembers());
     }
 
@@ -31,26 +31,19 @@ public class MemberController {
 
     // 로그인
     @PostMapping("/members/login")
-    public ResponseEntity<MemberResponse> login(@Valid @RequestBody MemberLoginRequest request){
+    public ResponseEntity<MemberResponse> login(@Valid @RequestBody MemberLoginRequest request) {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.login(request));
     }
 
     // 회원 단일 조회
     @GetMapping("/members")
-    public ResponseEntity<MemberResponse> getMember(@RequestHeader("X-USER_ID") long memberId){
+    public ResponseEntity<MemberResponse> getMember(@RequestHeader("X-USER_ID") long memberId) {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberById(memberId));
-    }
-
-    // 회원 단일 조회(Email)
-    @GetMapping(value = "/members", params = "memberEmail")
-    public ResponseEntity<MemberResponse> getMemberByEmail(@RequestParam String memberEmail) {
-        MemberResponse response = memberService.getMemberByEmail(memberEmail);
-        return ResponseEntity.ok(response);
     }
 
     // 회원 수정
     @PatchMapping("/members")
-    public ResponseEntity<MemberResponse> updateMember(@RequestHeader("X-USER_ID") long memberId, @Valid @RequestBody MemberUpdateRequest request){
+    public ResponseEntity<MemberResponse> updateMember(@RequestHeader("X-USER_ID") long memberId, @Valid @RequestBody MemberUpdateRequest request) {
         MemberResponse updatedMemberDto = memberService.updateMember(memberId, request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(updatedMemberDto);
@@ -58,8 +51,13 @@ public class MemberController {
 
     //회원 삭제
     @DeleteMapping("/members")
-    public void deleteMember(@RequestHeader("X-USER_ID") long memberId){
+    public void deleteMember(@RequestHeader("X-USER_ID") long memberId) {
         memberService.removeMember(memberId);
     }
 
+    // 이번 달 생일 회원 조회
+    @GetMapping(value = "/members/birth-month", params = "month")
+    public ResponseEntity<List<MemberResponse>> getMemberByBirthMonth(@RequestParam int month) {
+        return ResponseEntity.ok(memberService.getMembersByBirthMonth(month));
+    }
 }
