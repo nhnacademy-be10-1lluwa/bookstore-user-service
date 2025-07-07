@@ -3,19 +3,22 @@ GET http://localhost:10303/admin/members
 Content-Type: application/json
 
 ### 회원 단일 조회
-GET http://localhost:8080/members/1
-Content-Type: application/json
+GET http://localhost:10303/members
+X-USER_ID: 3
+
+### 월에 해당하는 회원 조회
+GET http://localhost:10303/members/birth-month?month=4
 
 ### 회원가입
 POST http://localhost:10303/members
 Content-Type: application/json
 
 {
-  "name" : "hge",
-  "birth" : "2000-03-13",
-  "email": "newuser@example.com",
+  "name" : "신규회원가입자2",
+  "birth" : "2000-07-13",
+  "email": "newmebmerABC@naver.com",
   "password": "Password123!",
-  "contact": "010-1234-5678"
+  "contact": "010-5463-5678"
 }
 
 ### 회원 이메일로 조회

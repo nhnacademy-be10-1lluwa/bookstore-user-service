@@ -5,6 +5,10 @@ import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressResponse;
 import com.nhnacademy.illuwa.domain.memberaddress.service.MemberAddressService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +26,18 @@ public class MemberAddressController {
         return ResponseEntity.ok().body(memberAddressService.getMemberAddressList(memberId));
     }
 
+    @GetMapping("/paged")
+    public ResponseEntity<Page<MemberAddressResponse>> getPagedMemberAddressList(
+            @RequestHeader("X-USER-ID") long memberId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size){
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("defaultAddress").descending());
+        Page<MemberAddressResponse> addressPage = memberAddressService.getPagedMemberAddressList(memberId, pageable);
+
+        return ResponseEntity.ok(addressPage);
+    }
+
     @PostMapping
     public ResponseEntity<MemberAddressResponse> createMemberAddress(@RequestHeader("X-USER-ID") long memberId, @Valid @RequestBody MemberAddressRequest request){
         return ResponseEntity.status(HttpStatus.CREATED).body(memberAddressService.registerMemberAddress(memberId, request));
@@ -32,7 +48,7 @@ public class MemberAddressController {
         return ResponseEntity.ok().body(memberAddressService.getMemberAddress(addressId));
     }
 
-    @PatchMapping("/{addressId}")
+    @PostMapping("/{addressId}")
     public ResponseEntity<MemberAddressResponse> updateMemberAddress(@PathVariable long addressId, @Valid @RequestBody MemberAddressRequest request){
         return ResponseEntity.ok().body(memberAddressService.updateMemberAddress(addressId, request));
     }
@@ -40,6 +56,12 @@ public class MemberAddressController {
     @DeleteMapping("/{addressId}")
     public ResponseEntity<Void> deleteMemberAddress(@RequestHeader("X-USER-ID") long memberId, @PathVariable long addressId){
         memberAddressService.deleteMemberAddress(memberId, addressId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/set-default/{addressId}")
+    public ResponseEntity<Void> setDefaultAddress(@RequestHeader("X-USER-ID") long memberId, @PathVariable long addressId){
+        memberAddressService.setDefaultAddress(memberId, addressId);
         return ResponseEntity.ok().build();
     }
 }

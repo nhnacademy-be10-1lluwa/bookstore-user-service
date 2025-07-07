@@ -12,6 +12,8 @@ import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.memberaddress.utils.MemberAddressMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -86,8 +88,24 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<MemberAddressResponse> getPagedMemberAddressList(long memberId, Pageable pageable) {
+        Page<MemberAddress> page = addressRepository.findAllByMember_MemberId(memberId, pageable);
+        return page.map(memberAddressMapper::toDto);
+    }
+
+    @Override
     public int countMemberAddress(long memberId) {
         return addressRepository.countAllByMember_MemberId(memberId);
+    }
+
+    @Override
+    public void setDefaultAddress(long memberId, long addressId) {
+        MemberAddress address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new MemberAddressNotFoundException(addressId));
+
+        addressRepository.unsetAllDefaultForMember(memberId);
+        addressRepository.setDefaultAddress(memberId, addressId);
     }
 
     private void validateMemberAddressLimit(long memberId) {

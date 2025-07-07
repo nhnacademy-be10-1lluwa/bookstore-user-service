@@ -1,6 +1,7 @@
 package com.nhnacademy.illuwa.domain.member.service;
 
 import com.nhnacademy.illuwa.domain.member.dto.*;
+import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 
 import java.math.BigDecimal;
@@ -28,4 +29,6 @@ public interface MemberService {
     void reactivateMember(long memberId);
 
     void removeMember(long memberId);
+
+    List<MemberResponse> getMembersByBirthMonth(int month);
 }

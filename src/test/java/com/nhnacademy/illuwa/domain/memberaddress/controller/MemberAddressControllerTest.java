@@ -13,7 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
@@ -113,7 +117,7 @@ class MemberAddressControllerTest {
         given(memberAddressService.updateMemberAddress(eq(addressId), any()))
                 .willReturn(response);
 
-        mockMvc.perform(patch("/members/addresses/{addressId}", addressId)
+        mockMvc.perform(post("/members/addresses/{addressId}", addressId)
                         .header("X-USER-ID", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -130,6 +134,20 @@ class MemberAddressControllerTest {
 
         mockMvc.perform(delete("/members/addresses/{addressId}", addressId)
                 .header("X-USER-ID", 1L))
+                .andExpect(status().isOk());
+    }
+
+
+    @Test
+    @DisplayName("기본 주소지 설정")
+    void testSetDefaultAddress() throws Exception {
+        long memberId = 1L;
+        long addressId = 1L;
+
+        willDoNothing().given(memberAddressService).setDefaultAddress(memberId, addressId);
+
+        mockMvc.perform(post("/members/addresses/set-default/{addressId}", addressId)
+                        .header("X-USER-ID", 1L))
                 .andExpect(status().isOk());
     }
 }
