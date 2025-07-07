@@ -22,7 +22,7 @@ public interface MemberAddressService {
     /**
      * 주소 삭제
      */
-    void deleteMemberAddress(long addressId);
+    void deleteMemberAddress(long memberId, long addressId);
 
     /**
      * 주소 단건 조회

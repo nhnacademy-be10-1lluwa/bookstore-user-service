@@ -9,27 +9,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/members/address")
+@RequestMapping("/members/addresses")
 public class MemberAddressController {
     private final MemberAddressService memberAddressService;
-
-    @GetMapping("/check-limit")
-    public ResponseEntity<Map<String, Object>> checkAddressLimit(@RequestHeader("X-USER-ID") long memberId){
-        int count = memberAddressService.countMemberAddress(memberId);
-        boolean canAdd = count < 10;
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("canAdd", canAdd);
-        response.put("currentCount", count);
-        response.put("maxLimit", 10);
-        return ResponseEntity.ok(response);
-    }
 
     @GetMapping
     public ResponseEntity<List<MemberAddressResponse>> getMemberAddressList(@RequestHeader("X-USER-ID") long memberId){
@@ -42,7 +28,7 @@ public class MemberAddressController {
     }
 
     @GetMapping("/{addressId}")
-    public ResponseEntity<MemberAddressResponse> getMemberAddress(@RequestHeader("X-USER-ID") long addressId){
+    public ResponseEntity<MemberAddressResponse> getMemberAddress(@PathVariable long addressId){
         return ResponseEntity.ok().body(memberAddressService.getMemberAddress(addressId));
     }
 
@@ -52,8 +38,8 @@ public class MemberAddressController {
     }
 
     @DeleteMapping("/{addressId}")
-    public ResponseEntity<Void> deleteMemberAddress(@PathVariable long addressId){
-        memberAddressService.deleteMemberAddress(addressId);
+    public ResponseEntity<Void> deleteMemberAddress(@RequestHeader("X-USER-ID") long memberId, @PathVariable long addressId){
+        memberAddressService.deleteMemberAddress(memberId, addressId);
         return ResponseEntity.ok().build();
     }
 }
