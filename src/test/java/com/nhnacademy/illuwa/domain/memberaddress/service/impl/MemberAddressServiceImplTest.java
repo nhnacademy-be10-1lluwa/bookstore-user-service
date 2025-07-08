@@ -92,44 +92,48 @@ class MemberAddressServiceImplTest {
     }
 
     @Test
-    @Disabled
     @DisplayName("회원 주소 등록 - false 체크해도 기본주소 없는 경우 자동 true")
     void registerAddress_forceDefaultIfNoneExists() {
         Member member = new Member();
         MemberAddressRequest request = createRequest(false);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-        when(addressRepository.countAllByMember_MemberId(1L)).thenReturn(0);
+        when(addressRepository.countAllByMember_MemberId(1L)).thenReturn(1); // 주소 1개라고 설정
         when(addressRepository.findDefaultMemberAddress(1L)).thenReturn(Optional.empty());
 
         when(addressRepository.save(any(MemberAddress.class))).thenAnswer(invocation -> {
             MemberAddress addr = invocation.getArgument(0);
-            setAddressId(addr,100L);
+            setAddressId(addr, 100L);
             return addr;
         });
 
         MemberAddressResponse response = addressService.registerMemberAddress(1L, request);
 
-        verify(addressRepository).setDefaultAddress(1L, 100L);
         assertThat(response).isNotNull();
         assertThat(response.isDefaultAddress()).isTrue();
+        assertThat(response.isForcedDefaultAddress()).isTrue();
     }
 
     @Test
     @DisplayName("회원 주소 등록 - 기본주소 false&기존 기본주소 있음")
     void registerAddress_notDefault_andDefaultAlreadyExists() {
         Member member = new Member();
+
+        MemberAddress existingDefault = new MemberAddress();
+        setAddressId(existingDefault, 1L);
+
         MemberAddressRequest request = createRequest(false);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-        when(addressRepository.countAllByMember_MemberId(1L)).thenReturn(0);
-        when(addressRepository.findDefaultMemberAddress(1L)).thenReturn(Optional.of(new MemberAddress())); // 기본 주소 존재
+        when(addressRepository.countAllByMember_MemberId(1L)).thenReturn(2);
+        when(addressRepository.findDefaultMemberAddress(1L)).thenReturn(Optional.of(existingDefault));
         when(addressRepository.save(any(MemberAddress.class))).thenAnswer(i -> i.getArgument(0));
 
         MemberAddressResponse response = addressService.registerMemberAddress(1L, request);
 
         assertThat(response).isNotNull();
         assertThat(response.isDefaultAddress()).isFalse();
+        assertThat(response.isForcedDefaultAddress()).isFalse();
         verify(addressRepository, never()).unsetAllDefaultForMember(1L);
     }
 
@@ -193,6 +197,8 @@ class MemberAddressServiceImplTest {
         when(addressRepository.findById(addressId)).thenReturn(Optional.of(address));
 
         MemberAddress another = mock(MemberAddress.class);
+        doNothing().when(another).changeDefaultAddress(true);
+
         List<MemberAddress> remaining = List.of(another);
         when(addressRepository.findAllByMember_MemberIdOrderByCreatedAtAsc(memberId)).thenReturn(remaining);
 
@@ -318,4 +324,38 @@ class MemberAddressServiceImplTest {
         assertEquals(expectedCount, actualCount);
         verify(addressRepository).countAllByMember_MemberId(memberId);
     }
+
+    @Test
+    @DisplayName("기본 주소 설정 - 기존 기본주소 아님")
+    void setDefaultAddress_shouldSetNewDefault() {
+        long memberId = 1L;
+        long addressId = 10L;
+
+        MemberAddress address = mock(MemberAddress.class);
+        when(address.isDefaultAddress()).thenReturn(false);
+        doNothing().when(address).changeDefaultAddress(true);
+        when(addressRepository.findById(addressId)).thenReturn(Optional.of(address));
+
+        addressService.setDefaultAddress(memberId, addressId);
+
+        verify(addressRepository).unsetAllDefaultForMember(memberId);
+        verify(address).changeDefaultAddress(true);
+    }
+
+    @Test
+    @DisplayName("기본 주소 설정 - 이미 기본주소인 경우 변경하지 않음")
+    void setDefaultAddress_alreadyDefault() {
+        long memberId = 1L;
+        long addressId = 10L;
+
+        MemberAddress address = mock(MemberAddress.class);
+        when(address.isDefaultAddress()).thenReturn(true);
+        when(addressRepository.findById(addressId)).thenReturn(Optional.of(address));
+
+        addressService.setDefaultAddress(memberId, addressId);
+
+        verify(addressRepository, never()).unsetAllDefaultForMember(anyLong());
+        verify(address, never()).changeDefaultAddress(anyBoolean());
+    }
+
 }

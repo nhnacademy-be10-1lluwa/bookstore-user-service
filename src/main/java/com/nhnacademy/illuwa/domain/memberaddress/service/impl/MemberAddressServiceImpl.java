@@ -43,7 +43,10 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         memberAddress.changeDefaultAddress(isDefault);
 
         MemberAddress savedAddress = addressRepository.save(memberAddress);
-        return memberAddressMapper.toDto(savedAddress);
+        MemberAddressResponse response = memberAddressMapper.toDto(savedAddress);
+        response.setForcedDefaultAddress(!request.isDefaultAddress() && isDefault);
+
+        return response;
     }
 
     @Override
@@ -51,11 +54,18 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         MemberAddress orgMemberAddress = addressRepository.findById(addressId)
                 .orElseThrow(() -> new MemberAddressNotFoundException(addressId));
 
+        boolean wasDefault = request.isDefaultAddress();
         boolean isDefault = assignDefaultAddressIfNeeded(memberId, addressId, request.isDefaultAddress());
         request.setDefaultAddress(isDefault);
+
         orgMemberAddress.updateMemberAddress(request);
-        return memberAddressMapper.toDto(orgMemberAddress);
+
+        MemberAddressResponse response = memberAddressMapper.toDto(orgMemberAddress);
+        response.setForcedDefaultAddress(!wasDefault && isDefault);
+
+        return response;
     }
+
 
     @Override
     public void deleteMemberAddress(long memberId, long addressId) {
@@ -128,16 +138,12 @@ public class MemberAddressServiceImpl implements MemberAddressService {
             return true;
         }
         if (existingDefaultOpt.isEmpty()) {
-            // 기본주소 없음 → 강제 기본
             return true;
         }
         MemberAddress existingDefault = existingDefaultOpt.get();
 
-        // 자기 자신이 기본주소인 경우 → 기본 해제 안 됨
-        if (existingDefault.getMemberAddressId() == currentAddressId) {
-            return true;
-        }
+        // 자기 자신이 기본주소인 경우 → 기본 해제 안 됨 true
         // 기본주소가 있고, 자기 자신도 아니고, 요청이 false → 기본주소 아님
-        return false;
+        return existingDefault.getMemberAddressId() == currentAddressId;
     }
 }
