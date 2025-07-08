@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -38,28 +39,33 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         validateMemberAddressLimit(memberId);
 
         MemberAddress memberAddress = memberAddressMapper.toEntity(request, member);
+        boolean isDefault = assignDefaultAddressIfNeeded(memberId, memberAddress.getMemberAddressId(), request.isDefaultAddress());
+        memberAddress.changeDefaultAddress(isDefault);
+
         MemberAddress savedAddress = addressRepository.save(memberAddress);
+        MemberAddressResponse response = memberAddressMapper.toDto(savedAddress);
+        response.setForcedDefaultAddress(!request.isDefaultAddress() && isDefault);
 
-        updateDefaultAddressIfNeeded(memberId, savedAddress.getMemberAddressId(), request.isDefaultAddress());
-
-        // TODO flush 사용 지양, 영속성 컨텍스트 사이 동기화 문제 해결
-        // 객체 상태를 변경하려면 리팩토링 필요
-//        addressRepository.flush();
-        return memberAddressMapper.toDto(savedAddress);
+        return response;
     }
 
     @Override
     public MemberAddressResponse updateMemberAddress(long memberId, long addressId, MemberAddressRequest request) {
         MemberAddress orgMemberAddress = addressRepository.findById(addressId)
                 .orElseThrow(() -> new MemberAddressNotFoundException(addressId));
+
+        boolean wasDefault = request.isDefaultAddress();
+        boolean isDefault = assignDefaultAddressIfNeeded(memberId, addressId, request.isDefaultAddress());
+        request.setDefaultAddress(isDefault);
+
         orgMemberAddress.updateMemberAddress(request);
 
-        updateDefaultAddressIfNeeded(memberId, addressId, request.isDefaultAddress());
+        MemberAddressResponse response = memberAddressMapper.toDto(orgMemberAddress);
+        response.setForcedDefaultAddress(!wasDefault && isDefault);
 
-        // TODO flush 사용 지양, 영속성 컨텍스트 사이 동기화 문제 해결
-//        addressRepository.flush();
-        return memberAddressMapper.toDto(orgMemberAddress);
+        return response;
     }
+
 
     @Override
     public void deleteMemberAddress(long memberId, long addressId) {
@@ -114,7 +120,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
                 .orElseThrow(() -> new MemberAddressNotFoundException(addressId));
         if (!address.isDefaultAddress()) {
             addressRepository.unsetAllDefaultForMember(memberId);
-            addressRepository.setDefaultAddress(memberId, addressId);
+            address.changeDefaultAddress(true);
         }
     }
 
@@ -124,15 +130,20 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         }
     }
 
-    private void updateDefaultAddressIfNeeded(long memberId, long addressId, Boolean isDefaultRequested) {
+    private boolean assignDefaultAddressIfNeeded(long memberId, long currentAddressId, Boolean isDefaultRequested) {
+        Optional<MemberAddress> existingDefaultOpt = addressRepository.findDefaultMemberAddress(memberId);
+
         if (Boolean.TRUE.equals(isDefaultRequested)) {
             addressRepository.unsetAllDefaultForMember(memberId);
-            addressRepository.setDefaultAddress(memberId, addressId);
-        } else {
-            boolean hasDefault = addressRepository.findDefaultMemberAddress(memberId).isPresent();
-            if (!hasDefault) {
-                addressRepository.setDefaultAddress(memberId, addressId);
-            }
+            return true;
         }
+        if (existingDefaultOpt.isEmpty()) {
+            return true;
+        }
+        MemberAddress existingDefault = existingDefaultOpt.get();
+
+        // 자기 자신이 기본주소인 경우 → 기본 해제 안 됨 true
+        // 기본주소가 있고, 자기 자신도 아니고, 요청이 false → 기본주소 아님
+        return existingDefault.getMemberAddressId() == currentAddressId;
     }
 }
