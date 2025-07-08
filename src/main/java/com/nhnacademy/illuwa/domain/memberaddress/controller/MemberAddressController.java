@@ -21,6 +21,12 @@ import java.util.List;
 public class MemberAddressController {
     private final MemberAddressService memberAddressService;
 
+    @GetMapping("/count")
+    public ResponseEntity<Integer> getMemberAddressCount(@RequestHeader("X-USER-ID") long memberId){
+        int count = memberAddressService.countMemberAddress(memberId);
+        return ResponseEntity.ok().body(count);
+    }
+
     @GetMapping
     public ResponseEntity<List<MemberAddressResponse>> getMemberAddressList(@RequestHeader("X-USER-ID") long memberId){
         return ResponseEntity.ok().body(memberAddressService.getMemberAddressList(memberId));
@@ -49,8 +55,8 @@ public class MemberAddressController {
     }
 
     @PostMapping("/{addressId}")
-    public ResponseEntity<MemberAddressResponse> updateMemberAddress(@PathVariable long addressId, @Valid @RequestBody MemberAddressRequest request){
-        return ResponseEntity.ok().body(memberAddressService.updateMemberAddress(addressId, request));
+    public ResponseEntity<MemberAddressResponse> updateMemberAddress(@RequestHeader("X-USER-ID") long memberId, @PathVariable long addressId, @Valid @RequestBody MemberAddressRequest request){
+        return ResponseEntity.ok().body(memberAddressService.updateMemberAddress(memberId, addressId, request));
     }
 
     @DeleteMapping("/{addressId}")

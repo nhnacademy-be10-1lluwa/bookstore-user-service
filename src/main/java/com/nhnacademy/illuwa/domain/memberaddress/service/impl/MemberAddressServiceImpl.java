@@ -34,20 +34,30 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     @Override
     public MemberAddressResponse registerMemberAddress(long memberId, MemberAddressRequest request) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(()-> new MemberNotFoundException(memberId));
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
         validateMemberAddressLimit(memberId);
-        handleDefaultAddressSetting(memberId, request);
 
         MemberAddress memberAddress = memberAddressMapper.toEntity(request, member);
-        return memberAddressMapper.toDto(addressRepository.save(memberAddress));
+        MemberAddress savedAddress = addressRepository.save(memberAddress);
+
+        updateDefaultAddressIfNeeded(memberId, savedAddress.getMemberAddressId(), request.isDefaultAddress());
+
+        // TODO flush 사용 지양, 영속성 컨텍스트 사이 동기화 문제 해결
+        // 객체 상태를 변경하려면 리팩토링 필요
+//        addressRepository.flush();
+        return memberAddressMapper.toDto(savedAddress);
     }
 
     @Override
-    public MemberAddressResponse updateMemberAddress(long addressId, MemberAddressRequest request) {
+    public MemberAddressResponse updateMemberAddress(long memberId, long addressId, MemberAddressRequest request) {
         MemberAddress orgMemberAddress = addressRepository.findById(addressId)
                 .orElseThrow(() -> new MemberAddressNotFoundException(addressId));
-
         orgMemberAddress.updateMemberAddress(request);
+
+        updateDefaultAddressIfNeeded(memberId, addressId, request.isDefaultAddress());
+
+        // TODO flush 사용 지양, 영속성 컨텍스트 사이 동기화 문제 해결
+//        addressRepository.flush();
         return memberAddressMapper.toDto(orgMemberAddress);
     }
 
@@ -62,12 +72,11 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         addressRepository.delete(address);
 
         if (wasDefault) {
-            List<MemberAddress> remains = addressRepository.findAllByMember_MemberId(memberId);
+            List<MemberAddress> remains = addressRepository.findAllByMember_MemberIdOrderByCreatedAtAsc(memberId);
             if (!remains.isEmpty()) {
                 remains.getFirst().changeDefaultAddress(true);
             }
         }
-
     }
 
     @Override
@@ -103,9 +112,10 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     public void setDefaultAddress(long memberId, long addressId) {
         MemberAddress address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new MemberAddressNotFoundException(addressId));
-
-        addressRepository.unsetAllDefaultForMember(memberId);
-        addressRepository.setDefaultAddress(memberId, addressId);
+        if (!address.isDefaultAddress()) {
+            addressRepository.unsetAllDefaultForMember(memberId);
+            addressRepository.setDefaultAddress(memberId, addressId);
+        }
     }
 
     private void validateMemberAddressLimit(long memberId) {
@@ -114,13 +124,14 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         }
     }
 
-    private void handleDefaultAddressSetting(long memberId, MemberAddressRequest request) {
-        if (Boolean.TRUE.equals(request.isDefaultAddress())) {
+    private void updateDefaultAddressIfNeeded(long memberId, long addressId, Boolean isDefaultRequested) {
+        if (Boolean.TRUE.equals(isDefaultRequested)) {
             addressRepository.unsetAllDefaultForMember(memberId);
+            addressRepository.setDefaultAddress(memberId, addressId);
         } else {
             boolean hasDefault = addressRepository.findDefaultMemberAddress(memberId).isPresent();
             if (!hasDefault) {
-                request.setDefaultAddress(true);
+                addressRepository.setDefaultAddress(memberId, addressId);
             }
         }
     }

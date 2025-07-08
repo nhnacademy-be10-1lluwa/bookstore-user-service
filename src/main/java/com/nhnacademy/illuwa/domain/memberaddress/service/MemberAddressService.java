@@ -19,7 +19,7 @@ public interface MemberAddressService {
      * 주소 수정
      * - 기본 주소로 변경 요청이 들어올 경우, 기존 기본 주소는 해제됨
      */
-    MemberAddressResponse updateMemberAddress(long addressId, MemberAddressRequest request);
+    MemberAddressResponse updateMemberAddress(long memberId, long addressId, MemberAddressRequest request);
 
     /**
      * 주소 삭제

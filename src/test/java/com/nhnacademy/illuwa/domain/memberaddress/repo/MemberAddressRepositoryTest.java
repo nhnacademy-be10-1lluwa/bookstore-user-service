@@ -73,6 +73,7 @@ class MemberAddressRepositoryTest {
     @DisplayName("MemberAddress 저장")
     void testSaveMemberAddress() {
         MemberAddress memberAddress = MemberAddress.builder()
+                .postCode("12345")
                 .addressName("우리집")
                 .recipientName("유지민")
                 .recipientContact("010-1234-5678")
@@ -94,6 +95,7 @@ class MemberAddressRepositoryTest {
     @DisplayName("MemberAddress 수정")
     void testUpdateAddress() {
         MemberAddress memberAddress = MemberAddress.builder()
+                .postCode("12345")
                 .addressName("선배님 댁")
                 .recipientName("장도연")
                 .recipientContact("010-2222-2222")
@@ -126,6 +128,7 @@ class MemberAddressRepositoryTest {
     @DisplayName("MemberAddress 삭제")
     void testDeleteAddress() {
         MemberAddress memberAddress = MemberAddress.builder()
+                .postCode("54321")
                 .addressName("삭제할 집")
                 .recipientName("김도영")
                 .recipientContact("010-0000-0000")
@@ -148,6 +151,7 @@ class MemberAddressRepositoryTest {
     @DisplayName("Member 기본 배송지 조회")
     void testFindDefaultAddressByMember() {
         MemberAddress defaultAddress = MemberAddress.builder()
+                .postCode("12345")
                 .addressName("기본 집")
                 .recipientName("기본 수령인")
                 .recipientContact("010-1111-2222")
@@ -170,6 +174,7 @@ class MemberAddressRepositoryTest {
     @DisplayName("Member 모든 주소 조회")
     void testFindAllByMember() {
         MemberAddress addr1 = MemberAddress.builder()
+                .postCode("12345")
                 .addressName("집1")
                 .recipientName("유지민")
                 .recipientContact("010-1111-1111")
@@ -180,6 +185,7 @@ class MemberAddressRepositoryTest {
                 .build();
 
         MemberAddress addr2 = MemberAddress.builder()
+                .postCode("54321")
                 .addressName("집2")
                 .recipientName("유지민")
                 .recipientContact("010-2222-2222")
@@ -203,6 +209,7 @@ class MemberAddressRepositoryTest {
     @DisplayName("멤버의 모든 주소 기본배송지 설정 해제")
     void TestUnsetAllDefaultForMember(){
         MemberAddress addr1 = MemberAddress.builder()
+                .postCode("12345")
                 .addressName("집1")
                 .recipientName("유지민")
                 .recipientContact("010-1111-1111")
@@ -213,6 +220,7 @@ class MemberAddressRepositoryTest {
                 .build();
 
         MemberAddress addr2 = MemberAddress.builder()
+                .postCode("23456")
                 .addressName("집2")
                 .recipientName("유지민")
                 .recipientContact("010-2222-2222")
@@ -223,6 +231,7 @@ class MemberAddressRepositoryTest {
                 .build();
 
         MemberAddress addr3 = MemberAddress.builder()
+                .postCode("34567")
                 .addressName("집3")
                 .recipientName("유지민")
                 .recipientContact("010-3333-3333")

@@ -2,6 +2,8 @@ package com.nhnacademy.illuwa.domain.memberaddress.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -16,4 +18,5 @@ public class MemberAddressResponse {
     private String address;
     private String detailAddress;
     private boolean defaultAddress;
+    private LocalDateTime createdAt;
 }

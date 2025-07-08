@@ -5,6 +5,8 @@ import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Table(name = "member_address")
 @Getter
 @NoArgsConstructor
@@ -16,7 +18,7 @@ public class MemberAddress {
     @Column(name = "member_address_id")
     private long memberAddressId;
 
-    @Column(name = "post_code")
+    @Column(name = "post_code", nullable = false)
     private String postCode;
 
     @Column(name = "address_name")
@@ -28,7 +30,7 @@ public class MemberAddress {
     @Column(name = "detail_address", nullable = false)
     private String detailAddress;
 
-    @Column(name = "default_address")
+    @Column(name = "default_address", nullable = false)
     private boolean defaultAddress = true;
 
     @Column(name = "recipient_name", nullable = false)
@@ -37,9 +39,19 @@ public class MemberAddress {
     @Column(name = "recipient_contact", nullable = false)
     private String recipientContact;
 
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+    }
 
     @Builder
     public MemberAddress(String postCode,
@@ -58,6 +70,7 @@ public class MemberAddress {
         this.address = address;
         this.detailAddress = detailAddress;
         this.defaultAddress = defaultAddress;
+        this.createdAt = LocalDateTime.now();
         this.member = member;
     }
 
