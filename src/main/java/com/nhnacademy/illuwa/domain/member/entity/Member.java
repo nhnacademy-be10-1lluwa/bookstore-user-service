@@ -64,9 +64,10 @@ public class Member {
     private LocalDateTime lastLoginAt;
 
     @Builder
-    public Member(String name, LocalDate birth, String email, String password,
+    public Member(String paycoId, String name, LocalDate birth, String email, String password,
                   Role role, String contact, Grade grade, BigDecimal point,
                   Status status) {
+        this.paycoId = paycoId;
         this.name = name;
         this.birth = birth;
         this.email = email;
