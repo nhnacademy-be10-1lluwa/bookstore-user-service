@@ -7,5 +7,4 @@ import java.util.Optional;
 public interface CustomMemberAddressRepository{
     Optional<MemberAddress> findDefaultMemberAddress(long memberId);
     void unsetAllDefaultForMember(long memberId);
-    void setDefaultAddress(long memberId, long addressId);
 }

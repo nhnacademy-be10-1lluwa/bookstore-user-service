@@ -79,7 +79,10 @@ public class MemberAddress {
     }
 
     public void changeDefaultAddress(boolean defaultAddress){
-        this.defaultAddress = defaultAddress;
+        if(this.defaultAddress != defaultAddress)
+        {
+            this.defaultAddress = defaultAddress;
+        }
     }
 
     public void updateMemberAddress(MemberAddressRequest request) {
