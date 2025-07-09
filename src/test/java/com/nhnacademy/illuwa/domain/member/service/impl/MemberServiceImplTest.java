@@ -176,7 +176,7 @@ class MemberServiceImplTest {
     void checkMemberStatus_inactive() {
         testMember.changeLastLoginAt(LocalDateTime.now().minusMonths(4));
         when(memberRepository.findById(anyLong())).thenReturn(Optional.of(testMember));
-        memberService.checkMemberStatus(1L);
+        memberService.updateMemberStatus(1L);
         assertThat(testMember.getStatus()).isEqualTo(Status.INACTIVE);
     }
 

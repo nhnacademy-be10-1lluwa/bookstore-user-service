@@ -141,7 +141,7 @@ class MemberControllerTest {
     }
 
     @Test
-    @DisplayName("회원 정보 수정 - PATCH")
+    @DisplayName("회원 정보 수정 - PUT")
     void updateMember() throws Exception {
         MemberUpdateRequest updateRequest = MemberUpdateRequest.builder()
                 .name("업데이트된 회원명")
@@ -158,7 +158,7 @@ class MemberControllerTest {
         Mockito.when(memberService.updateMember(eq(1L), any(MemberUpdateRequest.class)))
                 .thenReturn(response);
 
-        mockMvc.perform(patch("/members")
+        mockMvc.perform(put("/members")
                         .header("X-USER-ID", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))

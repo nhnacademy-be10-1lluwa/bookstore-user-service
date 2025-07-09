@@ -3,6 +3,7 @@ package com.nhnacademy.illuwa.common.advice;
 import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.common.exception.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.List;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -65,7 +67,7 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
         // 실제 운영에서는 에러 로그를 자세히 남기고, 사용자에게는 일반적인 메시지를 보여줍니다.
-        // log.error("Internal Server Error: ", ex);
+         log.error("Internal Server Error: {}", ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -19,6 +19,8 @@ import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
@@ -91,7 +93,10 @@ public class MemberServiceImpl implements MemberService {
             throw new InvalidInputException("비밀번호가 틀렸습니다.");
         }
 
-        checkMemberStatus(loginMember.getMemberId());
+        if(loginMember.getStatus().equals(Status.DELETED)){
+            throw new DeletedMemberException();
+        }
+        updateMemberStatus(loginMember.getMemberId());
         loginMember.changeLastLoginAt(LocalDateTime.now());
 
         memberRepository.save(loginMember);  //바로 DB 반영
@@ -109,6 +114,13 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(readOnly = true)
     @Override
+    public Page<MemberResponse> getPagedAllMembers(Pageable pageable) {
+        Page<Member> page = memberRepository.findActiveMemberOrderByLastLoginAtOrderDesc(pageable);
+        return page.map(memberMapper::toDto);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public List<MemberResponse> getAllMembersByStatus(Status status) {
         List<Member> memberList = memberRepository.findMembersByStatus(status);
         return memberList.stream()
@@ -121,7 +133,7 @@ public class MemberServiceImpl implements MemberService {
     public MemberResponse getMemberById(long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
-        checkMemberStatus(memberId);
+        updateMemberStatus(memberId);
         return memberMapper.toDto(member);
     }
 
@@ -140,13 +152,20 @@ public class MemberServiceImpl implements MemberService {
             orgMember.changeContact(newMemberRequest.getContact());
         }
         if(newMemberRequest.getName() != null){
-            orgMember.changeContact(newMemberRequest.getName());
+            orgMember.changeName(newMemberRequest.getName());
         }
         if(newMemberRequest.getPassword() != null){
-            orgMember.changeContact(newMemberRequest.getPassword());
+            String newPassword = passwordEncoder.encode(newMemberRequest.getPassword());
+            orgMember.changePassword(newPassword);
         }
         memberRepository.save(orgMember);
         return memberMapper.toDto(orgMember);
+    }
+
+    @Override
+    public boolean checkPassword(long memberId, String inputPassword) {
+        Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
+        return passwordEncoder.matches(inputPassword, member.getPassword());
     }
 
     @Override
@@ -165,7 +184,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void checkMemberStatus(long memberId) {
+    public void updateMemberStatus(long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
         LocalDateTime threeMonthsAgo  = LocalDateTime.now().minusMonths(3);
@@ -186,6 +205,9 @@ public class MemberServiceImpl implements MemberService {
     public void removeMember(long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
+        if(member.getStatus().equals(Status.DELETED)){
+            throw new DeletedMemberException();
+        }
         if(!memberRepository.isNotActiveMember(memberId)){
             member.changeStatus(Status.DELETED);
         }
