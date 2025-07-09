@@ -31,7 +31,7 @@ public class SocialMemberService {
     public Optional<MemberResponse> findByPaycoId(String paycoId) {
         return memberRepository.findByPaycoId(paycoId)
                 .map(member -> {
-                    memberService.checkMemberStatus(member.getMemberId());
+                    memberService.updateMemberStatus(member.getMemberId());
                     member.changeLastLoginAt(LocalDateTime.now());
                     Member saved = memberRepository.save(member);
                     return memberMapper.toDto(saved);
