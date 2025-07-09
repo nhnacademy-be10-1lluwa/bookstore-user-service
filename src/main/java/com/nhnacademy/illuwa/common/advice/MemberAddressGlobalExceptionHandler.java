@@ -5,12 +5,14 @@ import com.nhnacademy.illuwa.domain.memberaddress.exception.DuplicateMemberAddre
 import com.nhnacademy.illuwa.domain.memberaddress.exception.MemberAddressNotFoundException;
 import com.nhnacademy.illuwa.domain.memberaddress.exception.TooManyMemberAddressException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Order(4)
 public class MemberAddressGlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateMemberAddressException.class)
