@@ -1,6 +1,7 @@
 package com.nhnacademy.illuwa.domain.pointpolicy.dto;
 
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
+import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PolicyStatus;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -10,6 +11,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class PointPolicyResponse {
     private String policyKey;
+
+    private PolicyStatus status;
 
     private BigDecimal value;
 

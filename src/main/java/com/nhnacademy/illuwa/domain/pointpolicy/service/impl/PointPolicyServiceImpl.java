@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.List;
 
 @Service
@@ -64,11 +65,10 @@ public class PointPolicyServiceImpl implements PointPolicyService {
         PointPolicy pointPolicy = pointPolicyRepository.findById(policyKey)
                 .orElseThrow(() -> new PointPolicyNotFoundException(policyKey));
 
-        //타입 검증
-        validatePointPolicyValue(request.getValue(), request.getValueType());
-
         if(request.getValue() != null){
-            pointPolicy.changeValue(request.getValue());
+            validatePointPolicyValue(request.getValue(), request.getValueType());
+            BigDecimal value = request.getValue().divide(BigDecimal.valueOf(100), MathContext.DECIMAL64);
+            pointPolicy.changeValue(value);
         }
         if(request.getValueType() != null){
             pointPolicy.changeValueType(request.getValueType());
@@ -104,8 +104,8 @@ public class PointPolicyServiceImpl implements PointPolicyService {
             }
             case AMOUNT -> {
                 // 0 이상만 허용
-                if (value.compareTo(BigDecimal.ZERO) < 0) {
-                    throw new IllegalArgumentException("AMOUNT 타입은 0 이상만 허용됩니다.");
+                if (value.compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new InvalidInputException("AMOUNT 타입은 0 이상만 허용됩니다.");
                 }
             }
             default -> throw new InvalidInputException("알 수 없는 valueType이에요.");
