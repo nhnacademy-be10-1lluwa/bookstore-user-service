@@ -1,8 +1,9 @@
 package com.nhnacademy.illuwa.domain.member.service;
 
 import com.nhnacademy.illuwa.domain.member.dto.*;
-import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,6 +15,8 @@ public interface MemberService {
 
     List<MemberResponse> getAllMembers();
 
+    Page<MemberResponse> getPagedAllMembers(Pageable pageable);
+
     List<MemberResponse> getAllMembersByStatus(Status status);
 
     MemberResponse getMemberById(long memberId);
@@ -22,9 +25,11 @@ public interface MemberService {
 
     MemberResponse updateMember(long memberId, MemberUpdateRequest newMemberRequest);
 
+    boolean checkPassword(long memberId, String inputPassword);
+
     boolean updateMemberGrade(long memberId, BigDecimal netOrderAmount);
 
-    void checkMemberStatus(long memberId);
+    void updateMemberStatus(long memberId);
 
     void reactivateMember(long memberId);
 

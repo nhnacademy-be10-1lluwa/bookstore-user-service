@@ -24,9 +24,8 @@ Content-Type: application/json
 ### 회원 이메일로 조회
 GET http://localhost:10303/members?memberEmail=newuser@example.com
 
-
 ### 회원 로그인
-POST http://localhost:8080/members/login
+POST http://localhost:10303/members/login
 Content-Type: application/json
 
 {
@@ -35,8 +34,10 @@ Content-Type: application/json
 }
 
 ### 회원 정보수정
-PATCH http://localhost:8080/members/1
+PATCH http://localhost:10303/members
 Content-Type: application/json
+X-USER-ID: 1
+
 
 {
   "email": "royal@example.com",
@@ -44,8 +45,18 @@ Content-Type: application/json
 }
 
 ### 회원 삭제
-DELETE http://localhost:8080/members/1
+DELETE http://localhost:10303/members
 Content-Type: application/json
+X-USER-ID: 3
+
+### 비밀번호 일치 확인
+POST http://localhost:10303/members/check-pw
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "inputPassword": "Admin1234$"
+}
 
 
 
