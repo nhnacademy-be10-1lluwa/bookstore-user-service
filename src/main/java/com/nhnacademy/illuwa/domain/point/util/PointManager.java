@@ -13,6 +13,8 @@ import com.nhnacademy.illuwa.domain.pointhistory.dto.UsedPointRequest;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
 import com.nhnacademy.illuwa.domain.pointhistory.service.PointHistoryService;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyResponse;
+import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PolicyStatus;
+import com.nhnacademy.illuwa.domain.pointpolicy.exception.InactivePointPolicyException;
 import com.nhnacademy.illuwa.domain.pointpolicy.exception.PointPolicyNotFoundException;
 import com.nhnacademy.illuwa.domain.pointpolicy.service.PointPolicyService;
 import lombok.RequiredArgsConstructor;
@@ -70,15 +72,18 @@ public class PointManager {
             throw new MemberNotFoundException();
         }
         PointPolicyResponse policy = pointPolicyService.findByPolicyKey(reason.getPolicyKey().orElseThrow(PointPolicyNotFoundException::new));
+        if(policy.getStatus().equals(PolicyStatus.INACTIVE)){
+            throw new InactivePointPolicyException(policy.getPolicyKey());
+        }
         BigDecimal point = calculatedFromPolicy(policy);
         updateMemberPoint(memberId, point);
         return pointHistoryService.recordPointHistory(memberId, point, reason);
     }
 
 
-    //정책 기반 포인트 계산
+    //정책 기반 포인트 계산 - 이벤트 종류는 보통 AMOUNT만 사용
     private BigDecimal calculatedFromPolicy(PointPolicyResponse policy) {
-        //AMOUNT 타입만 있지만 추후 RATE 타입은 다르게 리턴
+        //AMOUNT 타입만 있지만 추후 RATE 타입은 다르게 리턴 필요
         return policy.getValue();
     }
 
