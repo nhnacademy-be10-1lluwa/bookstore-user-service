@@ -25,7 +25,7 @@ public class PointPolicyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PointPolicyResponse>> getAllPointPolicies(){
+    public ResponseEntity<List<PointPolicyResponse>> getPointPolicyList(){
         return ResponseEntity.status(HttpStatus.OK).body(pointPolicyService.findAllPointPolicy());
     }
 
@@ -34,7 +34,7 @@ public class PointPolicyController {
         return ResponseEntity.status(HttpStatus.OK).body(pointPolicyService.findByPolicyKey(policyKey));
     }
 
-    @PatchMapping("/{policyKey}")
+    @PutMapping("/{policyKey}")
     public ResponseEntity<PointPolicyResponse> updatePointPolicy(@PathVariable String policyKey, @Valid @RequestBody PointPolicyUpdateRequest request){
         PointPolicyResponse response = pointPolicyService.updatePointPolicy(policyKey, request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
