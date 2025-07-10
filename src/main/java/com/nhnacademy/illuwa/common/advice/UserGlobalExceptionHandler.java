@@ -1,6 +1,6 @@
 package com.nhnacademy.illuwa.common.advice;
 
-import com.nhnacademy.illuwa.common.exception.dto.ErrorResponse;
+import com.nhnacademy.illuwa.common.exception.ErrorResponse;
 import com.nhnacademy.illuwa.domain.guest.exception.GuestNotFoundException;
 import com.nhnacademy.illuwa.domain.member.exception.DeletedMemberException;
 import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;

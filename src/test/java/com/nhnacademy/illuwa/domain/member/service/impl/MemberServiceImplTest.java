@@ -97,7 +97,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("회원 가입 성공")
-    void register_success() {
+    void register_success(){
         when(memberRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(gradeService.getByGradeName(GradeName.BASIC)).thenReturn(basicGrade);
         when(memberRepository.save(any(Member.class))).thenReturn(testMember);

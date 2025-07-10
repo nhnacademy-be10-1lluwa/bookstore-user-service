@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "point_history")
 public class PointHistory {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "point_history_id")
     private long pointHistoryId;
 

@@ -1,7 +1,7 @@
 package com.nhnacademy.illuwa.common.advice;
 
+import com.nhnacademy.illuwa.common.exception.ErrorResponse;
 import com.nhnacademy.illuwa.common.exception.InvalidInputException;
-import com.nhnacademy.illuwa.common.exception.dto.ErrorResponse;
 import com.sun.jdi.request.InvalidRequestStateException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -45,18 +45,6 @@ public class GlobalExceptionHandler {
                 request.getRequestURI());
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex, HttpServletRequest request) {
-        ErrorResponse response = ErrorResponse.of(
-                HttpStatus.CONFLICT.value(),
-                HttpStatus.CONFLICT.getReasonPhrase(),
-                "ILLEGAL_STATE",
-                ex.getMessage(),
-                request.getRequestURI());
-
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(InvalidRequestStateException.class)

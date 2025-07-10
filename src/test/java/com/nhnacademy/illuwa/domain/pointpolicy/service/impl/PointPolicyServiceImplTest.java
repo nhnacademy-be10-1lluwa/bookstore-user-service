@@ -65,7 +65,7 @@ class PointPolicyServiceImplTest {
 
     @Test
     @DisplayName("포인트 정책 등록")
-    void testCreatePointPolicy() {
+    void testCreatePointPolicy(){
         when(pointPolicyRepository.save(any(PointPolicy.class))).thenReturn(testPolicy);
         PointPolicyResponse saved = pointPolicyService.createPointPolicy(request);
 
