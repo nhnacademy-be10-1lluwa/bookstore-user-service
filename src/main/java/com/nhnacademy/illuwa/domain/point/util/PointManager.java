@@ -3,7 +3,6 @@ package com.nhnacademy.illuwa.domain.point.util;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.grade.service.GradeService;
-import com.nhnacademy.illuwa.domain.member.dto.MemberPointResponse;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
@@ -35,24 +34,24 @@ public class PointManager {
 
     private static final String BOOK_DEFAULT_RATE = "book_default_rate";
 
-    public MemberPointResponse getMemberPoint(long memberId){
-        Member member = memberRepository.findById(memberId)
+    public BigDecimal getMemberPoint(long memberId){
+        memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
-        return new MemberPointResponse(member.getMemberId(), memberRepository.findPoint(memberId));
-
+        return memberRepository.findPoint(memberId);
     }
 
     //단순 포인트 업데이트 수행
-    private void updateMemberPoint(long memberId, BigDecimal point) {
+    private BigDecimal updateMemberPoint(long memberId, BigDecimal point) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
         member.changePoint(member.getPoint().add(point));
+        return member.getPoint();
     }
 
     //사용한 포인트 처리
     public PointHistoryResponse processUsedPoint(UsedPointRequest request){
         BigDecimal point = request.getUsedPoint().negate();  //음수 전환
-        updateMemberPoint(request.getMemberId(), point);
+        BigDecimal balance = updateMemberPoint(request.getMemberId(), point);
         return pointHistoryService.recordPointHistory(request.getMemberId(), point, PointReason.USED_IN_ORDER);
     }
 

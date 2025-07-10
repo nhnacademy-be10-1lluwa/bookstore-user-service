@@ -31,6 +31,9 @@ public class PointHistory {
     @Column(name = "type", nullable = false)
     private PointHistoryType type;
 
+    @Column(name = "balance", nullable = false)
+    private BigDecimal balance;
+
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -38,10 +41,11 @@ public class PointHistory {
     private long memberId;
 
     @Builder
-    public PointHistory(BigDecimal amount, PointReason reason, PointHistoryType type, LocalDateTime createdAt, long memberId) {
+    public PointHistory(BigDecimal amount, PointReason reason, PointHistoryType type, BigDecimal balance, LocalDateTime createdAt, long memberId) {
         this.amount = amount;
         this.reason = reason;
         this.type = type;
+        this.balance = balance;
         this.createdAt = createdAt;
         this.memberId = memberId;
     }

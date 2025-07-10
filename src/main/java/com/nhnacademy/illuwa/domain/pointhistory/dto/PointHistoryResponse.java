@@ -8,11 +8,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class PointHistoryResponse {
-    private BigDecimal amount;
-    private PointReason reason;
     private PointHistoryType type;
+    private PointReason reason;
+    private BigDecimal amount;
+    private BigDecimal balance;
     private LocalDateTime createdAt;
 }
