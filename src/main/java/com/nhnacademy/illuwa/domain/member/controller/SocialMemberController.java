@@ -2,6 +2,7 @@ package com.nhnacademy.illuwa.domain.member.controller;
 
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.dto.PaycoMemberRequest;
+import com.nhnacademy.illuwa.domain.member.dto.PaycoMemberUpdateRequest;
 import com.nhnacademy.illuwa.domain.member.service.impl.SocialMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,12 @@ public class SocialMemberController {
     public ResponseEntity<MemberResponse> registerSocialUser(@RequestBody PaycoMemberRequest request) {
         MemberResponse response = socialMemberService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping
+    public ResponseEntity<Void>  updateSocialUser(@RequestHeader("X-USER-ID") long memberId, @RequestBody PaycoMemberUpdateRequest request) {
+        socialMemberService.updatePaycoMember(memberId, request);
+        return ResponseEntity.ok().build();
     }
 }
 
