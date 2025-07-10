@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/members/internal/social-members")
+@RequestMapping("/api/members/internal/social-members")
 @RequiredArgsConstructor
 public class SocialMemberController {
     private final SocialMemberService socialMemberService;

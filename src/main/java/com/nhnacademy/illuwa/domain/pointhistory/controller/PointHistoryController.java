@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/members/points")
+@RequestMapping("/api/members/points")
 @RequiredArgsConstructor
 public class PointHistoryController {
 

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/members/inactive/verification")
+@RequestMapping("/api/members/inactive/verification")
 public class InactiveVerificationController {
 
     private final MemberService memberService;

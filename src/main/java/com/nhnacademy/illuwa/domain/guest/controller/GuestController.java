@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/guests")
+@RequestMapping("/api/guests")
 public class GuestController {
     private final GuestService guestService;
 
