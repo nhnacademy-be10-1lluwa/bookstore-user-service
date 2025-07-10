@@ -2,6 +2,7 @@ package com.nhnacademy.illuwa.common.advice;
 
 import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.common.exception.dto.ErrorResponse;
+import com.sun.jdi.request.InvalidRequestStateException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -57,6 +58,19 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(InvalidRequestStateException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidRequestStateException(IllegalStateException ex, HttpServletRequest request) {
+        ErrorResponse response = ErrorResponse.of(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "INVALID_REQUEST",
+                ex.getMessage(),
+                request.getRequestURI());
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
 
     // 기타 예상치 못한 예외 처리
     @ExceptionHandler(Exception.class)

@@ -22,7 +22,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Component
@@ -69,6 +68,7 @@ public class MemberInitializer implements ApplicationRunner {
                 .type(PointHistoryType.EARN)
                 .amount(joinPolicy.getValue())
                 .reason(PointReason.JOIN)
+                .balance(joinPolicy.getValue())
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -98,6 +98,7 @@ public class MemberInitializer implements ApplicationRunner {
                 .type(PointHistoryType.EARN)
                 .amount(joinPolicy.getValue())
                 .reason(PointReason.JOIN)
+                .balance(joinPolicy.getValue())
                 .createdAt(LocalDateTime.now())
                 .build();
 
