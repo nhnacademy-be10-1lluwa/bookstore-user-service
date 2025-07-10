@@ -1,6 +1,7 @@
 package com.nhnacademy.illuwa.domain.message.service;
 
 import com.nhnacademy.illuwa.common.client.DoorayMessageClient;
+import com.nhnacademy.illuwa.common.exception.ActionNotAllowedException;
 import com.nhnacademy.illuwa.domain.guest.dto.GuestOrderRequest;
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
@@ -158,7 +159,7 @@ class MessageSendServiceTest {
 
         when(memberService.getMemberByEmail("gongju@naver.com")).thenReturn(activeMember);
 
-        IllegalStateException ex = assertThrows(IllegalStateException.class,
+        ActionNotAllowedException ex = assertThrows(ActionNotAllowedException.class,
                 () -> messageSendService.sendVerificationCode(request));
 
         assertEquals("휴면 회원만 인증이 필요합니다!", ex.getMessage());
