@@ -1,6 +1,5 @@
 package com.nhnacademy.illuwa.domain.pointhistory.controller;
 
-import com.nhnacademy.illuwa.domain.member.dto.MemberPointResponse;
 import com.nhnacademy.illuwa.domain.pointhistory.dto.PointAfterOrderRequest;
 import com.nhnacademy.illuwa.domain.pointhistory.dto.PointHistoryResponse;
 import com.nhnacademy.illuwa.domain.pointhistory.dto.UsedPointRequest;
@@ -12,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -25,7 +25,7 @@ public class PointHistoryController {
      * 포인트 조회
      */
     @GetMapping
-    public ResponseEntity<MemberPointResponse> getMemberPoint(@RequestHeader("X-USER-ID") long memberId) {
+    public ResponseEntity<BigDecimal> getMemberPoint(@RequestHeader("X-USER-ID") long memberId) {
         return ResponseEntity.ok(pointManager.getMemberPoint(memberId));
     }
     /**
@@ -35,6 +35,9 @@ public class PointHistoryController {
     public ResponseEntity<List<PointHistoryResponse>> getMemberPointHistories(@RequestHeader("X-USER-ID") long memberId) {
         return ResponseEntity.ok(pointHistoryService.getMemberPointHistories(memberId));
     }
+
+
+    /* 내부 통신 api*/
     /**
      * 이벤트 포인트 지급
      */

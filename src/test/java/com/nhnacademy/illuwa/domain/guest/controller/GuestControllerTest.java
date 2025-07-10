@@ -46,7 +46,7 @@ class GuestControllerTest {
         Mockito.when(guestService.getGuest(any(GuestLoginRequest.class)))
                 .thenReturn(dummyResponse);
 
-        mockMvc.perform(post("/guests/login")
+        mockMvc.perform(post("/api/guests/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
@@ -72,7 +72,7 @@ class GuestControllerTest {
         Mockito.when(guestService.createGuest(any(GuestOrderRequest.class)))
                 .thenReturn(dummyResponse);
 
-        mockMvc.perform(post("/guests/create")
+        mockMvc.perform(post("/api/guests/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(orderRequest)))
                 .andExpect(status().isCreated())

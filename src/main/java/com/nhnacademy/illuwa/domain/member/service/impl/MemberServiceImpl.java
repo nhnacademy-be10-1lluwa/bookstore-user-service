@@ -6,6 +6,7 @@ import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.grade.service.GradeService;
 import com.nhnacademy.illuwa.domain.member.dto.*;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
+import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.exception.DeletedMemberException;
 import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;
@@ -67,6 +68,10 @@ public class MemberServiceImpl implements MemberService {
         Member newMember = memberMapper.toEntity(request);
         newMember.changeGrade(basicGrade);
 
+        //페이코 회원은 가입과 동시에 로그인한 걸로 기록
+        if(newMember.getRole().equals(Role.PAYCO)){
+            newMember.changeLastLoginAt(LocalDateTime.now());
+        }
         Member saved = memberRepository.save(newMember);
 
         try {
