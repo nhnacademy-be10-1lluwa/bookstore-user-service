@@ -46,10 +46,13 @@ public class PointHistoryController {
     @GetMapping("/histories/paged")
     public ResponseEntity<Page<PointHistoryResponse>> getPagedMemberPointHistories(
             @RequestHeader("X-USER-ID") long memberId,
+            @RequestParam(defaultValue = "ALL") String type,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size) {
+
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(pointHistoryService.getPagedMemberPointHistories(memberId, pageable));
+        Page<PointHistoryResponse> result = pointHistoryService.getPagedMemberPointHistories(memberId, type, pageable);
+        return ResponseEntity.ok(result);
     }
 
 

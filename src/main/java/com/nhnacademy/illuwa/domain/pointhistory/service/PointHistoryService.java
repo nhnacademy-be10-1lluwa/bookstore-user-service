@@ -14,5 +14,6 @@ public interface PointHistoryService {
 
     //회원 포인트 히스토리 조회
     List<PointHistoryResponse> getMemberPointHistories(long memberId);
-    Page<PointHistoryResponse> getPagedMemberPointHistories(long memberId, Pageable pageable);
+    Page<PointHistoryResponse> getPagedMemberPointHistories(long memberId, String type, Pageable pageable);
+
 }

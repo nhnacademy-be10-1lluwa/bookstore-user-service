@@ -3,6 +3,7 @@ package com.nhnacademy.illuwa.domain.pointhistory.service.impl;
 import com.nhnacademy.illuwa.domain.pointhistory.dto.PointHistoryRequest;
 import com.nhnacademy.illuwa.domain.pointhistory.dto.PointHistoryResponse;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.PointHistory;
+import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointHistoryType;
 import com.nhnacademy.illuwa.domain.pointhistory.repo.PointHistoryRepository;
 import com.nhnacademy.illuwa.domain.pointhistory.service.PointHistoryService;
 import com.nhnacademy.illuwa.domain.pointhistory.util.PointHistoryMapper;
@@ -41,8 +42,17 @@ public class PointHistoryServiceImpl implements PointHistoryService {
     }
 
     @Override
-    public Page<PointHistoryResponse> getPagedMemberPointHistories(long memberId, Pageable pageable){
-        Page<PointHistory> page = pointHistoryRepository.findAllByMemberIdOrderByCreatedAtDesc(memberId, pageable);
+    public Page<PointHistoryResponse> getPagedMemberPointHistories(long memberId, String type, Pageable pageable) {
+        Page<PointHistory> page;
+
+        if ("EARN".equalsIgnoreCase(type)) {
+            page = pointHistoryRepository.findByMemberIdAndTypeOrderByCreatedAtDesc(memberId, PointHistoryType.EARN, pageable);
+        } else if ("USE".equalsIgnoreCase(type)) {
+            page = pointHistoryRepository.findByMemberIdAndTypeOrderByCreatedAtDesc(memberId, PointHistoryType.USE, pageable);
+        } else {
+            page = pointHistoryRepository.findAllByMemberIdOrderByCreatedAtDesc(memberId, pageable);
+        }
         return page.map(pointHistoryMapper::toDto);
     }
+
 }
