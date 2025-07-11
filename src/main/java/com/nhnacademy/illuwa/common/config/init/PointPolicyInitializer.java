@@ -25,7 +25,7 @@ public class PointPolicyInitializer implements ApplicationRunner {
         saveOrUpdate("join_point", new BigDecimal("5000"), PointValueType.AMOUNT, "회원가입 포인트 적립액");
         saveOrUpdate("review_point", new BigDecimal("200"), PointValueType.AMOUNT, "리뷰 포인트 적립액");
         saveOrUpdate("photo_review_point", new BigDecimal("500"), PointValueType.AMOUNT, "포토리뷰 포인트 적립액");
-        saveOrUpdate("book_default_rate", new BigDecimal("0.005"), PointValueType.RATE, "도서구매 기본 적립률");
+        saveOrUpdate("book_default_rate", new BigDecimal("0.01"), PointValueType.RATE, "도서구매 기본 적립률");
     }
 
     private void saveOrUpdate(String key, BigDecimal value, PointValueType type, String description) {
