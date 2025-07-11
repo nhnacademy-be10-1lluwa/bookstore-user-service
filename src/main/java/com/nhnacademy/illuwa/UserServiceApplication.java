@@ -6,10 +6,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableFeignClients
-public class IlluwaApplication {
+public class UserServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(IlluwaApplication.class, args);
+        SpringApplication.run(UserServiceApplication.class, args);
     }
 
 }
