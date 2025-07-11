@@ -1,6 +1,7 @@
 package com.nhnacademy.illuwa.domain.message.service;
 
 import com.nhnacademy.illuwa.common.client.DoorayMessageClient;
+import com.nhnacademy.illuwa.common.exception.ActionNotAllowedException;
 import com.nhnacademy.illuwa.domain.guest.dto.GuestOrderRequest;
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
@@ -67,7 +68,7 @@ public class MessageSendService {
     public SendMessageResponse sendVerificationCode(SendMessageRequest request) {
         MemberResponse memberDto = memberService.getMemberByEmail(request.getRecipientEmail());
         if (!memberDto.getStatus().equals(Status.INACTIVE)) {
-            throw new IllegalStateException("휴면 회원만 인증이 필요합니다!");
+            throw new ActionNotAllowedException("휴면 회원만 인증이 필요합니다!");
         }
         String code = generateVerificationCode();
         String key = "verify:" + request.getRecipientEmail();

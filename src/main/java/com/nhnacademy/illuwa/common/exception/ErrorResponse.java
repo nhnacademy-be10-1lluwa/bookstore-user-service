@@ -1,4 +1,4 @@
-package com.nhnacademy.illuwa.common.exception.dto;
+package com.nhnacademy.illuwa.common.exception;
 
 import lombok.Builder;
 import lombok.Getter;

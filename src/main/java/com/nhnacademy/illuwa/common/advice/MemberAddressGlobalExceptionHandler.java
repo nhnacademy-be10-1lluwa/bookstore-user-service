@@ -1,6 +1,6 @@
 package com.nhnacademy.illuwa.common.advice;
 
-import com.nhnacademy.illuwa.common.exception.dto.ErrorResponse;
+import com.nhnacademy.illuwa.common.exception.ErrorResponse;
 import com.nhnacademy.illuwa.domain.memberaddress.exception.DuplicateMemberAddressException;
 import com.nhnacademy.illuwa.domain.memberaddress.exception.MemberAddressNotFoundException;
 import com.nhnacademy.illuwa.domain.memberaddress.exception.TooManyMemberAddressException;

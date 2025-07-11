@@ -20,7 +20,6 @@ public class SocialMemberController {
         return socialMemberService.findByPaycoId(request.getIdNo())
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-        //notfound 말고 boolean(isExist) 값 리턴 --!
     }
 
     @PostMapping

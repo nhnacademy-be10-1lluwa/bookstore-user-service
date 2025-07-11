@@ -1,6 +1,7 @@
 package com.nhnacademy.illuwa.common.advice;
 
-import com.nhnacademy.illuwa.common.exception.dto.ErrorResponse;
+import com.nhnacademy.illuwa.common.exception.ErrorResponse;
+import com.nhnacademy.illuwa.domain.point.exception.InvalidPointOperationException;
 import com.nhnacademy.illuwa.domain.pointpolicy.exception.DuplicatePointPolicyException;
 import com.nhnacademy.illuwa.domain.pointpolicy.exception.InactivePointPolicyException;
 import com.nhnacademy.illuwa.domain.pointpolicy.exception.PointPolicyNotFoundException;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @Order(2)
-public class PointPolicyGlobalExceptionHandler {
+public class PointGlobalExceptionHandler {
 
     @ExceptionHandler(PointPolicyNotFoundException.class)
     public ResponseEntity<ErrorResponse> handlePolicyNotFoundException(PointPolicyNotFoundException ex, HttpServletRequest request) {
@@ -45,6 +46,18 @@ public class PointPolicyGlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 "INACTIVE_POLICY",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidPointOperationException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPointOperationException(InvalidPointOperationException ex, HttpServletRequest request) {
+        ErrorResponse response = ErrorResponse.of(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "INVALID_POINT_OPERATION",
                 ex.getMessage(),
                 request.getRequestURI()
         );

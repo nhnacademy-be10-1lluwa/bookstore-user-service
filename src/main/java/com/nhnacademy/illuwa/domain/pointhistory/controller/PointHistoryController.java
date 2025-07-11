@@ -44,14 +44,18 @@ public class PointHistoryController {
     @PostMapping("/event")
     public ResponseEntity<PointHistoryResponse> earnEventPoint(@RequestHeader("X-USER-ID") long memberId,
                                                @RequestParam("reason") PointReason reason) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(pointManager.processEventPoint(memberId, reason));
+        return pointManager.processEventPoint(memberId, reason)
+                .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response))
+                .orElse(ResponseEntity.noContent().build());
     }
     /**
      * 주문에 의한 포인트 적립
      */
     @PostMapping("/order/earn")
     public ResponseEntity<PointHistoryResponse> earnPointAfterOrder(@RequestBody PointAfterOrderRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(pointManager.processOrderPoint(request));
+        return pointManager.processOrderPoint(request)
+                .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response))
+                .orElse(ResponseEntity.noContent().build());
     }
     /**
      * 주문에 의한 포인트 사용
