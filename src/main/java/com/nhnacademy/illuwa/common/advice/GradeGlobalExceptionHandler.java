@@ -1,6 +1,6 @@
 package com.nhnacademy.illuwa.common.advice;
 
-import com.nhnacademy.illuwa.common.exception.dto.ErrorResponse;
+import com.nhnacademy.illuwa.common.exception.ErrorResponse;
 import com.nhnacademy.illuwa.domain.grade.exception.GradeNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.annotation.Order;

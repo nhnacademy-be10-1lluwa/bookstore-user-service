@@ -19,7 +19,7 @@ public class MemberEventPublisher {
     }
 
     public void sendMemberCreateEvent(MemberEventDto message) {
-        rabbitTemplate.convertAndSend("test_welcome_queue",message);
+        rabbitTemplate.convertAndSend("1lluwa_welcome_queue",message);
         log.info(message.getName());
         log.info(message.getMemberId().toString());
         log.info(message.getBirth().toString());

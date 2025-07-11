@@ -2,19 +2,24 @@ package com.nhnacademy.illuwa.domain.pointhistory.dto;
 
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointHistoryType;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PointHistoryResponse {
+public class PointHistoryRequest {
+    private long memberId;
     private PointHistoryType type;
     private PointReason reason;
     private BigDecimal amount;
     private BigDecimal balance;
-    private LocalDateTime createdAt;
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

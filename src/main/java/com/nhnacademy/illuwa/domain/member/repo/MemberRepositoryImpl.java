@@ -32,10 +32,10 @@ public class MemberRepositoryImpl implements CustomMemberRepository{
     @Override
     public BigDecimal findPoint(long memberId) {
         QMember member = QMember.member;
-        return (BigDecimal) queryFactory.select(member.point)
+        return   queryFactory.select(member.point)
                 .from(member)
                 .where(member.memberId.eq(memberId))
-                .fetch();
+                .fetchOne();
     }
     public boolean isNotActiveMember(long memberId) {
         QMember member = QMember.member;

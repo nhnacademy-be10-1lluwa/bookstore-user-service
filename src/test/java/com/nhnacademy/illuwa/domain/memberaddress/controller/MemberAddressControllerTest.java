@@ -63,7 +63,7 @@ class MemberAddressControllerTest {
         given(memberAddressService.getMemberAddressList(memberId))
                 .willReturn(List.of(createResponse(1L, true)));
 
-        mockMvc.perform(get("/members/addresses", memberId)
+        mockMvc.perform(get("/api/members/addresses", memberId)
                 .header("X-USER-ID", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].memberAddressId").value(1L))
@@ -77,7 +77,7 @@ class MemberAddressControllerTest {
         given(memberAddressService.getMemberAddress(addressId))
                 .willReturn(createResponse(addressId, true));
 
-        mockMvc.perform(get("/members/addresses/{addressId}", addressId)
+        mockMvc.perform(get("/api/members/addresses/{addressId}", addressId)
                         .header("X-USER-ID", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.memberAddressId").value(addressId))
@@ -94,7 +94,7 @@ class MemberAddressControllerTest {
         given(memberAddressService.registerMemberAddress(eq(memberId), any()))
                 .willReturn(response);
 
-        mockMvc.perform(post("/members/addresses", memberId)
+        mockMvc.perform(post("/api/members/addresses", memberId)
                         .header("X-USER-ID", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -114,7 +114,7 @@ class MemberAddressControllerTest {
         given(memberAddressService.updateMemberAddress(eq(memberId), eq(addressId), any()))
                 .willReturn(response);
 
-        mockMvc.perform(post("/members/addresses/{addressId}", addressId)
+        mockMvc.perform(post("/api/members/addresses/{addressId}", addressId)
                         .header("X-USER-ID", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -129,7 +129,7 @@ class MemberAddressControllerTest {
         long addressId = 1L;
         willDoNothing().given(memberAddressService).deleteMemberAddress(memberId, addressId);
 
-        mockMvc.perform(delete("/members/addresses/{addressId}", addressId)
+        mockMvc.perform(delete("/api/members/addresses/{addressId}", addressId)
                 .header("X-USER-ID", 1L))
                 .andExpect(status().isOk());
     }
@@ -143,7 +143,7 @@ class MemberAddressControllerTest {
 
         willDoNothing().given(memberAddressService).setDefaultAddress(memberId, addressId);
 
-        mockMvc.perform(post("/members/addresses/set-default/{addressId}", addressId)
+        mockMvc.perform(post("/api/members/addresses/set-default/{addressId}", addressId)
                         .header("X-USER-ID", 1L))
                 .andExpect(status().isOk());
     }

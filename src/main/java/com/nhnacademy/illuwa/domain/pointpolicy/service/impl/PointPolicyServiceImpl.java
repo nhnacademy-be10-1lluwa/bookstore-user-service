@@ -1,6 +1,5 @@
 package com.nhnacademy.illuwa.domain.pointpolicy.service.impl;
 
-import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyCreateRequest;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyResponse;
 import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyUpdateRequest;
@@ -9,6 +8,7 @@ import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
 import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PolicyStatus;
 import com.nhnacademy.illuwa.domain.pointpolicy.exception.DuplicatePointPolicyException;
 import com.nhnacademy.illuwa.domain.pointpolicy.exception.PointPolicyNotFoundException;
+import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.domain.pointpolicy.repo.PointPolicyRepository;
 import com.nhnacademy.illuwa.domain.pointpolicy.service.PointPolicyService;
 import com.nhnacademy.illuwa.domain.pointpolicy.utils.PointPolicyMapper;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +34,6 @@ public class PointPolicyServiceImpl implements PointPolicyService {
     public PointPolicyResponse findByPolicyKey(String policyKey) {
         PointPolicy pointPolicy = pointPolicyRepository.findById(policyKey)
                 .orElseThrow(() -> new PointPolicyNotFoundException(policyKey));
-
         return pointPolicyMapper.toDto(pointPolicy);
     }
 
@@ -48,32 +48,40 @@ public class PointPolicyServiceImpl implements PointPolicyService {
     }
 
     @Override
-    public PointPolicyResponse createPointPolicy(PointPolicyCreateRequest request) {
+    public PointPolicyResponse createPointPolicy(PointPolicyCreateRequest request){
         List<PointPolicy> pointPolicyList = pointPolicyRepository.findAll();
         for (PointPolicy pointPolicy : pointPolicyList) {
-            if (pointPolicy.getPolicyKey().equals(request.getPolicyKey())) {   //false 반환 시 중복
+            if (pointPolicy.getPolicyKey().equals(request.getPolicyKey())) {
                 throw new DuplicatePointPolicyException(request.getPolicyKey());
             }
         }
         validatePointPolicyValue(request.getValue(), request.getValueType());
+//        if(request.getValueType().equals(PointValueType.RATE)){
+//            request.setValue(request.getValue().divide(BigDecimal.valueOf(100), MathContext.DECIMAL64));
+//        }
         PointPolicy saved = pointPolicyRepository.save(pointPolicyMapper.toEntity(request));
         return pointPolicyMapper.toDto(saved);
     }
 
     @Override
-    public PointPolicyResponse updatePointPolicy(String policyKey, PointPolicyUpdateRequest request) {
+    public PointPolicyResponse updatePointPolicy(String policyKey, PointPolicyUpdateRequest request){
         PointPolicy pointPolicy = pointPolicyRepository.findById(policyKey)
                 .orElseThrow(() -> new PointPolicyNotFoundException(policyKey));
-
-        if(request.getValue() != null){
-            validatePointPolicyValue(request.getValue(), request.getValueType());
-            BigDecimal value = request.getValue().divide(BigDecimal.valueOf(100), MathContext.DECIMAL64);
-            pointPolicy.changeValue(value);
+        if(!Objects.equals(request.getStatus(), pointPolicy.getStatus())){
+            pointPolicy.changeStatus(request.getStatus());
         }
-        if(request.getValueType() != null){
+        BigDecimal newValue = request.getValue();
+        PointValueType newType = request.getValueType();
+
+        if(!Objects.equals(newValue, pointPolicy.getValue()) || !Objects.equals(newType, pointPolicy.getValueType())){
+            validatePointPolicyValue(newValue, newType);
+//            if(newType.equals(PointValueType.RATE)){
+//                newValue = newValue.divide(BigDecimal.valueOf(100), MathContext.DECIMAL64);
+//            }
+            pointPolicy.changeValue(newValue);
             pointPolicy.changeValueType(request.getValueType());
         }
-        if(request.getDescription() != null){
+        if(!Objects.equals(request.getDescription(), pointPolicy.getDescription())){
             pointPolicy.changeDescription(request.getDescription());
         }
         return pointPolicyMapper.toDto(pointPolicyRepository.save(pointPolicy));
@@ -90,7 +98,7 @@ public class PointPolicyServiceImpl implements PointPolicyService {
         }
     }
 
-    private void validatePointPolicyValue(BigDecimal value, PointValueType type) {
+    private void validatePointPolicyValue(BigDecimal value, PointValueType type){
         if (value == null || type == null) {
             throw new InvalidInputException("value와 valueType은 빈 값일 수 없습니다.");
         }
@@ -108,7 +116,7 @@ public class PointPolicyServiceImpl implements PointPolicyService {
                     throw new InvalidInputException("AMOUNT 타입은 0 이상만 허용됩니다.");
                 }
             }
-            default -> throw new InvalidInputException("알 수 없는 valueType이에요.");
+            default -> throw new InvalidInputException("알 수 없는 ValueType이에요.");
         }
     }
 }

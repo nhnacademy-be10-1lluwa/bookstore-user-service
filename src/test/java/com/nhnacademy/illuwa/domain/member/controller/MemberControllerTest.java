@@ -50,7 +50,7 @@ class MemberControllerTest {
 
         Mockito.when(memberService.getAllMembers()).thenReturn(List.of(response));
 
-        mockMvc.perform(get("/admin/members"))
+        mockMvc.perform(get("/api/admin/members"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].memberId").value(1L))
                 .andExpect(jsonPath("$[0].name").value("최길동"))
@@ -77,7 +77,7 @@ class MemberControllerTest {
         Mockito.when(memberService.register(any(MemberRegisterRequest.class)))
                 .thenReturn(registerResponse);
 
-        mockMvc.perform(post("/members")
+        mockMvc.perform(post("/api/members")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated())
@@ -100,7 +100,7 @@ class MemberControllerTest {
         Mockito.when(memberService.login(any(MemberLoginRequest.class)))
                 .thenReturn(loginResponse);
 
-        mockMvc.perform(post("/members/login")
+        mockMvc.perform(post("/api/members/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
@@ -126,7 +126,7 @@ class MemberControllerTest {
 
         Mockito.when(memberService.getMemberById(1L)).thenReturn(response);
 
-        mockMvc.perform(get("/members")
+        mockMvc.perform(get("/api/members")
                         .header("X-USER-ID", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.memberId").value(1L))
@@ -158,7 +158,7 @@ class MemberControllerTest {
         Mockito.when(memberService.updateMember(eq(1L), any(MemberUpdateRequest.class)))
                 .thenReturn(response);
 
-        mockMvc.perform(put("/members")
+        mockMvc.perform(put("/api/members")
                         .header("X-USER-ID", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
@@ -171,7 +171,7 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원 삭제")
     void deleteMember() throws Exception {
-        mockMvc.perform(delete("/members")
+        mockMvc.perform(delete("/api/members")
                         .header("X-USER-ID", 1L))
                 .andExpect(status().isOk());
 
@@ -208,7 +208,7 @@ class MemberControllerTest {
 
         Mockito.when(memberService.getMembersByBirthMonth(7)).thenReturn(responseList);
 
-        mockMvc.perform(get("/members/birth-month")
+        mockMvc.perform(get("/api/members/birth-month")
                         .param("month", "7"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))

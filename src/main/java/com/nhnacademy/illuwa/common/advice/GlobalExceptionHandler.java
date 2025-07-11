@@ -1,7 +1,8 @@
 package com.nhnacademy.illuwa.common.advice;
 
+import com.nhnacademy.illuwa.common.exception.ErrorResponse;
 import com.nhnacademy.illuwa.common.exception.InvalidInputException;
-import com.nhnacademy.illuwa.common.exception.dto.ErrorResponse;
+import com.sun.jdi.request.InvalidRequestStateException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -46,17 +47,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex, HttpServletRequest request) {
+    @ExceptionHandler(InvalidRequestStateException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidRequestStateException(IllegalStateException ex, HttpServletRequest request) {
         ErrorResponse response = ErrorResponse.of(
-                HttpStatus.CONFLICT.value(),
-                HttpStatus.CONFLICT.getReasonPhrase(),
-                "ILLEGAL_STATE",
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "INVALID_REQUEST",
                 ex.getMessage(),
                 request.getRequestURI());
 
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
 
     // 기타 예상치 못한 예외 처리
     @ExceptionHandler(Exception.class)
@@ -68,7 +70,6 @@ public class GlobalExceptionHandler {
                 "서버 내부 오류가 발생했습니다.",
                 request.getRequestURI()
         );
-        // 실제 운영에서는 에러 로그를 자세히 남기고, 사용자에게는 일반적인 메시지를 보여줍니다.
          log.error("Internal Server Error: {}", ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -73,6 +73,7 @@ class PointHistoryRepositoryTest {
                 .reason(PointReason.JOIN)
                 .type(PointHistoryType.EARN)
                 .amount(new BigDecimal("5000"))
+                .balance(new BigDecimal("5000"))
                 .createdAt(LocalDateTime.now().minusDays(2))
                 .build();
 
@@ -81,6 +82,7 @@ class PointHistoryRepositoryTest {
                 .reason(PointReason.PURCHASE)
                 .type(PointHistoryType.USE)
                 .amount(new BigDecimal("300"))
+                .balance(new BigDecimal("4700"))
                 .createdAt(LocalDateTime.now().minusDays(1))
                 .build();
 
@@ -89,6 +91,7 @@ class PointHistoryRepositoryTest {
                 .reason(PointReason.PHOTO_REVIEW)
                 .type(PointHistoryType.EARN)
                 .amount(new BigDecimal("500"))
+                .balance(new BigDecimal("4200"))
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -104,6 +107,7 @@ class PointHistoryRepositoryTest {
                 .amount(new BigDecimal("5000"))
                 .type(PointHistoryType.EARN)
                 .reason(PointReason.JOIN)
+                .balance(new BigDecimal("5000"))
                 .createdAt(LocalDateTime.now())
                 .memberId(member.getMemberId())
                 .build();
@@ -119,8 +123,8 @@ class PointHistoryRepositoryTest {
     @Test
     @DisplayName("모든 포인트 히스토리 조회")
     void testFindAll() {
-        PointHistory history1 = new PointHistory(new BigDecimal("200"), PointReason.REVIEW, PointHistoryType.EARN, LocalDateTime.of(2025,3,19,21,29), member.getMemberId());
-        PointHistory history2 = new PointHistory(new BigDecimal("500"), PointReason.PHOTO_REVIEW, PointHistoryType.EARN, LocalDateTime.now(), member.getMemberId());
+        PointHistory history1 = new PointHistory(new BigDecimal("200"), PointReason.REVIEW, PointHistoryType.EARN, new BigDecimal("200"), LocalDateTime.of(2025,3,19,21,29), member.getMemberId());
+        PointHistory history2 = new PointHistory(new BigDecimal("500"), PointReason.PHOTO_REVIEW, PointHistoryType.EARN, new BigDecimal(800), LocalDateTime.now(), member.getMemberId());
 
         pointHistoryRepository.save(history1);
         pointHistoryRepository.save(history2);

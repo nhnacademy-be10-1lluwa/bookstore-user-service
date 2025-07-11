@@ -14,7 +14,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/admin/point-policies")
+@RequestMapping("/api/admin/point-policies")
 public class PointPolicyController {
 
     private final PointPolicyService pointPolicyService;

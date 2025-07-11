@@ -1,10 +1,13 @@
 package com.nhnacademy.illuwa.domain.pointhistory.entity.enums;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public enum PointReason {
-    PURCHASE(null),     // 구매 적립
+    PURCHASE("book_default_rate"),     // 구매 적립
     USED_IN_ORDER(null),  //사용
     JOIN("join_point"),   // 회원가입
     REVIEW("review_point"), // 일반리뷰
@@ -26,5 +29,4 @@ public enum PointReason {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Invalid reason: " + value));
     }
-
 }

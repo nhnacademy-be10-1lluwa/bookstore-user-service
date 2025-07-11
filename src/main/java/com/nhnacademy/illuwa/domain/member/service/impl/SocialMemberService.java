@@ -3,11 +3,14 @@ package com.nhnacademy.illuwa.domain.member.service.impl;
 import com.nhnacademy.illuwa.domain.member.dto.MemberRegisterRequest;
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.dto.PaycoMemberRequest;
+import com.nhnacademy.illuwa.domain.member.dto.PaycoMemberUpdateRequest;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
+import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -54,18 +57,36 @@ public class SocialMemberService {
         return memberService.register(registerRequest);
     }
 
+    public void updatePaycoMember(long memberId, PaycoMemberUpdateRequest request) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        if (request.getName() != null) {
+            member.changeName(request.getName());
+        }
+        if (request.getBirth() != null) {
+            member.changeBirth(request.getBirth());
+        }
+        if (request.getEmail() != null) {
+            member.changeEmail(request.getEmail());
+        }
+        if (request.getContact() != null) {
+            member.changeContact(request.getContact());
+        }
+        memberRepository.save(member);
+    }
+
     private LocalDate parseBirthdayOrDefault(String birthdayMMdd) {
         if (birthdayMMdd == null || birthdayMMdd.length() != 4) {
             // MMdd 형식이 아닌 경우 기본 생일 반환 (예: 1990-01-01)
-            return LocalDate.of(1990, 1, 1);
+            return LocalDate.of(1000, 1, 1);
         }
         try {
             // "MMdd" 형식 파싱 → 임의 연도 붙이기
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMdd");
             LocalDate parsed = LocalDate.parse(birthdayMMdd, formatter);
-            return parsed.withYear(1990); // 연도는 임의
+            return parsed.withYear(1000); // 연도는 임의
         } catch (DateTimeParseException e) {
-            return LocalDate.of(1990, 1, 1);
+            return LocalDate.of(1000, 1, 1);
         }
     }
 }
