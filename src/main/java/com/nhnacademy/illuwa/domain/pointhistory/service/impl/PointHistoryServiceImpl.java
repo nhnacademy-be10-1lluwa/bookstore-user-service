@@ -7,6 +7,8 @@ import com.nhnacademy.illuwa.domain.pointhistory.repo.PointHistoryRepository;
 import com.nhnacademy.illuwa.domain.pointhistory.service.PointHistoryService;
 import com.nhnacademy.illuwa.domain.pointhistory.util.PointHistoryMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,5 +38,11 @@ public class PointHistoryServiceImpl implements PointHistoryService {
     public List<PointHistoryResponse> getMemberPointHistories(long memberId){
         return pointHistoryRepository.findByMemberIdOrderByCreatedAtDesc(memberId)
                 .stream().map(pointHistoryMapper::toDto).toList();
+    }
+
+    @Override
+    public Page<PointHistoryResponse> getPagedMemberPointHistories(long memberId, Pageable pageable){
+        Page<PointHistory> page = pointHistoryRepository.findAllByMemberIdOrderByCreatedAtDesc(memberId, pageable);
+        return page.map(pointHistoryMapper::toDto);
     }
 }

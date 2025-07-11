@@ -7,6 +7,10 @@ import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
 import com.nhnacademy.illuwa.domain.point.util.PointManager;
 import com.nhnacademy.illuwa.domain.pointhistory.service.PointHistoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +38,18 @@ public class PointHistoryController {
     @GetMapping("/histories")
     public ResponseEntity<List<PointHistoryResponse>> getMemberPointHistories(@RequestHeader("X-USER-ID") long memberId) {
         return ResponseEntity.ok(pointHistoryService.getMemberPointHistories(memberId));
+    }
+
+    /**
+     * 포인트 내역 페이지네이션 조회
+     */
+    @GetMapping("/histories/paged")
+    public ResponseEntity<Page<PointHistoryResponse>> getPagedMemberPointHistories(
+            @RequestHeader("X-USER-ID") long memberId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(pointHistoryService.getPagedMemberPointHistories(memberId, pageable));
     }
 
 
