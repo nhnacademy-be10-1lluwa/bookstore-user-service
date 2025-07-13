@@ -161,7 +161,7 @@ class MessageSendServiceTest {
 
     @Test
     @DisplayName("인증번호 생성 형식 검증")
-    void testGenerateVerificationCode_format() throws Exception {
+    void testGenerateVerificationCode_format() {
         String code = messageSendService.generateVerificationCode();
         assertTrue(code.matches("\\d{6}"));
     }

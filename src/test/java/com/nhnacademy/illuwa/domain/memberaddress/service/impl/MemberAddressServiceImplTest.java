@@ -12,7 +12,6 @@ import com.nhnacademy.illuwa.domain.memberaddress.repo.MemberAddressRepository;
 import com.nhnacademy.illuwa.domain.memberaddress.utils.MemberAddressMapper;
 import com.nhnacademy.illuwa.domain.memberaddress.utils.MemberAddressMapperImpl;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

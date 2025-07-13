@@ -4,7 +4,6 @@ import com.nhnacademy.illuwa.common.client.DoorayMessageClient;
 import com.nhnacademy.illuwa.common.exception.ActionNotAllowedException;
 import com.nhnacademy.illuwa.domain.guest.dto.GuestOrderRequest;
 import com.nhnacademy.illuwa.domain.member.dto.InactiveCheckResponse;
-import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.message.dto.SendMessageRequest;
