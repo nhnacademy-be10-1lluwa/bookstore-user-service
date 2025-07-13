@@ -58,7 +58,7 @@ class PointHistoryRepositoryTest {
         Grade basicGrade = gradeData.getBasicGrade();
 
         member = Member.builder()
-                .name("공주님")
+                .name("카리나")
                 .birth(LocalDate.of(2002,2,19))
                 .email("gongju@illuwa.com")
                 .password("Pwd12345678!*")
@@ -123,14 +123,17 @@ class PointHistoryRepositoryTest {
     @Test
     @DisplayName("모든 포인트 히스토리 조회")
     void testFindAll() {
+        List<PointHistory> orgHistory = pointHistoryRepository.findAll();
+
         PointHistory history1 = new PointHistory(new BigDecimal("200"), PointReason.REVIEW, PointHistoryType.EARN, new BigDecimal("200"), LocalDateTime.of(2025,3,19,21,29), member.getMemberId());
         PointHistory history2 = new PointHistory(new BigDecimal("500"), PointReason.PHOTO_REVIEW, PointHistoryType.EARN, new BigDecimal(800), LocalDateTime.now(), member.getMemberId());
 
         pointHistoryRepository.save(history1);
         pointHistoryRepository.save(history2);
 
-        List<PointHistory> allHistory = pointHistoryRepository.findAll();
-        assertThat(allHistory).hasSize(5);
+        List<PointHistory> nowHistory = pointHistoryRepository.findAll();
+
+        assertThat(orgHistory.size()+2).isEqualTo(nowHistory.size());
     }
 
     @Test

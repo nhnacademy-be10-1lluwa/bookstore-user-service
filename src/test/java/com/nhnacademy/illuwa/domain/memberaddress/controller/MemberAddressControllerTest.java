@@ -37,7 +37,7 @@ class MemberAddressControllerTest {
                 .address("서울시 강남구")
                 .detailAddress("101호")
                 .addressName("집")
-                .recipientName("공주님")
+                .recipientName("카리나")
                 .recipientContact("010-1234-5678")
                 .defaultAddress(isDefault)
                 .build();
@@ -50,7 +50,7 @@ class MemberAddressControllerTest {
                 .address("서울시 강남구")
                 .detailAddress("101호")
                 .addressName("집")
-                .recipientName("공주님")
+                .recipientName("카리나")
                 .recipientContact("010-1234-5678")
                 .defaultAddress(isDefault)
                 .build();
@@ -67,7 +67,7 @@ class MemberAddressControllerTest {
                 .header("X-USER-ID", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].memberAddressId").value(1L))
-                .andExpect(jsonPath("$[0].recipientName").value("공주님"));
+                .andExpect(jsonPath("$[0].recipientName").value("카리나"));
     }
 
     @Test
@@ -81,7 +81,7 @@ class MemberAddressControllerTest {
                         .header("X-USER-ID", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.memberAddressId").value(addressId))
-                .andExpect(jsonPath("$.recipientName").value("공주님"));
+                .andExpect(jsonPath("$.recipientName").value("카리나"));
     }
 
     @Test

@@ -37,7 +37,7 @@ class MessageControllerTest {
         request.setText("테스트 메시지입니다~");
 
         SendMessageResponse mockResponse =
-                new SendMessageResponse(request.getRecipientEmail(), "두레이 메시지 전송 성공!", request.getText());
+                new SendMessageResponse(true, request.getRecipientEmail(), "두레이 메시지 전송 성공!", request.getText());
 
         when(messageSendService.sendDoorayMessage(any(SendMessageRequest.class)))
                 .thenReturn(mockResponse);
@@ -48,6 +48,7 @@ class MessageControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().isSuccess()).isTrue();
         assertThat(response.getBody().getEmail()).isEqualTo(request.getRecipientEmail());
         assertThat(response.getBody().getMessage()).isEqualTo("두레이 메시지 전송 성공!");
     }

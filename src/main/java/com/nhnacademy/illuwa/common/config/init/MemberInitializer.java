@@ -45,63 +45,93 @@ public class MemberInitializer implements ApplicationRunner {
 
 
         /* 관리자 계정 */
-        if (memberRepository.findByEmail("admin@1lluwa.com").isPresent()) {
-            return;
+        if (memberRepository.findByEmail("admin@1lluwa.com").isEmpty()) {
+            Member admin = Member.builder()
+                    .name("관리자")
+                    .birth("1990-01-01")
+                    .email("admin@1lluwa.com")
+                    .password(passwordEncoder.encode("Admin1234$"))
+                    .role(Role.ADMIN)
+                    .contact("010-1234-5678")
+                    .grade(basicGrade)
+                    .point(joinPolicy.getValue())
+                    .status(Status.ACTIVE)
+                    .build();
+
+            Member adminMember = memberRepository.save(admin);
+
+            PointHistory joinPoint1 = PointHistory.builder()
+                    .memberId(adminMember.getMemberId())
+                    .type(PointHistoryType.EARN)
+                    .amount(joinPolicy.getValue())
+                    .reason(PointReason.JOIN)
+                    .balance(joinPolicy.getValue())
+                    .createdAt(LocalDateTime.now())
+                    .build();
+
+            pointHistoryRepository.save(joinPoint1);
         }
-
-        Member admin = Member.builder()
-                .name("관리자")
-                .birth("1990-01-01")
-                .email("admin@1lluwa.com")
-                .password(passwordEncoder.encode("Admin1234$"))
-                .role(Role.ADMIN)
-                .contact("010-1234-5678")
-                .grade(basicGrade)
-                .point(joinPolicy.getValue())
-                .status(Status.ACTIVE)
-                .build();
-
-        Member adminMember = memberRepository.save(admin);
-
-        PointHistory joinPoint1 = PointHistory.builder()
-                .memberId(adminMember.getMemberId())
-                .type(PointHistoryType.EARN)
-                .amount(joinPolicy.getValue())
-                .reason(PointReason.JOIN)
-                .balance(joinPolicy.getValue())
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        pointHistoryRepository.save(joinPoint1);
 
         /* 일반 회원 계정 */
-        if (memberRepository.findByEmail("karina@naver.com").isPresent()) {
-            return;
+        if (memberRepository.findByEmail("karina@naver.com").isEmpty()) {
+            Member basicMember = Member.builder()
+                    .name("카리나")
+                    .birth("2000-04-11")
+                    .email("karina@naver.com")
+                    .password(passwordEncoder.encode("Karina1234$"))
+                    .role(Role.USER)
+                    .contact("010-1234-5678")
+                    .grade(basicGrade)
+                    .point(joinPolicy.getValue())
+                    .status(Status.ACTIVE)
+                    .build();
+
+            Member savedMember = memberRepository.save(basicMember);
+
+            PointHistory joinPoint2 = PointHistory.builder()
+                    .memberId(savedMember.getMemberId())
+                    .type(PointHistoryType.EARN)
+                    .amount(joinPolicy.getValue())
+                    .reason(PointReason.JOIN)
+                    .balance(joinPolicy.getValue())
+                    .createdAt(LocalDateTime.now())
+                    .build();
+
+            pointHistoryRepository.save(joinPoint2);
         }
 
-        Member basicMember = Member.builder()
-                .name("카리나")
-                .birth("2000-04-11")
-                .email("karina@naver.com")
-                .password(passwordEncoder.encode("Karina1234$"))
-                .role(Role.USER)
-                .contact("010-1234-5678")
-                .grade(basicGrade)
-                .point(joinPolicy.getValue())
-                .status(Status.ACTIVE)
-                .build();
 
-        Member savedMember = memberRepository.save(basicMember);
+        /* 휴면 회원 계정 */
+        if (memberRepository.findByEmail("inactive@1lluwa.com").isEmpty()) {
+            LocalDateTime joinedAt = LocalDateTime.now().minusMonths(6);
+            LocalDateTime lastLoginAt = LocalDateTime.now().minusMonths(4);
 
-        PointHistory joinPoint2 = PointHistory.builder()
-                .memberId(savedMember.getMemberId())
-                .type(PointHistoryType.EARN)
-                .amount(joinPolicy.getValue())
-                .reason(PointReason.JOIN)
-                .balance(joinPolicy.getValue())
-                .createdAt(LocalDateTime.now())
-                .build();
+            Member dormantMember = Member.builder()
+                    .name("여름휴가")
+                    .birth("2000-01-01")
+                    .email("inactive@1lluwa.com")
+                    .password(passwordEncoder.encode("Inactive1234$"))
+                    .role(Role.USER)
+                    .contact("010-9999-8888")
+                    .grade(basicGrade)
+                    .point(joinPolicy.getValue())
+                    .status(Status.INACTIVE)
+                    .createdAt(joinedAt)
+                    .lastLoginAt(lastLoginAt)
+                    .build();
 
-        pointHistoryRepository.save(joinPoint2);
+            Member savedDormant = memberRepository.save(dormantMember);
+
+            PointHistory joinPoint3 = PointHistory.builder()
+                    .memberId(savedDormant.getMemberId())
+                    .type(PointHistoryType.EARN)
+                    .amount(joinPolicy.getValue())
+                    .reason(PointReason.JOIN)
+                    .balance(joinPolicy.getValue())
+                    .createdAt(joinedAt)
+                    .build();
+
+            pointHistoryRepository.save(joinPoint3);
+        }
     }
 }

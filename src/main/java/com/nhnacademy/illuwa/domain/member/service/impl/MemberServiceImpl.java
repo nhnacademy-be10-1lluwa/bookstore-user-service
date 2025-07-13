@@ -143,10 +143,10 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberResponse getMemberByEmail(String email) {
+    public InactiveCheckResponse getInactiveMemberInfoByEmail(String email) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(MemberNotFoundException::new);
-        return memberMapper.toDto(member);
+        return new InactiveCheckResponse(member.getMemberId(), member.getName(), member.getEmail(), member.getStatus());
     }
 
     @Override

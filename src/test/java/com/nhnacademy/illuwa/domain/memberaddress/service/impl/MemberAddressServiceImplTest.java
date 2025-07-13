@@ -57,7 +57,7 @@ class MemberAddressServiceImplTest {
                 .address("서울시 강남구")
                 .detailAddress("101호")
                 .addressName("집")
-                .recipientName("공주님")
+                .recipientName("카리나")
                 .recipientContact("010-1234-5678")
                 .defaultAddress(isDefault)
                 .build();
@@ -86,7 +86,7 @@ class MemberAddressServiceImplTest {
         MemberAddressResponse response = addressService.registerMemberAddress(1L, request);
 
         assertThat(response).isNotNull();
-        assertThat(response.getRecipientName()).isEqualTo("공주님");
+        assertThat(response.getRecipientName()).isEqualTo("카리나");
         assertThat(response.isDefaultAddress()).isTrue();
         verify(addressRepository).unsetAllDefaultForMember(1L);
     }
@@ -277,7 +277,7 @@ class MemberAddressServiceImplTest {
         MemberAddressResponse response = addressService.getMemberAddress(10L);
 
         assertThat(response.getMemberAddressId()).isEqualTo(10L);
-        assertThat(response.getRecipientName()).isEqualTo("공주님");
+        assertThat(response.getRecipientName()).isEqualTo("카리나");
     }
 
     @Test

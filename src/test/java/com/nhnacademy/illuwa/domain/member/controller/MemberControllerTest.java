@@ -94,7 +94,7 @@ class MemberControllerTest {
         MemberResponse loginResponse = MemberResponse.builder()
                 .memberId(1L)
                 .email("gongju@naver.com")
-                .name("공주님")
+                .name("카리나")
                 .build();
 
         Mockito.when(memberService.login(any(MemberLoginRequest.class)))
@@ -106,7 +106,7 @@ class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.memberId").value(1L))
                 .andExpect(jsonPath("$.email").value("gongju@naver.com"))
-                .andExpect(jsonPath("$.name").value("공주님"));
+                .andExpect(jsonPath("$.name").value("카리나"));
     }
 
     @Test

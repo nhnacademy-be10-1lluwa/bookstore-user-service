@@ -3,7 +3,7 @@ package com.nhnacademy.illuwa.domain.message.service;
 import com.nhnacademy.illuwa.common.client.DoorayMessageClient;
 import com.nhnacademy.illuwa.common.exception.ActionNotAllowedException;
 import com.nhnacademy.illuwa.domain.guest.dto.GuestOrderRequest;
-import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
+import com.nhnacademy.illuwa.domain.member.dto.InactiveCheckResponse;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.message.dto.SendMessageRequest;
@@ -45,13 +45,13 @@ class MessageSendServiceTest {
     SendMessageRequest baseRequest() {
         SendMessageRequest request = new SendMessageRequest();
         request.setBotName("1lluwa");
-        request.setRecipientName("공주님");
+        request.setRecipientName("카리나");
         request.setRecipientEmail("gongju@naver.com");
         return request;
     }
 
     @Test
-    @DisplayName("두레이메시지 전송 - attachment 포함")
+    @DisplayName("두레이 메시지 전송 - attachment 포함")
     void testSendDoorayMessage_withAttachment() {
         SendMessageRequest request = baseRequest();
         request.setText("내용");
@@ -65,7 +65,7 @@ class MessageSendServiceTest {
     }
 
     @Test
-    @DisplayName("두레이메시지 전송 - attachment 없이")
+    @DisplayName("두레이 메시지 전송 - attachment 없이")
     void testSendDoorayMessage_withoutAttachment() {
         SendMessageRequest request = baseRequest();
         request.setText("내용만 있음");
@@ -76,7 +76,7 @@ class MessageSendServiceTest {
     }
 
     @Test
-    @DisplayName("두레이메시지 전송 - text 없이도 전송")
+    @DisplayName("두레이 메시지 전송 - text 없이도 전송")
     void testSendDoorayMessage_withoutText() {
         SendMessageRequest request = baseRequest();
         request.setText(null);
@@ -90,7 +90,7 @@ class MessageSendServiceTest {
     }
 
     @Test
-    @DisplayName("두레이메시지 전송 - 예외 발생 시 무시")
+    @DisplayName("두레이 메시지 전송 - 예외 발생 시 무시")
     void testSendDoorayMessage_exception() {
         SendMessageRequest request = baseRequest();
         request.setText("예외 테스트");
@@ -127,13 +127,9 @@ class MessageSendServiceTest {
     void testSendVerificationCode_success() {
         SendMessageRequest request = baseRequest();
 
-        MemberResponse inactiveMember = MemberResponse.builder()
-                .memberId(1L)
-                .email("gongju@naver.com")
-                .status(Status.INACTIVE)
-                .build();
+        InactiveCheckResponse inactiveMember = new InactiveCheckResponse(1L, "카리나", "gongju@naver.com", Status.INACTIVE);
 
-        when(memberService.getMemberByEmail("gongju@naver.com")).thenReturn(inactiveMember);
+        when(memberService.getInactiveMemberInfoByEmail("gongju@naver.com")).thenReturn(inactiveMember);
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 
         messageSendService.sendVerificationCode(request);
@@ -144,6 +140,8 @@ class MessageSendServiceTest {
                 eq(3L),
                 eq(TimeUnit.MINUTES)
         );
+
+        verify(doorayMessageClient).sendMessage(any());
     }
 
     @Test
@@ -151,13 +149,9 @@ class MessageSendServiceTest {
     void testSendVerificationCode_activeMember() {
         SendMessageRequest request = baseRequest();
 
-        MemberResponse activeMember = MemberResponse.builder()
-                .memberId(1L)
-                .email("gongju@naver.com")
-                .status(Status.ACTIVE)
-                .build();
+        InactiveCheckResponse activeMember = new InactiveCheckResponse(1L, "카리나", "gongju@naver.com", Status.ACTIVE);
 
-        when(memberService.getMemberByEmail("gongju@naver.com")).thenReturn(activeMember);
+        when(memberService.getInactiveMemberInfoByEmail("gongju@naver.com")).thenReturn(activeMember);
 
         ActionNotAllowedException ex = assertThrows(ActionNotAllowedException.class,
                 () -> messageSendService.sendVerificationCode(request));
@@ -168,12 +162,7 @@ class MessageSendServiceTest {
     @Test
     @DisplayName("인증번호 생성 형식 검증")
     void testGenerateVerificationCode_format() throws Exception {
-        // reflection 제거: 대신 정적 유틸로 리팩토링 권장
-        var method = MessageSendService.class.getDeclaredMethod("generateVerificationCode");
-        method.setAccessible(true);
-
-        String code = (String) method.invoke(messageSendService);
-
+        String code = messageSendService.generateVerificationCode();
         assertTrue(code.matches("\\d{6}"));
     }
 }
