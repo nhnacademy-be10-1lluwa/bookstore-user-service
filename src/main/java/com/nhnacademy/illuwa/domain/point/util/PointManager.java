@@ -32,7 +32,7 @@ public class PointManager {
     private final PointPolicyService pointPolicyService;
     private final PointHistoryService pointHistoryService;
 
-    public BigDecimal getMemberPoint(long memberId){
+    public BigDecimal getMemberPoint(long memberId) {
         memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
         return memberRepository.findPoint(memberId);
@@ -47,9 +47,9 @@ public class PointManager {
     }
 
     //사용한 포인트 처리
-    public PointHistoryResponse processUsedPoint(UsedPointRequest request){
+    public PointHistoryResponse processUsedPoint(UsedPointRequest request) {
         BigDecimal orgPoint = memberRepository.findPoint(request.getMemberId());
-        if(orgPoint.compareTo(request.getUsedPoint()) < 0){
+        if (orgPoint.compareTo(request.getUsedPoint()) < 0) {
             throw new InvalidPointOperationException("소유한 포인트보다 더 많은 포인트를 사용하는 것은 불가합니다.");
         }
         BigDecimal point = request.getUsedPoint().negate();  //음수 전환
@@ -65,8 +65,8 @@ public class PointManager {
     }
 
     //주문적립 포인트 처리
-    public  Optional<PointHistoryResponse> processOrderPoint(PointAfterOrderRequest request) {
-        if(memberRepository.isNotActiveMember(request.getMemberId())){
+    public Optional<PointHistoryResponse> processOrderPoint(PointAfterOrderRequest request) {
+        if (memberRepository.isNotActiveMember(request.getMemberId())) {
             throw new MemberNotFoundException();
         }
         BigDecimal point = calculateByOrder(request);
@@ -81,28 +81,33 @@ public class PointManager {
     }
 
     //이벤트 포인트 처리
-    public Optional<PointHistoryResponse> processEventPoint(long memberId, PointReason reason) {
-        if(memberRepository.isNotActiveMember(memberId)){
+    public Optional<PointHistoryResponse> processEventPoint(long memberId, PointReason reason, BigDecimal point) {
+        if (memberRepository.isNotActiveMember(memberId)) {
             throw new MemberNotFoundException();
         }
-        PointPolicyResponse policy = pointPolicyService.findByPolicyKey(reason.getPolicyKey().orElseThrow(PointPolicyNotFoundException::new));
-        PointHistoryRequest historyRequest;
 
-        if(policy.getStatus().equals(PolicyStatus.ACTIVE)){
-            BigDecimal point = policy.getValue();
-            historyRequest = PointHistoryRequest.builder()
-                    .memberId(memberId)
-                    .type(PointHistoryType.EARN)
-                    .reason(reason)
-                    .amount(point)
-                    .balance(updateMemberPoint(memberId, point))
-                    .build();
-
-            return Optional.of(pointHistoryService.recordPointHistory(historyRequest));
+        PointPolicyResponse policy;
+        if(!reason.getPolicyKey().orElse("").equals("grade_event")){
+             policy = pointPolicyService.findByPolicyKey(
+                    reason.getPolicyKey().orElseThrow(PointPolicyNotFoundException::new));
+            if (!PolicyStatus.ACTIVE.equals(policy.getStatus())) {
+                return Optional.empty();
+            }
+            if (point == null) {
+                point = policy.getValue();
+            }
         }
-        return Optional.empty();
-    }
 
+        PointHistoryRequest historyRequest = PointHistoryRequest.builder()
+                .memberId(memberId)
+                .type(PointHistoryType.EARN)
+                .reason(reason)
+                .amount(point)
+                .balance(updateMemberPoint(memberId, point))
+                .build();
+
+        return Optional.of(pointHistoryService.recordPointHistory(historyRequest));
+    }
 
     //정책 기반 포인트 계산 - 이벤트 종류는 보통 AMOUNT만 사용
 /*    private BigDecimal calculatedFromPolicy(PointPolicyResponse policy) {
@@ -123,7 +128,7 @@ public class PointManager {
         //기본적립
         BigDecimal defaultPoint = BigDecimal.ZERO;
         PointPolicyResponse defaultPolicy = pointPolicyService.findByPolicyKey(PointReason.PURCHASE.getPolicyKey().orElse(null));
-        if(defaultPolicy.getStatus().equals(PolicyStatus.ACTIVE)){
+        if (defaultPolicy.getStatus().equals(PolicyStatus.ACTIVE)) {
             defaultPoint = netOrderAmount.multiply(defaultPolicy.getValue());
         }
         //구매 후 등급별 적립

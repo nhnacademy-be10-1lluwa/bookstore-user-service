@@ -111,7 +111,7 @@ class MemberRepositoryTest {
         memberRepository.save(createMember("태연", "taeyeon@naver.com", platinumGrade, Role.USER));
         memberRepository.save(createMember("슬기", "seulgi@naver.com", royalGrade, Role.USER));
 
-        List<Member> royalMembers = memberRepository.findByGrade(royalGrade);
+        List<Member> royalMembers = memberRepository.findByGradeName(royalGrade.getGradeName());
 
         assertEquals(2, royalMembers.size());
         assertTrue(royalMembers.stream().allMatch(m -> m.getGrade() == royalGrade));
