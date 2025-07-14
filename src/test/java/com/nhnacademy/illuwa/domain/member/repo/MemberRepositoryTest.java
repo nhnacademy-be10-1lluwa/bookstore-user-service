@@ -107,13 +107,15 @@ class MemberRepositoryTest {
     @Test
     @DisplayName("특정 등급 회원 조회 테스트")
     void testFindByGrade() {
+        int orgRoyalCount = memberRepository.findByGradeName(royalGrade.getGradeName()).stream().toList().size();
+
         memberRepository.save(createMember("아이유", "iu@naver.com", royalGrade, Role.USER));
         memberRepository.save(createMember("태연", "taeyeon@naver.com", platinumGrade, Role.USER));
         memberRepository.save(createMember("슬기", "seulgi@naver.com", royalGrade, Role.USER));
 
         List<Member> royalMembers = memberRepository.findByGradeName(royalGrade.getGradeName());
 
-        assertEquals(2, royalMembers.size());
+        assertEquals(orgRoyalCount + 2, royalMembers.size());
         assertTrue(royalMembers.stream().allMatch(m -> m.getGrade() == royalGrade));
     }
 
