@@ -2,9 +2,7 @@ package com.nhnacademy.illuwa.domain.member.controller;
 
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.member.dto.*;
-import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.service.impl.MemberGradeService;
-import com.nhnacademy.illuwa.domain.pointhistory.dto.PointHistoryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
