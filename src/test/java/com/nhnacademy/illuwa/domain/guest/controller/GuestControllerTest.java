@@ -31,6 +31,7 @@ class GuestControllerTest {
     ObjectMapper objectMapper;
 
     GuestResponse dummyResponse = GuestResponse.builder()
+            .guestId("123456789101112131415161718")
             .orderId(1L)
             .orderNumber("20250630032809-123456")
             .name("비회원")
@@ -61,6 +62,7 @@ class GuestControllerTest {
     @DisplayName("비회원 정보 생성 성공")
     void testCreateGuest() throws Exception {
         GuestOrderRequest orderRequest = GuestOrderRequest.builder()
+                .guestId("123456789101112131415161718")
                 .name("비회원")
                 .email("guest@naver.com")
                 .contact("010-1234-5678")
@@ -76,6 +78,7 @@ class GuestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(orderRequest)))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.guestId").value("123456789101112131415161718"))
                 .andExpect(jsonPath("$.orderId").value(1L))
                 .andExpect(jsonPath("$.orderNumber").value("20250630032809-123456"))
                 .andExpect(jsonPath("$.name").value("비회원"))

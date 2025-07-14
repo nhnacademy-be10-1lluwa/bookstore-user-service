@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class GuestResponse {
-    long guestId;
+    String guestId;
     long orderId;
     String orderNumber;
     String name;

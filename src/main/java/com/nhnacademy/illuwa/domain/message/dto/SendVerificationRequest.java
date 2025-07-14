@@ -1,15 +1,14 @@
 package com.nhnacademy.illuwa.domain.message.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SendMessageResponse {
-    boolean success;
+public class SendVerificationRequest {
     String email;
-    String message;
-    String text;
 }

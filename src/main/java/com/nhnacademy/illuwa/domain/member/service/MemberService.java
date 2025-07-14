@@ -21,7 +21,7 @@ public interface MemberService {
 
     MemberResponse getMemberById(long memberId);
 
-    MemberResponse getMemberByEmail(String email);
+    InactiveCheckResponse getInactiveMemberInfoByEmail(String email);
 
     MemberResponse updateMember(long memberId, MemberUpdateRequest newMemberRequest);
 

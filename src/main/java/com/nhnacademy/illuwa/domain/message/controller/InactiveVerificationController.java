@@ -1,12 +1,9 @@
 package com.nhnacademy.illuwa.domain.message.controller;
 
-import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
+import com.nhnacademy.illuwa.domain.member.dto.InactiveCheckResponse;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
-import com.nhnacademy.illuwa.domain.message.dto.SendMessageRequest;
-import com.nhnacademy.illuwa.domain.message.dto.SendMessageResponse;
-import com.nhnacademy.illuwa.domain.message.dto.VerifyCodeRequest;
-import com.nhnacademy.illuwa.domain.message.dto.VerifyCodeResponse;
+import com.nhnacademy.illuwa.domain.message.dto.*;
 import com.nhnacademy.illuwa.domain.message.service.InactiveVerificationService;
 import com.nhnacademy.illuwa.domain.message.service.MessageSendService;
 import lombok.RequiredArgsConstructor;
@@ -25,40 +22,39 @@ public class InactiveVerificationController {
 
     //인증번호 전송 api
     @PostMapping
-    public ResponseEntity<SendMessageResponse> sendVerificationCode(@RequestHeader("X-USER-ID") long memberId) {
-        MemberResponse member = getMemberOrThrow(memberId);
+    public ResponseEntity<SendMessageResponse> sendVerificationCode(@RequestBody SendVerificationRequest request) {
+        InactiveCheckResponse member = getMemberOrThrow(request.getEmail());
 
-        SendMessageRequest request = new SendMessageRequest();
-        request.setRecipientName(member.getName());
-        request.setRecipientEmail(member.getEmail());
+        SendMessageRequest messageRequest = new SendMessageRequest();
+        messageRequest.setRecipientName(member.getName());
+        messageRequest.setRecipientEmail(member.getEmail());
 
-        SendMessageResponse response = messageSendService.sendVerificationCode(request);
+        SendMessageResponse response = messageSendService.sendVerificationCode(messageRequest);
         return ResponseEntity.ok().body(response);
     }
 
     //인증번호 검증 api
     @PostMapping("/verify")
-    public ResponseEntity<VerifyCodeResponse> receiveVerificationCode(@RequestHeader("X-USER-ID") long memberId,
-                                                                      @RequestBody VerifyCodeRequest request) {
-        MemberResponse member = getMemberOrThrow(memberId);
+    public ResponseEntity<VerifyCodeResponse> receiveVerificationCode(@RequestBody VerifyCodeRequest request) {
+        InactiveCheckResponse member = getMemberOrThrow(request.getEmail());
         String email = member.getEmail();
 
-        if (inactiveVerificationService.verifyAndReactivateMember(memberId, email, request.getCode())) {
+        if (inactiveVerificationService.verifyAndReactivateMember(member.getMemberId(), email, request.getCode())) {
             return ResponseEntity.ok(
-                    new VerifyCodeResponse(memberId, email, "인증에 성공하여 휴면상태가 해제됐어요")
+                    new VerifyCodeResponse(true,member.getMemberId(), email, "인증에 성공하여 휴면상태가 해제됐어요")
             );
         }else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    new VerifyCodeResponse(memberId, email, "인증에 실패하여 휴면상태가 지속됩니다.")
+                    new VerifyCodeResponse(false, member.getMemberId(), email, "인증에 실패하여 휴면상태가 지속됩니다.")
             );
         }
     }
 
-    public MemberResponse getMemberOrThrow(long memberId) {
+    public InactiveCheckResponse getMemberOrThrow(String email) {
         try {
-            return memberService.getMemberById(memberId);
+            return memberService.getInactiveMemberInfoByEmail(email);
         } catch (RuntimeException e) {
-            throw new MemberNotFoundException(memberId);
+            throw new MemberNotFoundException();
         }
     }
 }

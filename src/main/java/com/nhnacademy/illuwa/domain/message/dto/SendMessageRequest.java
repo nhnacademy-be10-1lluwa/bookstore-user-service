@@ -19,6 +19,7 @@ public class SendMessageRequest {
     String recipientEmail;
 
     String attachmentTitle;
+    String attachmentTitleLink;
     String attachmentText;
 
     @Builder.Default
