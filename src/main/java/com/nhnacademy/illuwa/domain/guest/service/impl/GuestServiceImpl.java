@@ -18,6 +18,7 @@ public class GuestServiceImpl implements GuestService {
     @Override
     public GuestResponse createGuest(GuestOrderRequest request){
         Guest guest = Guest.builder()
+                .guestId(request.getGuestId())
                 .orderId(request.getOrderId())
                 .orderNumber(request.getOrderNumber())
                 .orderPassword(request.getOrderPassword())
