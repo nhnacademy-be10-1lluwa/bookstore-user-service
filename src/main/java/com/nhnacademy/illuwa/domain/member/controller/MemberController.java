@@ -2,6 +2,7 @@ package com.nhnacademy.illuwa.domain.member.controller;
 
 import com.nhnacademy.illuwa.domain.member.dto.*;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
+import com.nhnacademy.illuwa.domain.message.dto.SendVerificationRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +57,12 @@ public class MemberController {
     @GetMapping("/api/members")
     public ResponseEntity<MemberResponse> getMember(@RequestHeader("X-USER-ID") long memberId) {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberById(memberId));
+    }
+
+    //회원 휴면상태 체크
+    @PostMapping("/api/members/check-status")
+    public ResponseEntity<InactiveCheckResponse> getInactiveMemberInfo(@RequestBody SendVerificationRequest request){
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.getInactiveMemberInfoByEmail(request.getEmail()));
     }
 
     // 회원 수정

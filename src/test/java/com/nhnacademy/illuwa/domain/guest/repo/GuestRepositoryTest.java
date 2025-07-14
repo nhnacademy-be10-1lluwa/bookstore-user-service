@@ -27,6 +27,7 @@ class GuestRepositoryTest {
     @BeforeEach
     void SetUp() {
         testGuest = Guest.builder()
+                .guestId("123456789101112131415161718")
                 .name("비회원카리나")
                 .email("test@email.com")
                 .orderPassword("guestPW!")
@@ -39,7 +40,7 @@ class GuestRepositoryTest {
     @DisplayName("비회원 정보저장 - 주문 시")
     void testSave(){
         Guest saved = guestRepository.save(testGuest);
-
+        assertEquals(testGuest.getGuestId(), saved.getGuestId());
         assertEquals(testGuest.getName(), saved.getName());
         assertEquals(testGuest.getEmail(), saved.getEmail());
         assertEquals(testGuest.getOrderPassword(), saved.getOrderPassword());

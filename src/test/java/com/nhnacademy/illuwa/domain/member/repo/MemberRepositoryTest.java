@@ -120,13 +120,15 @@ class MemberRepositoryTest {
     @Test
     @DisplayName("특정 역할 회원 조회 테스트")
     void testFindByRole() {
+        int orgAdminCount = memberRepository.findByRole(Role.ADMIN).stream().toList().size();
+
         memberRepository.save(createMember("보아", "boa@naver.com", basicGrade, Role.ADMIN));
         memberRepository.save(createMember("제니", "jennie@naver.com", basicGrade, Role.ADMIN));
         memberRepository.save(createMember("지수", "jisoo@naver.com", basicGrade, Role.USER));
 
         List<Member> admins = memberRepository.findByRole(Role.ADMIN);
 
-        assertEquals(2, admins.size());
+        assertEquals(2 + orgAdminCount, admins.size());
         assertTrue(admins.stream().allMatch(m -> m.getRole() == Role.ADMIN));
     }
 }

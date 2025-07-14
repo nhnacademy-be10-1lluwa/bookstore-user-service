@@ -9,9 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 public class Guest {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "guest_id")
-    private long guestId;
+    private String guestId;
 
     @Column(name = "order_id",nullable = false)
     private long orderId;
@@ -32,7 +31,8 @@ public class Guest {
     private String contact;
 
     @Builder
-    public Guest(long orderId, String orderNumber, String orderPassword, String name, String email, String contact) {
+    public Guest(String guestId, long orderId, String orderNumber, String orderPassword, String name, String email, String contact) {
+        this.guestId = guestId;
         this.orderId = orderId;
         this.orderNumber = orderNumber;
         this.orderPassword = orderPassword;

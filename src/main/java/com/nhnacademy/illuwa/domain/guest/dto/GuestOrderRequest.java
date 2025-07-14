@@ -10,6 +10,9 @@ import lombok.Data;
 @Data
 @Builder
 public class GuestOrderRequest {
+    @NotBlank
+    String guestId;
+
     @Positive
     long orderId;
 

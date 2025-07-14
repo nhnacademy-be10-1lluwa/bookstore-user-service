@@ -2,14 +2,12 @@ package com.nhnacademy.illuwa.domain.message.service;
 
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
-import com.nhnacademy.illuwa.domain.message.dto.SendMessageRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -17,7 +15,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-//@ExtendWith(MockitoExtension.class)
+@ExtendWith(MockitoExtension.class)
 class InactiveVerificationServiceTest {
 
     @Mock
@@ -37,7 +35,6 @@ class InactiveVerificationServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
     }
 
@@ -99,13 +96,20 @@ class InactiveVerificationServiceTest {
         String code = "123456";
 
         when(valueOperations.get("verify:" + email)).thenReturn(code);
-        when(memberService.getMemberById(memberId)).thenReturn(MemberResponse.builder().name("공주님").build());
+        when(memberService.getMemberById(memberId)).thenReturn(
+                MemberResponse.builder().name("카리나").build()
+        );
 
         boolean result = service.verifyAndReactivateMember(memberId, email, code);
 
         assertTrue(result);
         verify(memberService).reactivateMember(memberId);
-        verify(messageSendService).sendDoorayMessage(any(SendMessageRequest.class));
+        verify(messageSendService).sendDoorayMessage(
+                argThat(request ->
+                        request.getAttachmentTitle().contains("환영합니다") &&
+                                request.getAttachmentText().contains("카리나")
+                )
+        );
     }
 
     @Test
@@ -117,12 +121,19 @@ class InactiveVerificationServiceTest {
         String storedCode = "correctCode";
 
         when(valueOperations.get("verify:" + email)).thenReturn(storedCode);
-        when(memberService.getMemberById(memberId)).thenReturn(MemberResponse.builder().name("공주님").build());
+        when(memberService.getMemberById(memberId)).thenReturn(
+                MemberResponse.builder().name("카리나").build()
+        );
 
         boolean result = service.verifyAndReactivateMember(memberId, email, inputCode);
 
         assertFalse(result);
         verify(memberService, never()).reactivateMember(anyLong());
-        verify(messageSendService).sendDoorayMessage(any(SendMessageRequest.class));
+        verify(messageSendService).sendDoorayMessage(
+                argThat(request ->
+                        request.getAttachmentTitle().contains("인증번호를 다시 확인") &&
+                                request.getAttachmentTitle().contains("카리나")
+                )
+        );
     }
 }

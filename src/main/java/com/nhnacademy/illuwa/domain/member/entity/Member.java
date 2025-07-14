@@ -66,7 +66,7 @@ public class Member {
     @Builder
     public Member(String paycoId, String name, LocalDate birth, String email, String password,
                   Role role, String contact, Grade grade, BigDecimal point,
-                  Status status) {
+                  Status status, LocalDateTime createdAt, LocalDateTime lastLoginAt) {
         this.paycoId = paycoId;
         this.name = name;
         this.birth = birth;
@@ -77,7 +77,8 @@ public class Member {
         this.role = (role != null) ? role : Role.USER;
         this.point = (point != null) ? point : BigDecimal.ZERO;
         this.status = (status != null) ? status : Status.ACTIVE;
-        this.createdAt = LocalDateTime.now();
+        this.lastLoginAt = lastLoginAt;
+        this.createdAt = (createdAt != null) ? createdAt : LocalDateTime.now();
     }
 
     // LocalDate 값 편하게 넣기 위한 커스텀 Builder

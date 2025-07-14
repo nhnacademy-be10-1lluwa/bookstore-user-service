@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Field;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -34,19 +33,10 @@ class GuestServiceImplTest {
     Guest testGuest;
 
 
-    void setGuestId(Guest guest) {
-        try {
-            Field field = Guest.class.getDeclaredField("guestId");
-            field.setAccessible(true);
-            field.set(guest, 1L);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @BeforeEach
     void Setup(){
         guestOrderRequest = GuestOrderRequest.builder()
+                .guestId("123456789101112131415161718")
                 .orderId(1L)
                 .orderNumber("20250630032809-123456")
                 .orderPassword("guest!123!")
@@ -56,6 +46,7 @@ class GuestServiceImplTest {
                 .build();
 
         testGuest = Guest.builder()
+                .guestId(guestOrderRequest.getGuestId())
                 .orderId(guestOrderRequest.getOrderId())
                 .orderNumber(guestOrderRequest.getOrderNumber())
                 .orderPassword(guestOrderRequest.getOrderPassword())
@@ -63,8 +54,6 @@ class GuestServiceImplTest {
                 .email(guestOrderRequest.getEmail())
                 .contact(guestOrderRequest.getContact())
                 .build();
-
-        setGuestId(testGuest);
     }
 
     @Test
@@ -73,7 +62,7 @@ class GuestServiceImplTest {
         when(guestRepository.save(any(Guest.class))).thenReturn(testGuest);
 
         GuestResponse response = guestService.createGuest(guestOrderRequest);
-        assertThat(response.getGuestId()).isEqualTo(guestOrderRequest.getOrderId());
+        assertThat(response.getGuestId()).isEqualTo(guestOrderRequest.getGuestId());
     }
 
     @Test

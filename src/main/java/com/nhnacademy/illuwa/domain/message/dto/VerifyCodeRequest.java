@@ -6,5 +6,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VerifyCodeRequest {
+    String email;
     String code;
 }

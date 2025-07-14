@@ -3,7 +3,7 @@ package com.nhnacademy.illuwa.domain.message.service;
 import com.nhnacademy.illuwa.common.client.DoorayMessageClient;
 import com.nhnacademy.illuwa.common.exception.ActionNotAllowedException;
 import com.nhnacademy.illuwa.domain.guest.dto.GuestOrderRequest;
-import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
+import com.nhnacademy.illuwa.domain.member.dto.InactiveCheckResponse;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.message.dto.SendMessageRequest;
@@ -30,6 +30,7 @@ public class MessageSendService {
     public SendMessageResponse sendDoorayMessage(SendMessageRequest request) {
         Map<String, Object> body = new HashMap<>();
         body.put("botName", request.getBotName());
+        body.put("botIconImage", "/static/icon/1lluwa-favicon.png");
         if(request.getText() != null){
             body.put("text", request.getText());
         }
@@ -38,6 +39,7 @@ public class MessageSendService {
             Map<String, Object> attachment = new HashMap<>();
 
             attachment.put("title", request.getAttachmentTitle());
+            attachment.put("titleLink", request.getAttachmentTitleLink());
             attachment.put("text", request.getAttachmentText());
             attachment.put("color", request.getAttachmentColor());
 
@@ -45,13 +47,13 @@ public class MessageSendService {
         }
         try {
             doorayMessageClient.sendMessage(body);
-            String message = "두레이 메시지 전송 성공!";
+            String message = "메시지 전송이 완료되었습니다!";
             log.debug(message);
-            return new SendMessageResponse(request.getRecipientEmail(), message, request.getText());
+            return new SendMessageResponse(true, request.getRecipientEmail(), message, request.getText());
         } catch (Exception e) {
-            String message = "두레이 메시지 전송 실패!";
+            String message = "메시지 전송이 실패했습니다.";
             log.error(message + "{}", e.getMessage());
-            return new SendMessageResponse(request.getRecipientEmail(), message, null);
+            return new SendMessageResponse(false, request.getRecipientEmail(), message, null);
         }
     }
 
@@ -66,8 +68,8 @@ public class MessageSendService {
 
     //인증번호 메시지
     public SendMessageResponse sendVerificationCode(SendMessageRequest request) {
-        MemberResponse memberDto = memberService.getMemberByEmail(request.getRecipientEmail());
-        if (!memberDto.getStatus().equals(Status.INACTIVE)) {
+        InactiveCheckResponse inactiveMemberInfo = memberService.getInactiveMemberInfoByEmail(request.getRecipientEmail());
+        if (!inactiveMemberInfo.getStatus().equals(Status.INACTIVE)) {
             throw new ActionNotAllowedException("휴면 회원만 인증이 필요합니다!");
         }
         String code = generateVerificationCode();
@@ -76,12 +78,13 @@ public class MessageSendService {
         redisTemplate.opsForValue().set(key, code, 3, TimeUnit.MINUTES);
 
         String messageText = request.getRecipientName() + "님 🙌\n" +
-                "휴면해제를 위해 아래 인증번호를 입력해주세요.";
+                "3분이내에 아래 인증번호를 입력해주세요.";
 
         request.setText(messageText);
         request.setAttachmentTitle("🔑인증번호");
-        request.setAttachmentText("[" + code + "]" + "\n3분 동안 유효합니다.");
-        request.setAttachmentColor("red");
+        request.setAttachmentTitleLink("https://book1lluwa.store/");
+        request.setAttachmentText("[" + code + "]");
+        request.setAttachmentColor("orange");
         return sendDoorayMessage(request);
     }
 
