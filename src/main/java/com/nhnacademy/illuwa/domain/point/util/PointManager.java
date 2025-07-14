@@ -122,7 +122,7 @@ public class PointManager {
 
         //기본적립
         BigDecimal defaultPoint = BigDecimal.ZERO;
-        PointPolicyResponse defaultPolicy = pointPolicyService.findByPolicyKey(PointReason.PURCHASE.getPolicyKey().toString());
+        PointPolicyResponse defaultPolicy = pointPolicyService.findByPolicyKey(PointReason.PURCHASE.getPolicyKey().orElse(null));
         if(defaultPolicy.getStatus().equals(PolicyStatus.ACTIVE)){
             defaultPoint = netOrderAmount.multiply(defaultPolicy.getValue());
         }
