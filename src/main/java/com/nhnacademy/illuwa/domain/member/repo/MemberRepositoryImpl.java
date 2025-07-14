@@ -1,6 +1,5 @@
 package com.nhnacademy.illuwa.domain.member.repo;
 
-import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 
@@ -38,13 +37,14 @@ public class MemberRepositoryImpl implements CustomMemberRepository{
                 .where(member.memberId.eq(memberId))
                 .fetchOne();
     }
+
+    @Override
     public boolean isNotActiveMember(long memberId) {
         QMember member = QMember.member;
         Member result = queryFactory.selectFrom(member)
                 .where(member.memberId.eq(memberId),
                         member.status.eq(Status.ACTIVE))
                 .fetchFirst();
-
         return result == null;
     }
 
@@ -69,7 +69,6 @@ public class MemberRepositoryImpl implements CustomMemberRepository{
                         member.role.ne(Role.ADMIN)
                 )
                 .fetchOne();
-
         return new PageImpl<>(content, pageable, total != null ? total : 0L);
     }
 

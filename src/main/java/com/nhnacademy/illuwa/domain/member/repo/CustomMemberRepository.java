@@ -1,6 +1,5 @@
 package com.nhnacademy.illuwa.domain.member.repo;
 
-import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import org.springframework.data.domain.Page;

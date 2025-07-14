@@ -17,8 +17,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, CustomMem
 
     List<Member> findMembersByStatus(Status status);
 
-    Optional<Member> getMemberByEmailAndPassword(String email, String password);
-
     boolean existsByEmail(String email);
 
     boolean existsByPaycoId(String paycoId);
@@ -27,5 +25,4 @@ public interface MemberRepository extends JpaRepository<Member, Long>, CustomMem
 
     @Query("SELECT m FROM Member m WHERE MONTH(m.birth) = :month")
     List<Member> findMemberByBirthMonth(@Param("month")int month);
-
 }
