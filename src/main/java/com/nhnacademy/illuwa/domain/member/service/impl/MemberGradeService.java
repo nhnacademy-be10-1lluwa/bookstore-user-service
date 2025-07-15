@@ -24,11 +24,7 @@ public class MemberGradeService {
 
         for(MemberGradeUpdateRequest request : requests){
             long memberId = request.getMemberId();
-            List<BigDecimal> amounts = request.getNetOrderAmount();
-
-            BigDecimal totalAmount = amounts.stream()
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-
+            BigDecimal totalAmount = request.getNetOrderAmount();
             if(memberService.updateMemberGrade(memberId, totalAmount)){
                 updatedCount++;
             }
