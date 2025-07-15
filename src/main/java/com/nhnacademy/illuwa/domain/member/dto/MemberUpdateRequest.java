@@ -14,6 +14,6 @@ public class MemberUpdateRequest {
     @ConditionalPattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,16}")
     private String password;
 
-    @Pattern(regexp = "^010-\\d{3,4}-\\d{4}$")
+    @Pattern(regexp = "^010-[1-9][0-9]{3,3}-[1-9][0-9]{3,3}$")
     private String contact;
 }

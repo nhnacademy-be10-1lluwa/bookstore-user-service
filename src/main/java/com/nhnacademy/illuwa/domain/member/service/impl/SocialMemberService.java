@@ -10,7 +10,6 @@ import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -89,4 +88,22 @@ public class SocialMemberService {
             return LocalDate.of(1000, 1, 1);
         }
     }
+
+    //public static final LocalDate TEMPORARY_BIRTH = LocalDate.of(1000, 1, 1);
+
+    // MMdd 형식 아닌 경우 기본생일 반환 (TEMPORARY_BIRTH)
+/*    private LocalDate parseBirthdayOrDefault(String birthdayMMdd) {
+        if (birthdayMMdd == null || birthdayMMdd.length() != 4) {
+            return TEMPORARY_BIRTH;
+        }
+         // "MMdd" 형식 파싱
+        try {
+            int month = Integer.parseInt(birthdayMMdd.substring(0, 2));
+            int day = Integer.parseInt(birthdayMMdd.substring(2, 4));
+            return LocalDate.of(1000, month, day);
+        } catch (Exception e) {
+            return TEMPORARY_BIRTH;
+        }
+    }*/
+
 }

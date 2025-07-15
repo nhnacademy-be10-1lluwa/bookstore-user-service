@@ -17,7 +17,6 @@ import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
 import com.nhnacademy.illuwa.domain.point.util.PointManager;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,7 +31,6 @@ import java.util.List;
 
 @Slf4j
 @Service
-@Builder
 @Transactional
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {

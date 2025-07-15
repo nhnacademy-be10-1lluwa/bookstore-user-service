@@ -1,13 +1,9 @@
 package com.nhnacademy.illuwa.domain.guest.dto;
 
 import com.nhnacademy.illuwa.domain.guest.entity.Guest;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
 @Builder
 public class GuestResponse {
