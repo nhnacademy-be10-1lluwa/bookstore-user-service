@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Order(1)
 public class GradeGlobalExceptionHandler {
-    /*Grade 관련 예외처리*/
     @ExceptionHandler(GradeNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUGradeNotFoundException(GradeNotFoundException ex, HttpServletRequest request) {
         ErrorResponse response = ErrorResponse.of(

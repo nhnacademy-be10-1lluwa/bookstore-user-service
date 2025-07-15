@@ -1,5 +1,7 @@
 package com.nhnacademy.illuwa.domain.pointhistory.controller;
 
+import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
+import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.pointhistory.dto.PointAfterOrderRequest;
 import com.nhnacademy.illuwa.domain.pointhistory.dto.PointHistoryResponse;
 import com.nhnacademy.illuwa.domain.pointhistory.dto.UsedPointRequest;
@@ -62,7 +64,7 @@ public class PointHistoryController {
     @PostMapping("/event")
     public ResponseEntity<PointHistoryResponse> earnEventPoint(@RequestHeader("X-USER-ID") long memberId,
                                                @RequestParam("reason") PointReason reason) {
-        return pointManager.processEventPoint(memberId, reason)
+        return pointManager.processEventPoint(memberId, reason, null)
                 .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response))
                 .orElse(ResponseEntity.noContent().build());
     }

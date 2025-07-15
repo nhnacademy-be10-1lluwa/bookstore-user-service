@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.member.service;
 
+import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.member.dto.*;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,11 @@ public interface MemberService {
 
     Page<MemberResponse> getPagedAllMembers(Pageable pageable);
 
-    List<MemberResponse> getAllMembersByStatus(Status status);
+    Page<MemberResponse> getPagedAllMembersByGradeName(GradeName gradeName, Pageable pageable);
+
+    List<MemberResponse> getMembersByStatus(Status status);
+
+    List<MemberResponse> getMembersByGradeName(GradeName gradeName);
 
     MemberResponse getMemberById(long memberId);
 

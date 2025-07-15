@@ -75,7 +75,7 @@ public class MemberServiceImpl implements MemberService {
         Member saved = memberRepository.save(newMember);
 
         try {
-            pointManager.processEventPoint(saved.getMemberId(), PointReason.JOIN);
+            pointManager.processEventPoint(saved.getMemberId(), PointReason.JOIN, null);
         } catch (Exception e) {
             log.warn("회원가입 포인트 적립 실패: memberId={}, reason={}", saved.getMemberId(), e.getMessage());
         }
@@ -120,14 +120,30 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(readOnly = true)
     @Override
     public Page<MemberResponse> getPagedAllMembers(Pageable pageable) {
-        Page<Member> page = memberRepository.findActiveMemberOrderByLastLoginAtOrderDesc(pageable);
+        Page<Member> page = memberRepository.findMemberOrderByLastLoginAtOrderDesc(pageable);
         return page.map(memberMapper::toDto);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<MemberResponse> getAllMembersByStatus(Status status) {
+    public Page<MemberResponse> getPagedAllMembersByGradeName(GradeName gradeName, Pageable pageable) {
+        Page<Member> page = memberRepository.findMemberByGradeNameOrderByLastLoginAtOrderDesc(gradeName, pageable);
+        return page.map(memberMapper::toDto);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<MemberResponse> getMembersByStatus(Status status) {
         List<Member> memberList = memberRepository.findMembersByStatus(status);
+        return memberList.stream()
+                .map(memberMapper::toDto)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<MemberResponse> getMembersByGradeName(GradeName gradeName) {
+        List<Member> memberList =  memberRepository.findByGradeName(gradeName);
         return memberList.stream()
                 .map(memberMapper::toDto)
                 .toList();

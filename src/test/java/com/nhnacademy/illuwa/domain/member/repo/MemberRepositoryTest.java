@@ -5,8 +5,6 @@ import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -14,6 +12,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+
+import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import jakarta.persistence.EntityManager;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -48,7 +50,7 @@ class MemberRepositoryTest {
     Grade royalGrade;
     Grade platinumGrade;
 
-    Member createMember(String name, String email, Grade grade, Role role) {
+    Member createMember(String name, String email, Grade grade, Role role, Status status) {
         return Member.builder()
                 .name(name)
                 .birth(LocalDate.of(1990, 1, 1))
@@ -58,7 +60,7 @@ class MemberRepositoryTest {
                 .contact("01012345678")
                 .grade(grade)
                 .point(new BigDecimal("1000"))
-                .status(Status.ACTIVE)
+                .status(status)
                 .build();
     }
 
@@ -73,7 +75,7 @@ class MemberRepositoryTest {
     @Test
     @DisplayName("회원 저장 성공 테스트")
     void testSave() {
-        Member member = createMember("카리나", "karina@naver.com",royalGrade, Role.USER);
+        Member member = createMember("카리나", "karina@naver.com", royalGrade, Role.USER, Status.ACTIVE);
         Member saved = memberRepository.save(member);
 
         assertEquals("카리나", saved.getName());
@@ -82,7 +84,7 @@ class MemberRepositoryTest {
     @Test
     @DisplayName("회원 정보 수정 성공 테스트")
     void testUpdate() {
-        Member member = memberRepository.save(createMember("윈터", "winter@naver.com", basicGrade, Role.USER));
+        Member member = memberRepository.save(createMember("윈터", "winter@naver.com", basicGrade, Role.USER, Status.ACTIVE));
 
         member.changeName("윈터수정");
         member.changePoint(new BigDecimal("5000"));
@@ -95,7 +97,7 @@ class MemberRepositoryTest {
     @Test
     @DisplayName("회원 삭제 성공 테스트")
     void testDelete() {
-        Member member = memberRepository.save(createMember("닝닝", "ningning@naver.com", royalGrade, Role.USER));
+        Member member = memberRepository.save(createMember("닝닝", "ningning@naver.com", royalGrade, Role.USER, Status.ACTIVE));
         Long id = member.getMemberId();
 
         memberRepository.deleteById(id);
@@ -107,28 +109,74 @@ class MemberRepositoryTest {
     @Test
     @DisplayName("특정 등급 회원 조회 테스트")
     void testFindByGrade() {
-        memberRepository.save(createMember("아이유", "iu@naver.com", royalGrade, Role.USER));
-        memberRepository.save(createMember("태연", "taeyeon@naver.com", platinumGrade, Role.USER));
-        memberRepository.save(createMember("슬기", "seulgi@naver.com", royalGrade, Role.USER));
+        int orgRoyalCount = memberRepository.findByGradeName(royalGrade.getGradeName()).size();
 
-        List<Member> royalMembers = memberRepository.findByGrade(royalGrade);
+        memberRepository.save(createMember("아이유", "iu@naver.com", royalGrade, Role.USER, Status.ACTIVE));
+        memberRepository.save(createMember("태연", "taeyeon@naver.com", platinumGrade, Role.USER, Status.ACTIVE));
+        memberRepository.save(createMember("슬기", "seulgi@naver.com", royalGrade, Role.USER, Status.ACTIVE));
 
-        assertEquals(2, royalMembers.size());
-        assertTrue(royalMembers.stream().allMatch(m -> m.getGrade() == royalGrade));
+        List<Member> royalMembers = memberRepository.findByGradeName(royalGrade.getGradeName());
+
+        assertEquals(orgRoyalCount + 2, royalMembers.size());
+        assertTrue(royalMembers.stream().allMatch(m -> m.getGrade().getGradeName() == royalGrade.getGradeName()));
     }
 
     @Test
-    @DisplayName("특정 역할 회원 조회 테스트")
-    void testFindByRole() {
-        int orgAdminCount = memberRepository.findByRole(Role.ADMIN).stream().toList().size();
+    @DisplayName("회원 포인트 조회 테스트")
+    void testFindPoint() {
+        Member member = memberRepository.save(createMember("지민", "jimin@naver.com", goldGrade, Role.USER, Status.ACTIVE));
+        BigDecimal point = memberRepository.findPoint(member.getMemberId());
 
-        memberRepository.save(createMember("보아", "boa@naver.com", basicGrade, Role.ADMIN));
-        memberRepository.save(createMember("제니", "jennie@naver.com", basicGrade, Role.ADMIN));
-        memberRepository.save(createMember("지수", "jisoo@naver.com", basicGrade, Role.USER));
+        assertEquals(0, point.compareTo(new BigDecimal("1000.00")));
+    }
 
-        List<Member> admins = memberRepository.findByRole(Role.ADMIN);
+    @Test
+    @DisplayName("회원 활동 여부 검사 - ACTIVE 일 때 false 리턴")
+    void testIsNotActiveMember_Active() {
+        Member member = memberRepository.save(createMember("태용", "taeyong@naver.com", basicGrade, Role.USER, Status.ACTIVE));
+        boolean result = memberRepository.isNotActiveMember(member.getMemberId());
+        assertFalse(result); // ACTIVE 이므로 false 리턴
+    }
 
-        assertEquals(2 + orgAdminCount, admins.size());
-        assertTrue(admins.stream().allMatch(m -> m.getRole() == Role.ADMIN));
+    @Test
+    @DisplayName("회원 활동 여부 검사 - INACTIVE 일 때 true 리턴")
+    void testIsNotActiveMember_NotActive() {
+        Member member = memberRepository.save(createMember("마크", "mark@naver.com", basicGrade, Role.USER, Status.INACTIVE));
+        boolean result = memberRepository.isNotActiveMember(member.getMemberId());
+        assertTrue(result);
+    }
+
+    @Test
+    @DisplayName("회원 활동 여부 검사 - 없는 회원일 때 true 리턴")
+    void testIsNotActiveMember_NoMember() {
+        boolean result = memberRepository.isNotActiveMember(-1L);
+        assertTrue(result);
+    }
+
+    @Test
+    @DisplayName("회원 마지막 로그인 내림차순 페이징 조회 테스트")
+    void testFindMemberOrderByLastLoginAtOrderDesc() {
+        memberRepository.save(createMember("은하", "eunha@naver.com", goldGrade, Role.USER, Status.ACTIVE));
+        memberRepository.save(createMember("하니", "hani@naver.com", goldGrade, Role.USER, Status.ACTIVE));
+        memberRepository.save(createMember("관리자", "admin@naver.com", basicGrade, Role.ADMIN, Status.ACTIVE)); // 관리자 포함해서 필터링 테스트
+
+        var page = memberRepository.findMemberOrderByLastLoginAtOrderDesc(org.springframework.data.domain.PageRequest.of(0, 10));
+
+        assertTrue(page.getContent().stream().noneMatch(m -> m.getRole() == Role.ADMIN));
+        assertFalse(page.getContent().isEmpty());
+    }
+
+    @Test
+    @DisplayName("특정 등급 회원 마지막 로그인 내림차순 페이징 조회 테스트")
+    void testFindMemberByGradeNameOrderByLastLoginAtOrderDesc() {
+        memberRepository.save(createMember("세정", "sejeong@naver.com", royalGrade, Role.USER, Status.ACTIVE));
+        memberRepository.save(createMember("예린", "yerin@naver.com", royalGrade, Role.USER, Status.ACTIVE));
+        memberRepository.save(createMember("유주", "yujoo@naver.com", platinumGrade, Role.USER, Status.ACTIVE));
+        memberRepository.save(createMember("관리자", "admin2@naver.com", royalGrade, Role.ADMIN, Status.ACTIVE)); // 관리자 포함해서 필터링 테스트
+
+        var page = memberRepository.findMemberByGradeNameOrderByLastLoginAtOrderDesc(royalGrade.getGradeName(), org.springframework.data.domain.PageRequest.of(0, 10));
+
+        assertTrue(page.getContent().stream().noneMatch(m -> m.getRole() == Role.ADMIN));
+        assertTrue(page.getContent().stream().allMatch(m -> m.getGrade().getGradeName() == royalGrade.getGradeName()));
     }
 }

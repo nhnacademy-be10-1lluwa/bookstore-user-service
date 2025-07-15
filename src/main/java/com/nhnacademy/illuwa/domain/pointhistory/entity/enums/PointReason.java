@@ -11,7 +11,8 @@ public enum PointReason {
     USED_IN_ORDER(null),  //사용
     JOIN("join_point"),   // 회원가입
     REVIEW("review_point"), // 일반리뷰
-    PHOTO_REVIEW("photo_review_point"); // 포토리뷰
+    PHOTO_REVIEW("photo_review_point"), // 포토리뷰
+    GRADE_EVENT("grade_event");  //등급별 이벤트포인트
 
     private final String policyKey;
 
