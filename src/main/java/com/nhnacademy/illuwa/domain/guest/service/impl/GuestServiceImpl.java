@@ -9,6 +9,7 @@ import com.nhnacademy.illuwa.domain.guest.repo.GuestRepository;
 import com.nhnacademy.illuwa.domain.guest.service.GuestService;
 import com.nhnacademy.illuwa.domain.message.service.MessageSendService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class GuestServiceImpl implements GuestService {
     private final GuestRepository guestRepository;
+    private final PasswordEncoder passwordEncoder;
     private final MessageSendService messageSendService;
 
     @Override
@@ -25,6 +27,7 @@ public class GuestServiceImpl implements GuestService {
                 .guestId(request.getGuestId())
                 .orderId(request.getOrderId())
                 .orderNumber(request.getOrderNumber())
+                .orderPassword(passwordEncoder.encode(request.getOrderPassword()))
                 .name(request.getName())
                 .email(request.getEmail())
                 .contact(request.getContact())
