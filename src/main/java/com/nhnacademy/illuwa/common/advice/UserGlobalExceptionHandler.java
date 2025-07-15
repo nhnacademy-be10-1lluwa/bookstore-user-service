@@ -2,10 +2,7 @@ package com.nhnacademy.illuwa.common.advice;
 
 import com.nhnacademy.illuwa.common.exception.ErrorResponse;
 import com.nhnacademy.illuwa.domain.guest.exception.GuestNotFoundException;
-import com.nhnacademy.illuwa.domain.member.exception.DeletedMemberException;
-import com.nhnacademy.illuwa.domain.member.exception.DuplicateMemberException;
-import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
-import com.nhnacademy.illuwa.domain.member.exception.UnauthorizedMemberAccessException;
+import com.nhnacademy.illuwa.domain.member.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -31,6 +28,18 @@ public class UserGlobalExceptionHandler {
     }
 
     /*Member 관련 예외처리*/
+    @ExceptionHandler(InactiveMemberException.class)
+    public ResponseEntity<ErrorResponse> handleDeletedMember(InactiveMemberException ex, HttpServletRequest request) {
+        ErrorResponse response = ErrorResponse.of(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "INACTIVE_MEMBER",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(DeletedMemberException.class)
     public ResponseEntity<ErrorResponse> handleDeletedMember(DeletedMemberException ex, HttpServletRequest request) {
         ErrorResponse response = ErrorResponse.of(

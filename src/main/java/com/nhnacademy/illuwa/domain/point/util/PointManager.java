@@ -2,6 +2,7 @@ package com.nhnacademy.illuwa.domain.point.util;
 
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
+import com.nhnacademy.illuwa.domain.member.exception.InactiveMemberException;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.point.exception.InvalidPointOperationException;
@@ -67,7 +68,7 @@ public class PointManager {
     //주문적립 포인트 처리
     public Optional<PointHistoryResponse> processOrderPoint(PointAfterOrderRequest request) {
         if (memberRepository.isNotActiveMember(request.getMemberId())) {
-            throw new MemberNotFoundException();
+            throw new InactiveMemberException(request.getMemberId());
         }
         BigDecimal point = calculateByOrder(request);
         PointHistoryRequest historyRequest = PointHistoryRequest.builder()
@@ -83,7 +84,7 @@ public class PointManager {
     //이벤트 포인트 처리
     public Optional<PointHistoryResponse> processEventPoint(long memberId, PointReason reason, BigDecimal point) {
         if (memberRepository.isNotActiveMember(memberId)) {
-            throw new MemberNotFoundException();
+            return Optional.empty();
         }
 
         PointPolicyResponse policy;
