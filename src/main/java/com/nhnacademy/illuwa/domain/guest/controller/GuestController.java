@@ -21,7 +21,7 @@ public class GuestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(guestService.createGuest(request));
     }
 
-    @GetMapping
+    @PostMapping
     public ResponseEntity<GuestResponse> getGuest(@Valid @RequestBody GuestLoginRequest request){
         return ResponseEntity.status(HttpStatus.OK).body(guestService.getGuest(request));
     }

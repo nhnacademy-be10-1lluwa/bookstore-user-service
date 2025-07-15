@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class GuestResponse {
     String guestId;
-    long orderId;
+    Long orderId;
     String orderNumber;
     String name;
     String email;
