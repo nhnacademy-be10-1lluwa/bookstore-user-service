@@ -1,5 +1,7 @@
 package com.nhnacademy.illuwa.domain.member.controller;
 
+import com.nhnacademy.illuwa.domain.grade.entity.Grade;
+import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.member.dto.*;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.message.dto.SendVerificationRequest;
@@ -28,16 +30,25 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getAllMembers());
     }
 
-    // 회원 목록 조회
+    // 회원 목록 조회 (등급별 조회 가능)
     @GetMapping("/api/admin/members/paged")
     public ResponseEntity<Page<MemberResponse>> getPagedMemberList(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(value = "grade", required = false) GradeName gradeName
+    ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("lastLoginAt").descending());
-        Page<MemberResponse> memberPage = memberService.getPagedAllMembers(pageable);
+        Page<MemberResponse> memberPage;
+
+        if (gradeName != null) {
+            memberPage = memberService.getPagedAllMembersByGradeName(gradeName, pageable);
+        } else {
+            memberPage = memberService.getPagedAllMembers(pageable);
+        }
 
         return ResponseEntity.ok(memberPage);
     }
+
 
     // 회원가입
     @PostMapping("/api/members")

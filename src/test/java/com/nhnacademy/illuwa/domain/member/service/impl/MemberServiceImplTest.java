@@ -104,7 +104,7 @@ class MemberServiceImplTest {
 
         MemberResponse response = memberService.register(registerRequest);
         assertThat(response.getMemberId()).isEqualTo(1L);
-        verify(pointManager, times(1)).processEventPoint(response.getMemberId(), PointReason.JOIN);
+        verify(pointManager, times(1)).processEventPoint(response.getMemberId(), PointReason.JOIN, null);
         verify(memberEventPublisher, times(1)).sendMemberCreateEvent(any(MemberEventDto.class));
     }
 
