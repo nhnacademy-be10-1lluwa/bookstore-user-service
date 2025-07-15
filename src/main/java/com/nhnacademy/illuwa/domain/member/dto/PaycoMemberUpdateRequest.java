@@ -4,17 +4,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Builder
 public class PaycoMemberUpdateRequest {
     @NotBlank(message = "이름은 필수 입력값입니다")
     private String name;
@@ -25,7 +21,7 @@ public class PaycoMemberUpdateRequest {
     @NotBlank(message = "이메일은 필수 입력 값입니다.")
     private String email;
 
-    @Pattern(regexp = "^010-\\d{3,4}-\\d{4}$",
+    @Pattern(regexp = "^010-[1-9][0-9]{3,3}-[1-9][0-9]{3,3}$",
             message = "휴대폰 번호는 010으로 시작하는 11자리 숫자와 '-'로 구성되어야 합니다.")
     private String contact;
 }
