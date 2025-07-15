@@ -5,6 +5,7 @@ import com.nhnacademy.illuwa.domain.guest.dto.GuestOrderRequest;
 import com.nhnacademy.illuwa.domain.guest.dto.GuestResponse;
 import com.nhnacademy.illuwa.domain.guest.entity.Guest;
 import com.nhnacademy.illuwa.domain.guest.repo.GuestRepository;
+import com.nhnacademy.illuwa.domain.message.service.MessageSendService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,9 @@ class GuestServiceImplTest {
 
     @InjectMocks
     GuestServiceImpl guestService;
+
+    @Mock
+    MessageSendService messageSendService;
 
     GuestOrderRequest guestOrderRequest;
     Guest testGuest;
@@ -66,8 +70,8 @@ class GuestServiceImplTest {
     }
 
     @Test
-    @DisplayName("비회원 로그인")
-    void testLogin(){
+    @DisplayName("비회원 정보조회")
+    void testGetGuest(){
         when(guestRepository.findGuestByOrderNumberAndOrderPassword(anyString(), anyString())).thenReturn(Optional.of(testGuest));
 
         GuestLoginRequest loginRequest = new GuestLoginRequest(guestOrderRequest.getOrderNumber(), guestOrderRequest.getOrderPassword());

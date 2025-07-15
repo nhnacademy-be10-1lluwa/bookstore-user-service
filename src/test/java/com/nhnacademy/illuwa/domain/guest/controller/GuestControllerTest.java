@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -40,14 +41,14 @@ class GuestControllerTest {
             .build();
 
     @Test
-    @DisplayName("게스트 로그인 (정보조회) 성공")
-    void testLogin() throws Exception {
+    @DisplayName("게스트 정보조회 성공")
+    void testGetGuest() throws Exception {
         GuestLoginRequest loginRequest = new GuestLoginRequest("20250630032809-123456", "guestPw!123");
 
         Mockito.when(guestService.getGuest(any(GuestLoginRequest.class)))
                 .thenReturn(dummyResponse);
 
-        mockMvc.perform(post("/api/guests/login")
+        mockMvc.perform(get("/api/guests")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
