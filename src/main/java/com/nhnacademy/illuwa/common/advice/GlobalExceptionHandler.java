@@ -70,7 +70,6 @@ public class GlobalExceptionHandler {
                 "서버 내부 오류가 발생했습니다.",
                 request.getRequestURI()
         );
-        // 실제 운영에서는 에러 로그를 자세히 남기고, 사용자에게는 일반적인 메시지를 보여줍니다.
          log.error("Internal Server Error: {}", ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }

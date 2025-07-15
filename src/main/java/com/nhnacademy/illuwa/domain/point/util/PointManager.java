@@ -118,6 +118,7 @@ public class PointManager {
         }
     }*/
 
+
     //주문 이후 포인트 적립
     private BigDecimal calculateByOrder(PointAfterOrderRequest request) {
         Member member = memberRepository.findById(request.getMemberId())
