@@ -247,7 +247,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public Map<Long, String> getMemberNameFromReviewers(List<Long> memberIds) {
+    public Map<Long, String> getNamesFromIdList(List<Long> memberIds) {
         Map<Long, String> reviewers = new HashMap<>();
 
         for(long memberId : memberIds){

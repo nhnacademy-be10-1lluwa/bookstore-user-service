@@ -43,5 +43,5 @@ public interface MemberService {
 
     List<MemberResponse> getMembersByBirthMonth(int month);
 
-    Map<Long, String> getMemberNameFromReviewers(List<Long> memberIds);
+    Map<Long, String> getNamesFromIdList(List<Long> memberIds);
 }

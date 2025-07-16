@@ -104,7 +104,7 @@ public class MemberController {
     }
 
     @PostMapping(value = "/api/members/names")
-    public ResponseEntity<Map<Long, String>> getMemberNameFromReviewers(@RequestBody List<Long> memberIds) {
-        return ResponseEntity.ok(memberService.getMemberNameFromReviewers(memberIds));
+    public ResponseEntity<Map<Long, String>> getNamesFromIdList(@RequestBody List<Long> memberIds) {
+        return ResponseEntity.ok(memberService.getNamesFromIdList(memberIds));
     }
 }
