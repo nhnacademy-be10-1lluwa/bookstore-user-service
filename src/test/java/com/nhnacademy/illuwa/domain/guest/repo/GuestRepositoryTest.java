@@ -52,8 +52,8 @@ class GuestRepositoryTest {
     void testFindGuestByOrderIdAndOrderPassword() {
         Guest savedGuest = guestRepository.save(testGuest);
 
-        Optional<Guest> optionalGuest = guestRepository.findGuestByOrderNumberAndOrderPassword(
-                savedGuest.getOrderNumber(), savedGuest.getOrderPassword()
+        Optional<Guest> optionalGuest = guestRepository.findGuestByOrderNumber(
+                savedGuest.getOrderNumber()
         );
 
         assertTrue(optionalGuest.isPresent(), "Guest should be found!");
@@ -72,8 +72,8 @@ class GuestRepositoryTest {
     void testFindGuestByInvalidOrderNumberAndPassword(){
         guestRepository.save(testGuest);
 
-        Optional<Guest> result = guestRepository.findGuestByOrderNumberAndOrderPassword(
-                "wrongOrderNumber", testGuest.getOrderPassword());
+        Optional<Guest> result = guestRepository.findGuestByOrderNumber(
+                "wrongOrderNumber");
 
         assertTrue(result.isEmpty());
     }
