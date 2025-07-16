@@ -21,9 +21,9 @@ public class MemberGradeController {
     * 전체회원 등급 재조정
     */
     @PostMapping("/update")
-    public ResponseEntity<String> updateAllMemberGrade(@RequestBody List<MemberGradeUpdateRequest> requests) {
+    public ResponseEntity<Integer> updateAllMemberGrade(@RequestBody List<MemberGradeUpdateRequest> requests) {
         int updatedCount = memberGradeService.updateGrades(requests);
-        return ResponseEntity.ok("총 " + updatedCount + "명의 등급이 갱신되었어요!");
+        return ResponseEntity.ok(updatedCount);
     }
 
     /**

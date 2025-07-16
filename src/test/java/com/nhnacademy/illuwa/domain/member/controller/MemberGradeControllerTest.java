@@ -46,7 +46,7 @@ class MemberGradeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requests)))
                 .andExpect(status().isOk())
-                .andExpect(content().string("총 2명의 등급이 갱신되었어요!"));
+                .andExpect(content().string("2"));
     }
 
     @Test
