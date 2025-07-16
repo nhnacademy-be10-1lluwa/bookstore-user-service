@@ -1,5 +1,6 @@
 package com.nhnacademy.illuwa.domain.guest.service.impl;
 
+import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.domain.guest.dto.GuestLoginRequest;
 import com.nhnacademy.illuwa.domain.guest.dto.GuestOrderRequest;
 import com.nhnacademy.illuwa.domain.guest.dto.GuestResponse;
@@ -40,8 +41,11 @@ public class GuestServiceImpl implements GuestService {
     @Transactional(readOnly = true)
     @Override
     public GuestResponse getGuest(GuestLoginRequest request) {
-        Guest guest = guestRepository.findGuestByOrderNumberAndOrderPassword(request.getOrderNumber(), request.getOrderPassword())
+        Guest guest = guestRepository.findGuestByOrderNumber(request.getOrderNumber())
                 .orElseThrow(GuestNotFoundException::new);
+        if (!passwordEncoder.matches(request.getOrderPassword(), guest.getOrderPassword())){
+            throw new InvalidInputException("주문조회 비밀번호가 일치하지 않습니다.");
+        }
         return GuestResponse.from(guest);
     }
 }

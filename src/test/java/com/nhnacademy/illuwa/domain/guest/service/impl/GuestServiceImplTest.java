@@ -76,7 +76,8 @@ class GuestServiceImplTest {
     @Test
     @DisplayName("비회원 정보조회")
     void testGetGuest(){
-        when(guestRepository.findGuestByOrderNumberAndOrderPassword(anyString(), anyString())).thenReturn(Optional.of(testGuest));
+        when(guestRepository.findGuestByOrderNumber(anyString())).thenReturn(Optional.of(testGuest));
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
         GuestLoginRequest loginRequest = new GuestLoginRequest(guestOrderRequest.getOrderNumber(), guestOrderRequest.getOrderPassword());
         GuestResponse response = guestService.getGuest(loginRequest);
