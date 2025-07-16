@@ -14,9 +14,9 @@ POST http://localhost:10303/members
 Content-Type: application/json
 
 {
-  "name" : "신규회원가입자2",
+  "name" : "신규회원3",
   "birth" : "2000-07-13",
-  "email": "newmebmerABC@naver.com",
+  "email": "foejof@naver.com",
   "password": "Password123!",
   "contact": "010-5463-5678"
 }
