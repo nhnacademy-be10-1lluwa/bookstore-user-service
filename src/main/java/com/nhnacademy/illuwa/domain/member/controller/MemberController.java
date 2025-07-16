@@ -1,6 +1,5 @@
 package com.nhnacademy.illuwa.domain.member.controller;
 
-import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.member.dto.*;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
@@ -17,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -87,9 +87,7 @@ public class MemberController {
     // 회원 비밀번호 체크
     @PostMapping("/api/members/check-pw")
     public ResponseEntity<Boolean> checkPassword(@RequestHeader("X-USER-ID") long memberId, @RequestBody PasswordCheckRequest request) {
-        log.info("비밀번호 체크 요청 - memberId: {}, password: {}", memberId, request.getInputPassword());
         boolean isEqual = memberService.checkPassword(memberId, request.getInputPassword());
-        log.info("검증 결과: {}", isEqual);
         return ResponseEntity.ok(isEqual);
     }
 
@@ -103,5 +101,10 @@ public class MemberController {
     @GetMapping(value = "/api/members/birth-month", params = "month")
     public ResponseEntity<List<MemberResponse>> getMemberByBirthMonth(@RequestParam int month) {
         return ResponseEntity.ok(memberService.getMembersByBirthMonth(month));
+    }
+
+    @PostMapping(value = "/api/members/names")
+    public ResponseEntity<Map<Long, String>> getNamesFromIdList(@RequestBody List<Long> memberIds) {
+        return ResponseEntity.ok(memberService.getNamesFromIdList(memberIds));
     }
 }

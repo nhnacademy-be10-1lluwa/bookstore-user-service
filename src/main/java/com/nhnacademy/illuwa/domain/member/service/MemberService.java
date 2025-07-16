@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 public interface MemberService {
     MemberResponse register(MemberRegisterRequest request);
@@ -41,4 +42,6 @@ public interface MemberService {
     void removeMember(long memberId);
 
     List<MemberResponse> getMembersByBirthMonth(int month);
+
+    Map<Long, String> getNamesFromIdList(List<Long> memberIds);
 }
