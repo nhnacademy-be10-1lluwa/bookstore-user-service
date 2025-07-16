@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -100,5 +101,10 @@ public class MemberController {
     @GetMapping(value = "/api/members/birth-month", params = "month")
     public ResponseEntity<List<MemberResponse>> getMemberByBirthMonth(@RequestParam int month) {
         return ResponseEntity.ok(memberService.getMembersByBirthMonth(month));
+    }
+
+    @PostMapping(value = "/api/members/names")
+    public ResponseEntity<Map<Long, String>> getMemberNameFromReviewers(@RequestBody List<Long> memberIds) {
+        return ResponseEntity.ok(memberService.getMemberNameFromReviewers(memberIds));
     }
 }

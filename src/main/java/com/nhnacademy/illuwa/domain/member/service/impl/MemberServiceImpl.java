@@ -27,7 +27,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -241,5 +243,18 @@ public class MemberServiceImpl implements MemberService {
                 .stream()
                 .map(memberMapper::toDto)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public Map<Long, String> getMemberNameFromReviewers(List<Long> memberIds) {
+        Map<Long, String> reviewers = new HashMap<>();
+
+        for(long memberId : memberIds){
+            String memberName = getMemberById(memberId).getName();
+            reviewers.put(memberId, memberName);
+        }
+
+        return reviewers;
     }
 }
