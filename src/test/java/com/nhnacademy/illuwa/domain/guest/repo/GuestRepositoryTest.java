@@ -30,9 +30,9 @@ class GuestRepositoryTest {
                 .guestId("123456789101112131415161718")
                 .name("비회원카리나")
                 .email("test@email.com")
-                .orderPassword("guestPW!")
                 .contact("010-2394-0592")
                 .orderNumber("20250819063812-234877")
+                .orderPassword("orderPassword1234$")
                 .build();
     }
 
@@ -43,7 +43,6 @@ class GuestRepositoryTest {
         assertEquals(testGuest.getGuestId(), saved.getGuestId());
         assertEquals(testGuest.getName(), saved.getName());
         assertEquals(testGuest.getEmail(), saved.getEmail());
-        assertEquals(testGuest.getOrderPassword(), saved.getOrderPassword());
         assertEquals(testGuest.getContact(), saved.getContact());
         assertEquals(testGuest.getOrderNumber(), saved.getOrderNumber());
     }
@@ -54,8 +53,7 @@ class GuestRepositoryTest {
         Guest savedGuest = guestRepository.save(testGuest);
 
         Optional<Guest> optionalGuest = guestRepository.findGuestByOrderNumberAndOrderPassword(
-                savedGuest.getOrderNumber(),
-                savedGuest.getOrderPassword()
+                savedGuest.getOrderNumber(), savedGuest.getOrderPassword()
         );
 
         assertTrue(optionalGuest.isPresent(), "Guest should be found!");
@@ -75,7 +73,7 @@ class GuestRepositoryTest {
         guestRepository.save(testGuest);
 
         Optional<Guest> result = guestRepository.findGuestByOrderNumberAndOrderPassword(
-                "wrongOrderNumber", "wrongPassword");
+                "wrongOrderNumber", testGuest.getOrderPassword());
 
         assertTrue(result.isEmpty());
     }

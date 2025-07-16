@@ -54,7 +54,7 @@ public class InactiveVerificationController {
         try {
             return memberService.getInactiveMemberInfoByEmail(email);
         } catch (RuntimeException e) {
-            throw new MemberNotFoundException();
+                 throw new MemberNotFoundException();
         }
     }
 }

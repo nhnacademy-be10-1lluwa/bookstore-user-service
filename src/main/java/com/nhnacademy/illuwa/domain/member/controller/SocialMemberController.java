@@ -34,4 +34,3 @@ public class SocialMemberController {
         return ResponseEntity.ok().build();
     }
 }
-

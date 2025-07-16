@@ -2,7 +2,6 @@ package com.nhnacademy.illuwa.domain.message.service;
 
 import com.nhnacademy.illuwa.common.client.DoorayMessageClient;
 import com.nhnacademy.illuwa.common.exception.ActionNotAllowedException;
-import com.nhnacademy.illuwa.domain.guest.dto.GuestOrderRequest;
 import com.nhnacademy.illuwa.domain.member.dto.InactiveCheckResponse;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
@@ -57,12 +56,12 @@ public class MessageSendService {
         }
     }
 
-    //비회원 주문완료 메시지
-    public SendMessageResponse sendOrderMessage(GuestOrderRequest guestOrderRequest) {
+    //주문완료 메시지
+    public SendMessageResponse sendOrderMessage(String name, String orderNumber) {
         SendMessageRequest request = new SendMessageRequest();
-        request.setText(request.getRecipientName() + "님의 소중한 주문이 완료되었습니다!😎");
+        request.setText(name + "님의 소중한 주문이 완료되었습니다!😎");
         request.setAttachmentTitle("🎁주문완료");
-        request.setAttachmentText("주문번호: " + "[" + guestOrderRequest.getOrderNumber() + "]");
+        request.setAttachmentText("주문번호: " + "[" + orderNumber + "]");
         return sendDoorayMessage(request);
     }
 

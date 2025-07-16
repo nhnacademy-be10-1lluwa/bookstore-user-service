@@ -102,14 +102,14 @@ class MessageSendServiceTest {
     }
 
     @Test
-    @DisplayName("비회원 주문 메시지 전송 테스트")
+    @DisplayName("주문 메시지 전송 테스트 - 비회원")
     void testSendOrderMessage() {
         GuestOrderRequest orderRequest = GuestOrderRequest.builder()
                 .name("비회원")
                 .orderNumber("20250702091229-123456")
                 .build();
 
-        messageSendService.sendOrderMessage(orderRequest);
+        messageSendService.sendOrderMessage(orderRequest.getName(), orderRequest.getOrderNumber());
 
         ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
         verify(doorayMessageClient).sendMessage(captor.capture());

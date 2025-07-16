@@ -17,7 +17,7 @@ public class RabbitConfig {
      */
     @Bean
     public Queue memberRegisterQueue() {
-        return new Queue("test_welcome_queue", true);
+        return new Queue("book1lluwa_welcome_queue", true);
     }
 
 

@@ -19,10 +19,7 @@ public class MemberEventPublisher {
     }
 
     public void sendMemberCreateEvent(MemberEventDto message) {
-        rabbitTemplate.convertAndSend("1lluwa_welcome_queue",message);
-        log.info(message.getName());
-        log.info(message.getMemberId().toString());
-        log.info(message.getBirth().toString());
+        rabbitTemplate.convertAndSend("book1lluwa_welcome_queue",message);
         log.info("회원가입 이벤트 발송 성공");
     }
 }

@@ -17,7 +17,6 @@ import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
 import com.nhnacademy.illuwa.domain.point.util.PointManager;
 import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,7 +31,6 @@ import java.util.List;
 
 @Slf4j
 @Service
-@Builder
 @Transactional
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
@@ -92,7 +90,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberResponse login(MemberLoginRequest request) {
         Member loginMember = memberRepository.findByEmail(request.getEmail())
-                        .orElseThrow(MemberNotFoundException::new);
+                        .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 이메일 아이디입니다."));
 
         if(!passwordEncoder.matches(request.getPassword(), loginMember.getPassword())) {
             throw new InvalidInputException("비밀번호가 틀렸습니다.");
@@ -161,7 +159,8 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public InactiveCheckResponse getInactiveMemberInfoByEmail(String email) {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(MemberNotFoundException::new);
+                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 이메일 아이디입니다."));
+
         return new InactiveCheckResponse(member.getMemberId(), member.getName(), member.getEmail(), member.getStatus());
     }
 

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PointHistoryResponse {
+    private long memberId;
     private PointHistoryType type;
     private PointReason reason;
     private BigDecimal amount;

@@ -25,6 +25,7 @@ public class MemberRegisterRequest {
             message = "비밀번호는 8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요.")
     private String password;
 
+    //payco 초기가입 때문에 첫자리 010-0000-0000 허용 (수정 시 불가)
     @Pattern(regexp = "^010-\\d{3,4}-\\d{4}$",
             message = "휴대폰 번호는 010으로 시작하는 11자리 숫자와 '-'로 구성되어야 합니다.")
     private String contact;
