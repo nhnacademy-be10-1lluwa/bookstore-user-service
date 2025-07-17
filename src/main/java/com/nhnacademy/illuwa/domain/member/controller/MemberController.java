@@ -71,7 +71,7 @@ public class MemberController {
     }
 
     //회원 휴면상태 체크
-    @PostMapping("/api/members/check-status")
+    @PostMapping("/api/members/inactive/check-status")
     public ResponseEntity<InactiveCheckResponse> getInactiveMemberInfo(@RequestBody SendVerificationRequest request){
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getInactiveMemberInfoByEmail(request.getEmail()));
     }
