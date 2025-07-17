@@ -273,7 +273,7 @@ class MemberControllerTest {
         Mockito.when(memberService.getInactiveMemberInfoByEmail("sleepy@naver.com"))
                 .thenReturn(response);
 
-        mockMvc.perform(post("/api/members/check-status")
+        mockMvc.perform(post("/api/members/inactive/check-status")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
