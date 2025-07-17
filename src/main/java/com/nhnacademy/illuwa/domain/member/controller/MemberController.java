@@ -70,12 +70,6 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberById(memberId));
     }
 
-    //회원 휴면상태 체크
-    @PostMapping("/api/members/check-status")
-    public ResponseEntity<InactiveCheckResponse> getInactiveMemberInfo(@RequestBody SendVerificationRequest request){
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.getInactiveMemberInfoByEmail(request.getEmail()));
-    }
-
     // 회원 수정
     @PutMapping("/api/members")
     public ResponseEntity<MemberResponse> updateMember(@RequestHeader("X-USER-ID") long memberId, @Valid @RequestBody MemberUpdateRequest request) {

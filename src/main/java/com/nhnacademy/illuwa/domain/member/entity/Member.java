@@ -51,7 +51,7 @@ public class Member {
     private Grade grade;
 
     @Column(name = "point", nullable = false)
-    private BigDecimal point = BigDecimal.ZERO;   //회원가입 포인트는 포인트정책 반영하여 넣어줄 거라 기본값 ZERO
+    private BigDecimal point = BigDecimal.ZERO;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
