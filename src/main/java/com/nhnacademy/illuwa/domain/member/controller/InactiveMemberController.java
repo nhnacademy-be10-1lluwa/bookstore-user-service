@@ -1,4 +1,4 @@
-package com.nhnacademy.illuwa.domain.message.controller;
+package com.nhnacademy.illuwa.domain.member.controller;
 
 import com.nhnacademy.illuwa.domain.member.dto.InactiveCheckResponse;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
@@ -7,18 +7,28 @@ import com.nhnacademy.illuwa.domain.message.dto.*;
 import com.nhnacademy.illuwa.domain.message.service.InactiveVerificationService;
 import com.nhnacademy.illuwa.domain.message.service.MessageSendService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/members/inactive/verification")
-public class InactiveVerificationController {
-
+@RequestMapping("/api/members/inactive")
+public class InactiveMemberController {
     private final MemberService memberService;
     private final MessageSendService messageSendService;
     private final InactiveVerificationService inactiveVerificationService;
+
+    //회원 휴면상태 체크
+    @PostMapping("/check-status")
+    public ResponseEntity<InactiveCheckResponse> getInactiveMemberInfo(@RequestBody SendVerificationRequest request){
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.getInactiveMemberInfoByEmail(request.getEmail()));
+    }
 
     //인증번호 전송 api
     @PostMapping
@@ -54,7 +64,7 @@ public class InactiveVerificationController {
         try {
             return memberService.getInactiveMemberInfoByEmail(email);
         } catch (RuntimeException e) {
-                 throw new MemberNotFoundException();
+            throw new MemberNotFoundException();
         }
     }
 }
