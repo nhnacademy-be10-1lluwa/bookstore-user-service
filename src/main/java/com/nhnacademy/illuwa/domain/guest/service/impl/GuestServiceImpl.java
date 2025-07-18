@@ -8,7 +8,7 @@ import com.nhnacademy.illuwa.domain.guest.entity.Guest;
 import com.nhnacademy.illuwa.domain.guest.exception.GuestNotFoundException;
 import com.nhnacademy.illuwa.domain.guest.repo.GuestRepository;
 import com.nhnacademy.illuwa.domain.guest.service.GuestService;
-import com.nhnacademy.illuwa.domain.message.service.MessageSendService;
+import com.nhnacademy.illuwa.domain.message.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class GuestServiceImpl implements GuestService {
     private final GuestRepository guestRepository;
     private final PasswordEncoder passwordEncoder;
-    private final MessageSendService messageSendService;
+    private final MessageService messageService;
 
     @Override
     public GuestResponse createGuest(GuestOrderRequest request){
@@ -34,7 +34,7 @@ public class GuestServiceImpl implements GuestService {
                 .contact(request.getContact())
                 .build();
 
-        messageSendService.sendOrderMessage(request.getName(), request.getOrderNumber());
+        messageService.sendOrderMessage(request.getName(), request.getOrderNumber());
         return GuestResponse.from(guestRepository.save(guest));
     }
 

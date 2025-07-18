@@ -3,7 +3,6 @@ package com.nhnacademy.illuwa.domain.member.controller;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.member.dto.*;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
-import com.nhnacademy.illuwa.domain.message.dto.SendVerificationRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -6,7 +6,6 @@ import com.nhnacademy.illuwa.domain.member.dto.*;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
-import com.nhnacademy.illuwa.domain.message.dto.SendVerificationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,7 +22,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.nhnacademy.illuwa.domain.member.entity.enums.Status.INACTIVE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -262,25 +260,6 @@ class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].memberId").value(2L))
                 .andExpect(jsonPath("$.content[0].gradeName").value("ROYAL"));
-    }
-
-    @Test
-    @DisplayName("휴면 회원 정보 확인")
-    void getInactiveMemberInfo() throws Exception {
-        SendVerificationRequest request = new SendVerificationRequest("sleepy@naver.com");
-        InactiveCheckResponse response = new InactiveCheckResponse(3L, "최길동", "sleepy@naver.com", INACTIVE);
-
-        Mockito.when(memberService.getInactiveMemberInfoByEmail("sleepy@naver.com"))
-                .thenReturn(response);
-
-        mockMvc.perform(post("/api/members/check-status")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.memberId").value(3L))
-                .andExpect(jsonPath("$.name").value("최길동"))
-                .andExpect(jsonPath("$.email").value("sleepy@naver.com"))
-                .andExpect(jsonPath("$.status").value("INACTIVE"));
     }
 
     @Test

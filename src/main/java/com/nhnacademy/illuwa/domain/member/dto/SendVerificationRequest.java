@@ -1,15 +1,14 @@
-package com.nhnacademy.illuwa.domain.message.dto;
+package com.nhnacademy.illuwa.domain.member.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VerifyCodeResponse {
-    boolean success;
-    Long memberId;
+public class SendVerificationRequest {
     String email;
-    String message;
 }
