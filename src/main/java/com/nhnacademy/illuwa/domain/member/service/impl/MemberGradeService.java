@@ -3,9 +3,9 @@ package com.nhnacademy.illuwa.domain.member.service.impl;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
 import com.nhnacademy.illuwa.domain.member.dto.MemberGradeUpdateRequest;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
-import com.nhnacademy.illuwa.domain.point.util.PointManager;
-import com.nhnacademy.illuwa.domain.pointhistory.dto.PointHistoryResponse;
-import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
+import com.nhnacademy.illuwa.domain.point.utils.PointManager;
+import com.nhnacademy.illuwa.domain.point.pointhistory.dto.PointHistoryResponse;
+import com.nhnacademy.illuwa.domain.point.pointhistory.entity.enums.PointReason;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

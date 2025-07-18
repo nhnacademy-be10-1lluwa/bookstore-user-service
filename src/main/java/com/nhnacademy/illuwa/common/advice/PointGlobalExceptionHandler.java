@@ -2,9 +2,9 @@ package com.nhnacademy.illuwa.common.advice;
 
 import com.nhnacademy.illuwa.common.exception.ErrorResponse;
 import com.nhnacademy.illuwa.domain.point.exception.InvalidPointOperationException;
-import com.nhnacademy.illuwa.domain.pointpolicy.exception.DuplicatePointPolicyException;
-import com.nhnacademy.illuwa.domain.pointpolicy.exception.InactivePointPolicyException;
-import com.nhnacademy.illuwa.domain.pointpolicy.exception.PointPolicyNotFoundException;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.exception.DuplicatePointPolicyException;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.exception.InactivePointPolicyException;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.exception.PointPolicyNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
