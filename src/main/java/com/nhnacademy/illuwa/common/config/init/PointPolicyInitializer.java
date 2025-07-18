@@ -1,8 +1,8 @@
 package com.nhnacademy.illuwa.common.config.init;
 
-import com.nhnacademy.illuwa.domain.pointpolicy.entity.PointPolicy;
-import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
-import com.nhnacademy.illuwa.domain.pointpolicy.repo.PointPolicyRepository;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.entity.PointPolicy;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.entity.enums.PointValueType;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.repo.PointPolicyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

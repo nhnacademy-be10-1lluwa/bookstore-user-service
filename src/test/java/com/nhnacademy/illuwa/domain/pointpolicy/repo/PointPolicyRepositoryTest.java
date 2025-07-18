@@ -1,7 +1,8 @@
 package com.nhnacademy.illuwa.domain.pointpolicy.repo;
 
-import com.nhnacademy.illuwa.domain.pointpolicy.entity.PointPolicy;
-import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.entity.PointPolicy;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.entity.enums.PointValueType;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.repo.PointPolicyRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.*;

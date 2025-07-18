@@ -1,16 +1,17 @@
 package com.nhnacademy.illuwa.domain.pointpolicy.service.impl;
 
 import com.nhnacademy.illuwa.common.exception.InvalidInputException;
-import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyCreateRequest;
-import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyResponse;
-import com.nhnacademy.illuwa.domain.pointpolicy.dto.PointPolicyUpdateRequest;
-import com.nhnacademy.illuwa.domain.pointpolicy.entity.PointPolicy;
-import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PointValueType;
-import com.nhnacademy.illuwa.domain.pointpolicy.entity.enums.PolicyStatus;
-import com.nhnacademy.illuwa.domain.pointpolicy.exception.DuplicatePointPolicyException;
-import com.nhnacademy.illuwa.domain.pointpolicy.exception.PointPolicyNotFoundException;
-import com.nhnacademy.illuwa.domain.pointpolicy.repo.PointPolicyRepository;
-import com.nhnacademy.illuwa.domain.pointpolicy.utils.PointPolicyMapper;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.dto.PointPolicyCreateRequest;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.dto.PointPolicyResponse;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.dto.PointPolicyUpdateRequest;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.entity.PointPolicy;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.entity.enums.PointValueType;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.entity.enums.PolicyStatus;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.exception.DuplicatePointPolicyException;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.exception.PointPolicyNotFoundException;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.repo.PointPolicyRepository;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.service.impl.PointPolicyServiceImpl;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.utils.PointPolicyMapper;
 import com.nhnacademy.illuwa.domain.pointpolicy.utils.PointPolicyMapperImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

@@ -4,9 +4,11 @@ import com.nhnacademy.illuwa.common.testconfig.GradeTestDataConfig;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
-import com.nhnacademy.illuwa.domain.pointhistory.entity.PointHistory;
-import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointHistoryType;
-import com.nhnacademy.illuwa.domain.pointhistory.entity.enums.PointReason;
+import com.nhnacademy.illuwa.domain.point.pointhistory.entity.PointHistory;
+import com.nhnacademy.illuwa.domain.point.pointhistory.entity.enums.PointHistoryType;
+import com.nhnacademy.illuwa.domain.point.pointhistory.entity.enums.PointReason;
+import com.nhnacademy.illuwa.domain.point.pointhistory.repo.PointHistoryRepository;
+import com.nhnacademy.illuwa.domain.point.pointhistory.repo.PointHistoryRepositoryImpl;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,7 +82,7 @@ class PointHistoryRepositoryTest {
         PointHistory history2 = PointHistory.builder()
                 .memberId(member.getMemberId())
                 .reason(PointReason.PURCHASE)
-                .type(PointHistoryType.USE)
+                .type(PointHistoryType.DEDUCT)
                 .amount(new BigDecimal("300"))
                 .balance(new BigDecimal("4700"))
                 .createdAt(LocalDateTime.now().minusDays(1))
@@ -160,7 +162,7 @@ class PointHistoryRepositoryTest {
         List<PointHistory> useList = pointHistoryRepository.findByPointTypeUse(member.getMemberId());
 
         assertThat(useList).hasSize(1);
-        assertThat(useList.getFirst().getType()).isEqualTo(PointHistoryType.USE);
+        assertThat(useList.getFirst().getType()).isEqualTo(PointHistoryType.DEDUCT);
     }
 
     @Test
