@@ -1,7 +1,7 @@
 package com.nhnacademy.illuwa.domain.point.pointhistory.repo;
 
 import com.nhnacademy.illuwa.domain.point.pointhistory.entity.PointHistory;
-import com.nhnacademy.illuwa.domain.pointhistory.entity.QPointHistory;
+import com.nhnacademy.illuwa.domain.point.pointhistory.entity.QPointHistory;
 import com.nhnacademy.illuwa.domain.point.pointhistory.entity.enums.PointHistoryType;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

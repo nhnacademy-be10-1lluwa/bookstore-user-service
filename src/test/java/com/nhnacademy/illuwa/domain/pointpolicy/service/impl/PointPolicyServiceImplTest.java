@@ -12,7 +12,7 @@ import com.nhnacademy.illuwa.domain.point.pointpolicy.exception.PointPolicyNotFo
 import com.nhnacademy.illuwa.domain.point.pointpolicy.repo.PointPolicyRepository;
 import com.nhnacademy.illuwa.domain.point.pointpolicy.service.impl.PointPolicyServiceImpl;
 import com.nhnacademy.illuwa.domain.point.pointpolicy.utils.PointPolicyMapper;
-import com.nhnacademy.illuwa.domain.pointpolicy.utils.PointPolicyMapperImpl;
+import com.nhnacademy.illuwa.domain.point.pointpolicy.utils.PointPolicyMapperImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
