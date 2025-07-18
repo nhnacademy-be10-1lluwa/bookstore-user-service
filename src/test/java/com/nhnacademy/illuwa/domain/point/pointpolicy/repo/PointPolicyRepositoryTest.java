@@ -1,4 +1,4 @@
-package com.nhnacademy.illuwa.domain.pointpolicy.repo;
+package com.nhnacademy.illuwa.domain.point.pointpolicy.repo;
 
 import com.nhnacademy.illuwa.domain.point.pointpolicy.entity.PointPolicy;
 import com.nhnacademy.illuwa.domain.point.pointpolicy.entity.enums.PointValueType;

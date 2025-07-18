@@ -1,4 +1,4 @@
-package com.nhnacademy.illuwa.domain.pointhistory.repo;
+package com.nhnacademy.illuwa.domain.point.pointhistory.repo;
 
 import com.nhnacademy.illuwa.common.testconfig.GradeTestDataConfig;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
@@ -7,8 +7,6 @@ import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
 import com.nhnacademy.illuwa.domain.point.pointhistory.entity.PointHistory;
 import com.nhnacademy.illuwa.domain.point.pointhistory.entity.enums.PointHistoryType;
 import com.nhnacademy.illuwa.domain.point.pointhistory.entity.enums.PointReason;
-import com.nhnacademy.illuwa.domain.point.pointhistory.repo.PointHistoryRepository;
-import com.nhnacademy.illuwa.domain.point.pointhistory.repo.PointHistoryRepositoryImpl;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;

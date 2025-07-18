@@ -1,4 +1,4 @@
-package com.nhnacademy.illuwa.domain.pointpolicy.service.impl;
+package com.nhnacademy.illuwa.domain.point.pointpolicy.service.impl;
 
 import com.nhnacademy.illuwa.common.exception.InvalidInputException;
 import com.nhnacademy.illuwa.domain.point.pointpolicy.dto.PointPolicyCreateRequest;
