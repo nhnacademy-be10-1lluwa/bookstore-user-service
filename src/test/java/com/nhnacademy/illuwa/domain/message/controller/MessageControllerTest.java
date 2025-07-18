@@ -2,7 +2,7 @@ package com.nhnacademy.illuwa.domain.message.controller;
 
 import com.nhnacademy.illuwa.domain.message.dto.SendMessageRequest;
 import com.nhnacademy.illuwa.domain.message.dto.SendMessageResponse;
-import com.nhnacademy.illuwa.domain.message.service.MessageSendService;
+import com.nhnacademy.illuwa.domain.message.service.MessageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ class MessageControllerTest {
     private MessageController controller;
 
     @Mock
-    private MessageSendService messageSendService;
+    private MessageService messageService;
 
     @BeforeEach
     void setUp() {
@@ -39,12 +39,12 @@ class MessageControllerTest {
         SendMessageResponse mockResponse =
                 new SendMessageResponse(true, request.getRecipientEmail(), "두레이 메시지 전송 성공!", request.getText());
 
-        when(messageSendService.sendDoorayMessage(any(SendMessageRequest.class)))
+        when(messageService.sendDoorayMessage(any(SendMessageRequest.class)))
                 .thenReturn(mockResponse);
 
         ResponseEntity<SendMessageResponse> response = controller.sendCustomMessage(request);
 
-        verify(messageSendService, times(1)).sendDoorayMessage(request);
+        verify(messageService, times(1)).sendDoorayMessage(request);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();

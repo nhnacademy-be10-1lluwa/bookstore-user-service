@@ -5,7 +5,7 @@ import com.nhnacademy.illuwa.domain.guest.dto.GuestOrderRequest;
 import com.nhnacademy.illuwa.domain.guest.dto.GuestResponse;
 import com.nhnacademy.illuwa.domain.guest.entity.Guest;
 import com.nhnacademy.illuwa.domain.guest.repo.GuestRepository;
-import com.nhnacademy.illuwa.domain.message.service.MessageSendService;
+import com.nhnacademy.illuwa.domain.message.service.MessageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,7 @@ class GuestServiceImplTest {
     GuestServiceImpl guestService;
 
     @Mock
-    MessageSendService messageSendService;
+    MessageService messageService;
 
     GuestOrderRequest guestOrderRequest;
     Guest testGuest;

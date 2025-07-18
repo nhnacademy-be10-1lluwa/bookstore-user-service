@@ -1,4 +1,4 @@
-package com.nhnacademy.illuwa.domain.message.dto;
+package com.nhnacademy.illuwa.domain.member.dto;
 
 import lombok.*;
 

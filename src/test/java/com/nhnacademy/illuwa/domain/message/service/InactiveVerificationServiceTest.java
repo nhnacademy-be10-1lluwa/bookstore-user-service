@@ -28,10 +28,10 @@ class InactiveVerificationServiceTest {
     MemberService memberService;
 
     @Mock
-    MessageSendService messageSendService;
+    MessageService messageService;
 
     @InjectMocks
-    InactiveVerificationService service;
+    InactiveVerificationService inactiveVerificationService;
 
     @BeforeEach
     void setUp() {
@@ -46,7 +46,7 @@ class InactiveVerificationServiceTest {
 
         when(valueOperations.get("verify:" + email)).thenReturn(code);
 
-        boolean result = service.verifyCode(email, code);
+        boolean result = inactiveVerificationService.verifyCode(email, code);
 
         assertTrue(result);
     }
@@ -56,7 +56,7 @@ class InactiveVerificationServiceTest {
     void verifyCode_shouldReturnFalse_whenInputCodeIsNull() {
         String email = "test@example.com";
 
-        boolean result = service.verifyCode(email, null);
+        boolean result = inactiveVerificationService.verifyCode(email, null);
 
         assertFalse(result);
     }
@@ -70,7 +70,7 @@ class InactiveVerificationServiceTest {
 
         when(valueOperations.get("verify:" + email)).thenReturn(storedCode);
 
-        boolean result = service.verifyCode(email, inputCode);
+        boolean result = inactiveVerificationService.verifyCode(email, inputCode);
 
         assertFalse(result);
     }
@@ -83,7 +83,7 @@ class InactiveVerificationServiceTest {
 
         when(valueOperations.get("verify:" + email)).thenReturn(null);
 
-        boolean result = service.verifyCode(email, inputCode);
+        boolean result = inactiveVerificationService.verifyCode(email, inputCode);
 
         assertFalse(result);
     }
@@ -100,11 +100,11 @@ class InactiveVerificationServiceTest {
                 MemberResponse.builder().name("카리나").build()
         );
 
-        boolean result = service.verifyAndReactivateMember(memberId, email, code);
+        boolean result = inactiveVerificationService.verifyAndReactivateMember(memberId, email, code);
 
         assertTrue(result);
         verify(memberService).reactivateMember(memberId);
-        verify(messageSendService).sendDoorayMessage(
+        verify(messageService).sendDoorayMessage(
                 argThat(request ->
                         request.getAttachmentTitle().contains("환영합니다") &&
                                 request.getAttachmentText().contains("카리나")
@@ -125,11 +125,11 @@ class InactiveVerificationServiceTest {
                 MemberResponse.builder().name("카리나").build()
         );
 
-        boolean result = service.verifyAndReactivateMember(memberId, email, inputCode);
+        boolean result = inactiveVerificationService.verifyAndReactivateMember(memberId, email, inputCode);
 
         assertFalse(result);
         verify(memberService, never()).reactivateMember(anyLong());
-        verify(messageSendService).sendDoorayMessage(
+        verify(messageService).sendDoorayMessage(
                 argThat(request ->
                         request.getAttachmentTitle().contains("인증번호를 다시 확인") &&
                                 request.getAttachmentTitle().contains("카리나")

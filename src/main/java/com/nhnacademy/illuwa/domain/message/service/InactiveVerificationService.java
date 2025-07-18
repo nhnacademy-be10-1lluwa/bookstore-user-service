@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class InactiveVerificationService {
     private final MemberService memberService;
-    private final MessageSendService messageSendService;
+    private final MessageService messageService;
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -25,13 +25,13 @@ public class InactiveVerificationService {
                     .attachmentTitle("환영합니다!🥳")
                     .attachmentText(name +"님, 휴면이 성공적으로 해제됐습니다.")
                     .build();
-            messageSendService.sendDoorayMessage(successRequest);
+            messageService.sendDoorayMessage(successRequest);
             return true;
         }
         SendMessageRequest failRequest = SendMessageRequest.builder()
                 .attachmentTitle(name +"님, 인증번호를 다시 확인해주세요 😢")
                 .build();
-        messageSendService.sendDoorayMessage(failRequest);
+        messageService.sendDoorayMessage(failRequest);
         return false;
     }
 

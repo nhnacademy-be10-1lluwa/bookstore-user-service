@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MessageSendService {
+public class MessageService {
     private final DoorayMessageClient doorayMessageClient;
     private final MemberService memberService;
     private final RedisTemplate<String, String> redisTemplate;

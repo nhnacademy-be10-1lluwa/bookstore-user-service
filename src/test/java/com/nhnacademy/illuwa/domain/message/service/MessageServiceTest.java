@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class MessageSendServiceTest {
+class MessageServiceTest {
 
     @Mock
     DoorayMessageClient doorayMessageClient;
@@ -40,7 +40,7 @@ class MessageSendServiceTest {
     ValueOperations<String, String> valueOperations;
 
     @InjectMocks
-    MessageSendService messageSendService;
+    MessageService messageService;
 
     SendMessageRequest baseRequest() {
         SendMessageRequest request = new SendMessageRequest();
@@ -59,7 +59,7 @@ class MessageSendServiceTest {
         request.setAttachmentText("본문");
         request.setAttachmentColor("blue");
 
-        messageSendService.sendDoorayMessage(request);
+        messageService.sendDoorayMessage(request);
 
         verify(doorayMessageClient).sendMessage(any(Map.class));
     }
@@ -70,7 +70,7 @@ class MessageSendServiceTest {
         SendMessageRequest request = baseRequest();
         request.setText("내용만 있음");
 
-        messageSendService.sendDoorayMessage(request);
+        messageService.sendDoorayMessage(request);
 
         verify(doorayMessageClient).sendMessage(any(Map.class));
     }
@@ -84,7 +84,7 @@ class MessageSendServiceTest {
         request.setAttachmentText("내용");
         request.setAttachmentColor("red");
 
-        messageSendService.sendDoorayMessage(request);
+        messageService.sendDoorayMessage(request);
 
         verify(doorayMessageClient).sendMessage(any());
     }
@@ -98,7 +98,7 @@ class MessageSendServiceTest {
         doThrow(new RuntimeException("전송 실패"))
                 .when(doorayMessageClient).sendMessage(any());
 
-        assertDoesNotThrow(() -> messageSendService.sendDoorayMessage(request));
+        assertDoesNotThrow(() -> messageService.sendDoorayMessage(request));
     }
 
     @Test
@@ -109,7 +109,7 @@ class MessageSendServiceTest {
                 .orderNumber("20250702091229-123456")
                 .build();
 
-        messageSendService.sendOrderMessage(orderRequest.getName(), orderRequest.getOrderNumber());
+        messageService.sendOrderMessage(orderRequest.getName(), orderRequest.getOrderNumber());
 
         ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
         verify(doorayMessageClient).sendMessage(captor.capture());
@@ -132,7 +132,7 @@ class MessageSendServiceTest {
         when(memberService.getInactiveMemberInfoByEmail("gongju@naver.com")).thenReturn(inactiveMember);
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 
-        messageSendService.sendVerificationCode(request);
+        messageService.sendVerificationCode(request);
 
         verify(valueOperations).set(
                 startsWith("verify:"),
@@ -154,7 +154,7 @@ class MessageSendServiceTest {
         when(memberService.getInactiveMemberInfoByEmail("gongju@naver.com")).thenReturn(activeMember);
 
         ActionNotAllowedException ex = assertThrows(ActionNotAllowedException.class,
-                () -> messageSendService.sendVerificationCode(request));
+                () -> messageService.sendVerificationCode(request));
 
         assertEquals("휴면 회원만 인증이 필요합니다!", ex.getMessage());
     }
@@ -162,7 +162,7 @@ class MessageSendServiceTest {
     @Test
     @DisplayName("인증번호 생성 형식 검증")
     void testGenerateVerificationCode_format() {
-        String code = messageSendService.generateVerificationCode();
+        String code = messageService.generateVerificationCode();
         assertTrue(code.matches("\\d{6}"));
     }
 }

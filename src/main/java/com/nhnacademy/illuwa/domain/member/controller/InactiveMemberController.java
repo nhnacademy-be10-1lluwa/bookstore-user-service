@@ -1,11 +1,14 @@
 package com.nhnacademy.illuwa.domain.member.controller;
 
 import com.nhnacademy.illuwa.domain.member.dto.InactiveCheckResponse;
+import com.nhnacademy.illuwa.domain.member.dto.SendVerificationRequest;
+import com.nhnacademy.illuwa.domain.member.dto.VerifyCodeRequest;
+import com.nhnacademy.illuwa.domain.member.dto.VerifyCodeResponse;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.message.dto.*;
 import com.nhnacademy.illuwa.domain.message.service.InactiveVerificationService;
-import com.nhnacademy.illuwa.domain.message.service.MessageSendService;
+import com.nhnacademy.illuwa.domain.message.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,17 +24,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/members/inactive")
 public class InactiveMemberController {
     private final MemberService memberService;
-    private final MessageSendService messageSendService;
+    private final MessageService messageService;
     private final InactiveVerificationService inactiveVerificationService;
 
     //회원 휴면상태 체크
     @PostMapping("/check-status")
     public ResponseEntity<InactiveCheckResponse> getInactiveMemberInfo(@RequestBody SendVerificationRequest request){
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.getInactiveMemberInfoByEmail(request.getEmail()));
+        InactiveCheckResponse member = getMemberOrThrow(request.getEmail());
+        return ResponseEntity.status(HttpStatus.OK).body(member);
     }
 
     //인증번호 전송 api
-    @PostMapping
+    @PostMapping("/code")
     public ResponseEntity<SendMessageResponse> sendVerificationCode(@RequestBody SendVerificationRequest request) {
         InactiveCheckResponse member = getMemberOrThrow(request.getEmail());
 
@@ -39,12 +43,12 @@ public class InactiveMemberController {
         messageRequest.setRecipientName(member.getName());
         messageRequest.setRecipientEmail(member.getEmail());
 
-        SendMessageResponse response = messageSendService.sendVerificationCode(messageRequest);
+        SendMessageResponse response = messageService.sendVerificationCode(messageRequest);
         return ResponseEntity.ok().body(response);
     }
 
     //인증번호 검증 api
-    @PostMapping("/verify")
+    @PostMapping("/verification")
     public ResponseEntity<VerifyCodeResponse> receiveVerificationCode(@RequestBody VerifyCodeRequest request) {
         InactiveCheckResponse member = getMemberOrThrow(request.getEmail());
         String email = member.getEmail();
