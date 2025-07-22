@@ -9,13 +9,13 @@ import lombok.*;
 @NoArgsConstructor
 public class Guest {
     @Id
-    @Column(name = "guest_id")
+    @Column(name = "guest_id", unique = true)
     private String guestId;
 
-    @Column(name = "order_id",nullable = false)
+    @Column(name = "order_id", unique = true, nullable = false)
     private long orderId;
 
-    @Column(name = "order_number", nullable = false)
+    @Column(name = "order_number", unique = true, nullable = false)
     private String orderNumber;
 
     @Column(name = "order_password",nullable = false)
