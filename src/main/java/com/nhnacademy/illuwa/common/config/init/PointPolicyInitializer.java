@@ -19,8 +19,8 @@ public class PointPolicyInitializer implements ApplicationRunner {
 
     private final PointPolicyRepository pointPolicyRepository;
 
-    @Transactional
     @Override
+    @Transactional
     public void run(ApplicationArguments args) {
         saveOrUpdate("join_point", new BigDecimal("5000"), PointValueType.AMOUNT, "회원가입 포인트 적립액");
         saveOrUpdate("review_point", new BigDecimal("200"), PointValueType.AMOUNT, "리뷰 포인트 적립액");

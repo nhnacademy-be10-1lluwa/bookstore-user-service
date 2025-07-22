@@ -8,6 +8,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,6 +21,7 @@ public class GradeInitializer implements ApplicationRunner {
     private final GradeRepository gradeRepository;
 
     @Override
+    @Transactional
     public void run(ApplicationArguments args){
         if(gradeRepository.count() > 0) return;
 

@@ -28,10 +28,6 @@ public class InactiveVerificationService {
             messageService.sendDoorayMessage(successRequest);
             return true;
         }
-        SendMessageRequest failRequest = SendMessageRequest.builder()
-                .attachmentTitle(name +"님, 인증번호를 다시 확인해주세요 😢")
-                .build();
-        messageService.sendDoorayMessage(failRequest);
         return false;
     }
 
