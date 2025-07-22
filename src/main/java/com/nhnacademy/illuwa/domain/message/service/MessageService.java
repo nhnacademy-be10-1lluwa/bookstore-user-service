@@ -29,7 +29,7 @@ public class MessageService {
     public SendMessageResponse sendDoorayMessage(SendMessageRequest request) {
         Map<String, Object> body = new HashMap<>();
         body.put("botName", request.getBotName());
-        body.put("botIconImage", "/static/icon/1lluwa-favicon.png");
+        body.put("botIconImage", "/icon/1lluwa-favicon.png");
         if(request.getText() != null){
             body.put("text", request.getText());
         }

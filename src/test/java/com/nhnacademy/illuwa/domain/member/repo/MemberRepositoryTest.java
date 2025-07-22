@@ -1,6 +1,7 @@
 package com.nhnacademy.illuwa.domain.member.repo;
 
-import com.nhnacademy.illuwa.common.testconfig.GradeTestDataConfig;
+import com.nhnacademy.illuwa.common.config.JPAConfig;
+import com.nhnacademy.illuwa.testconfig.GradeTestDataConfig;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
@@ -9,13 +10,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-
-import com.querydsl.jpa.impl.JPAQueryFactory;
-
-import jakarta.persistence.EntityManager;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -23,21 +18,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
-@TestInstance(PER_CLASS)
 @DataJpaTest
-@Import({MemberRepositoryImpl.class, GradeTestDataConfig.class})
+@Import({JPAConfig.class, MemberRepositoryImpl.class, GradeTestDataConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MemberRepositoryTest {
-
-    @TestConfiguration
-    static class QueryDslTestConfig {
-        @Bean
-        public JPAQueryFactory jpaQueryFactory(EntityManager em) {
-            return new JPAQueryFactory(em);
-        }
-    }
 
     @Autowired
     GradeTestDataConfig gradeData;
@@ -64,8 +49,8 @@ class MemberRepositoryTest {
                 .build();
     }
 
-    @BeforeAll
-    void beforeAll() {
+    @BeforeEach
+    void setUp() {
         basicGrade = gradeData.getBasicGrade();
         goldGrade = gradeData.getGoldGrade();
         royalGrade = gradeData.getRoyalGrade();
