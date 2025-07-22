@@ -5,7 +5,7 @@ import com.nhnacademy.illuwa.domain.member.dto.*;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.message.dto.*;
-import com.nhnacademy.illuwa.domain.message.service.InactiveVerificationService;
+import com.nhnacademy.illuwa.domain.member.service.impl.InactiveVerificationService;
 import com.nhnacademy.illuwa.domain.message.service.MessageService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

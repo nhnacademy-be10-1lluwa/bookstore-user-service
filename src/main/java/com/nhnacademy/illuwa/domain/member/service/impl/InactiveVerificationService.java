@@ -1,7 +1,8 @@
-package com.nhnacademy.illuwa.domain.message.service;
+package com.nhnacademy.illuwa.domain.member.service.impl;
 
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.message.dto.SendMessageRequest;
+import com.nhnacademy.illuwa.domain.message.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;

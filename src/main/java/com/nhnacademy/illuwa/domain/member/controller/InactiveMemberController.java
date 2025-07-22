@@ -6,7 +6,7 @@ import com.nhnacademy.illuwa.domain.member.dto.VerifyCodeRequest;
 import com.nhnacademy.illuwa.domain.member.exception.MemberNotFoundException;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.message.dto.*;
-import com.nhnacademy.illuwa.domain.message.service.InactiveVerificationService;
+import com.nhnacademy.illuwa.domain.member.service.impl.InactiveVerificationService;
 import com.nhnacademy.illuwa.domain.message.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
