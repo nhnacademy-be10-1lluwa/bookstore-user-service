@@ -1,7 +1,8 @@
-package com.nhnacademy.illuwa.domain.message.service;
+package com.nhnacademy.illuwa.domain.member.service.impl;
 
 import com.nhnacademy.illuwa.domain.member.dto.MemberResponse;
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
+import com.nhnacademy.illuwa.domain.message.service.MessageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -108,31 +109,6 @@ class InactiveVerificationServiceTest {
                 argThat(request ->
                         request.getAttachmentTitle().contains("환영합니다") &&
                                 request.getAttachmentText().contains("카리나")
-                )
-        );
-    }
-
-    @Test
-    @DisplayName("인증 실패 시 실패 메시지를 보냄")
-    void verifyAndReactivateMember_shouldReturnFalse_whenVerificationFails() {
-        long memberId = 1L;
-        String email = "test@example.com";
-        String inputCode = "wrongCode";
-        String storedCode = "correctCode";
-
-        when(valueOperations.get("verify:" + email)).thenReturn(storedCode);
-        when(memberService.getMemberById(memberId)).thenReturn(
-                MemberResponse.builder().name("카리나").build()
-        );
-
-        boolean result = inactiveVerificationService.verifyAndReactivateMember(memberId, email, inputCode);
-
-        assertFalse(result);
-        verify(memberService, never()).reactivateMember(anyLong());
-        verify(messageService).sendDoorayMessage(
-                argThat(request ->
-                        request.getAttachmentTitle().contains("인증번호를 다시 확인") &&
-                                request.getAttachmentTitle().contains("카리나")
                 )
         );
     }

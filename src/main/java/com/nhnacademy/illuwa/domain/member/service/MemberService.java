@@ -29,6 +29,8 @@ public interface MemberService {
 
     InactiveCheckResponse getInactiveMemberInfoByEmail(String email);
 
+    InactiveCheckResponse getInactiveMemberInfoByContact(String contact);
+
     MemberResponse updateMember(long memberId, MemberUpdateRequest newMemberRequest);
 
     boolean checkPassword(long memberId, String inputPassword);

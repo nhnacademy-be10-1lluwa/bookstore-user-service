@@ -1,7 +1,8 @@
-package com.nhnacademy.illuwa.domain.message.service;
+package com.nhnacademy.illuwa.domain.member.service.impl;
 
 import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.message.dto.SendMessageRequest;
+import com.nhnacademy.illuwa.domain.message.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -28,10 +29,6 @@ public class InactiveVerificationService {
             messageService.sendDoorayMessage(successRequest);
             return true;
         }
-        SendMessageRequest failRequest = SendMessageRequest.builder()
-                .attachmentTitle(name +"님, 인증번호를 다시 확인해주세요 😢")
-                .build();
-        messageService.sendDoorayMessage(failRequest);
         return false;
     }
 

@@ -167,6 +167,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public InactiveCheckResponse getInactiveMemberInfoByContact(String contact) {
+        Member member = memberRepository.findByContact(contact)
+                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 전화번호입니다."));
+
+        return new InactiveCheckResponse(member.getMemberId(), member.getName(), member.getEmail(), member.getStatus());
+    }
+
+    @Override
     public MemberResponse updateMember(long memberId, MemberUpdateRequest newMemberRequest) {
         Member orgMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
