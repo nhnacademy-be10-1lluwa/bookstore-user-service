@@ -21,8 +21,10 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class MemberInitializer implements ApplicationRunner {
 
 
     @Override
+    @Transactional
     public void run(ApplicationArguments args){
 
         Grade basicGrade = gradeRepository.findByGradeName(GradeName.BASIC)
@@ -80,7 +83,7 @@ public class MemberInitializer implements ApplicationRunner {
                     .email("karina@naver.com")
                     .password(passwordEncoder.encode("Karina1234$"))
                     .role(Role.USER)
-                    .contact("010-1234-5678")
+                    .contact("010-8765-4321")
                     .grade(basicGrade)
                     .point(joinPolicy.getValue())
                     .status(Status.ACTIVE)
@@ -100,9 +103,10 @@ public class MemberInitializer implements ApplicationRunner {
             pointHistoryRepository.save(joinPoint2);
         }
 
+        Optional<Member> inactiveMember = memberRepository.findByEmail("inactive@1lluwa.com");
 
         /* 휴면 회원 계정 */
-        if (memberRepository.findByEmail("inactive@1lluwa.com").isEmpty()) {
+        if (inactiveMember.isEmpty()) {
             LocalDateTime joinedAt = LocalDateTime.now().minusMonths(6);
             LocalDateTime lastLoginAt = LocalDateTime.now().minusMonths(4);
 
@@ -132,6 +136,8 @@ public class MemberInitializer implements ApplicationRunner {
                     .build();
 
             pointHistoryRepository.save(joinPoint3);
+        } else {
+            inactiveMember.get().changeStatus(Status.INACTIVE);
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.nhnacademy.illuwa.domain.point.pointhistory.repo;
 
-import com.nhnacademy.illuwa.common.testconfig.GradeTestDataConfig;
+import com.nhnacademy.illuwa.testconfig.GradeTestDataConfig;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;

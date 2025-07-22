@@ -19,10 +19,10 @@ public class Grade {
     private long gradeId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "grade_name", unique = true)
+    @Column(name = "grade_name", unique = true, nullable = false)
     private GradeName gradeName;
 
-    @Column(name = "priority", nullable = false)
+    @Column(name = "priority", unique = true, nullable = false)
     private long priority;
 
     @Column(name = "point_rate", nullable = false)

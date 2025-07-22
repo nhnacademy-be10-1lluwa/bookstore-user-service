@@ -1,4 +1,4 @@
-package com.nhnacademy.illuwa.common.testconfig;
+package com.nhnacademy.illuwa.testconfig;
 
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
@@ -6,11 +6,11 @@ import com.nhnacademy.illuwa.domain.grade.repo.GradeRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.test.context.TestConfiguration;
 
 import java.math.BigDecimal;
 
-@Configuration
+@TestConfiguration
 @RequiredArgsConstructor
 @Getter
 public class GradeTestDataConfig {

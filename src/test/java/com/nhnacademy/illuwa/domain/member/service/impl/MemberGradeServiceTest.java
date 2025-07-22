@@ -9,7 +9,9 @@ import com.nhnacademy.illuwa.domain.point.pointhistory.dto.PointHistoryResponse;
 import com.nhnacademy.illuwa.domain.point.pointhistory.entity.enums.PointHistoryType;
 import com.nhnacademy.illuwa.domain.point.pointhistory.entity.enums.PointReason;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,7 +21,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ExtendWith(MockitoExtension.class)
 class MemberGradeServiceTest {
 
     @Mock
@@ -31,15 +33,9 @@ class MemberGradeServiceTest {
     @InjectMocks
     private MemberGradeService memberGradeService;
 
-    private GradeName basicGrade;
-    private GradeName goldGrade;
+    private final GradeName basicGrade = GradeName.BASIC;
+    private final GradeName goldGrade = GradeName.GOLD;
 
-    @BeforeAll
-    void beforeAll() {
-        MockitoAnnotations.openMocks(this);
-        basicGrade = GradeName.BASIC;
-        goldGrade = GradeName.GOLD;
-    }
 
     @Test
     @DisplayName("회원 등급 업데이트: 일부만 성공한 경우")

@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -34,6 +36,9 @@ public class GuestServiceImpl implements GuestService {
                 .contact(request.getContact())
                 .build();
 
+        if(Objects.isNull(guest)){
+            throw new GuestNotFoundException("주문자 정보 등록에 실패했습니다");
+        }
         messageService.sendOrderMessage(request.getName(), request.getOrderNumber());
         return GuestResponse.from(guestRepository.save(guest));
     }
@@ -42,7 +47,7 @@ public class GuestServiceImpl implements GuestService {
     @Override
     public GuestResponse getGuest(GuestLoginRequest request) {
         Guest guest = guestRepository.findGuestByOrderNumber(request.getOrderNumber())
-                .orElseThrow(GuestNotFoundException::new);
+                .orElseThrow(() -> new GuestNotFoundException("해당 주문번호에 대한 정보를 찾을 수 없습니다."));
         if (!passwordEncoder.matches(request.getOrderPassword(), guest.getOrderPassword())){
             throw new InvalidInputException("주문조회 비밀번호가 일치하지 않습니다.");
         }

@@ -33,7 +33,7 @@ public class Member {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birth;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
     @Column(name = "password", nullable = false)
@@ -43,7 +43,7 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
 
-    @Column(name = "contact", nullable = false)
+    @Column(name = "contact", unique = true, nullable = false)
     private String contact;
 
     @ManyToOne

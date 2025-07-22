@@ -1,23 +1,20 @@
 package com.nhnacademy.illuwa.domain.memberaddress.repo;
 
-import com.nhnacademy.illuwa.common.testconfig.GradeTestDataConfig;
+import com.nhnacademy.illuwa.common.config.JPAConfig;
+import com.nhnacademy.illuwa.testconfig.GradeTestDataConfig;
 import com.nhnacademy.illuwa.domain.memberaddress.dto.MemberAddressRequest;
 import com.nhnacademy.illuwa.domain.memberaddress.entity.MemberAddress;
 import com.nhnacademy.illuwa.domain.grade.entity.Grade;
 import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.repo.MemberRepository;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 import java.util.List;
@@ -27,19 +24,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import({MemberAddressRepositoryImpl.class, GradeTestDataConfig.class})
+@Import({JPAConfig.class, MemberAddressRepositoryImpl.class, GradeTestDataConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MemberAddressRepositoryTest {
-    @PersistenceContext
-    EntityManager em;
 
-    @TestConfiguration
-    static class QueryDslTestConfig {
-        @Bean
-        public JPAQueryFactory jpaQueryFactory(EntityManager em) {
-            return new JPAQueryFactory(em);
-        }
-    }
+    @Autowired
+    EntityManager em;
 
     @Autowired
     GradeTestDataConfig gradeData;
