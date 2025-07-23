@@ -20,7 +20,7 @@ public class MemberGradeController {
     /**
     * 전체회원 등급 재조정
     */
-    @PostMapping("/update")
+    @PostMapping("/recalculate")
     public ResponseEntity<Integer> updateAllMemberGrade(@RequestBody List<MemberGradeUpdateRequest> requests) {
         int updatedCount = memberGradeService.updateGrades(requests);
         return ResponseEntity.ok(updatedCount);
@@ -29,8 +29,8 @@ public class MemberGradeController {
     /**
      * 등급별 포인트 지급
      */
-    @PostMapping("/event-point")
-    public ResponseEntity<Void> givePointToGrade(@RequestParam(value = "grade") GradeName gradeName, @RequestParam(value = "point") BigDecimal point) {
+    @PostMapping("/{gradeName}/points")
+    public ResponseEntity<Void> givePointToGrade(@PathVariable GradeName gradeName, @RequestParam(value = "point") BigDecimal point) {
         memberGradeService.givePointsByGrade(gradeName, point);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

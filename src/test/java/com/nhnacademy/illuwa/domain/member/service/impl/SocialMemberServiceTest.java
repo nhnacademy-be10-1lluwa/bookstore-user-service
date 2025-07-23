@@ -10,7 +10,6 @@ import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapper;
 import com.nhnacademy.illuwa.domain.member.utils.MemberMapperImpl;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -113,7 +112,6 @@ class SocialMemberServiceTest {
         verify(memberService).register(any(MemberRegisterRequest.class));
     }
 
-    @Disabled
     @Test
     @DisplayName("Payco 회원 등록 - 필수값 누락 시 기본값 사용")
     void register_withMissingOptionalFields() {

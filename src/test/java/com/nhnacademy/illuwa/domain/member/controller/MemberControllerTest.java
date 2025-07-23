@@ -48,13 +48,16 @@ class MemberControllerTest {
                 .email("choi@naver.com")
                 .build();
 
-        Mockito.when(memberService.getAllMembers()).thenReturn(List.of(response));
+        PageRequest pageable = PageRequest.of(0, 10, Sort.by("lastLoginAt").descending());
+
+        Mockito.when(memberService.getPagedAllMembers(any()))
+                .thenReturn(new PageImpl<>(List.of(response), pageable, 1));
 
         mockMvc.perform(get("/api/admin/members"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].memberId").value(1L))
-                .andExpect(jsonPath("$[0].name").value("최길동"))
-                .andExpect(jsonPath("$[0].email").value("choi@naver.com"));
+                .andExpect(jsonPath("$.content[0].memberId").value(1L))
+                .andExpect(jsonPath("$.content[0].name").value("최길동"))
+                .andExpect(jsonPath("$.content[0].email").value("choi@naver.com"));
     }
 
     @Test
@@ -216,51 +219,7 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$[1].name").value("이순신"));
     }
 
-    @Test
-    @DisplayName("회원 페이지 목록 조회 - gradeName 없이")
-    void getPagedMembersWithoutGrade() throws Exception {
-        MemberResponse response = MemberResponse.builder()
-                .memberId(1L)
-                .name("테스터")
-                .email("test@naver.com")
-                .build();
 
-        PageRequest pageable = PageRequest.of(0, 10, Sort.by("lastLoginAt").descending());
-
-        Mockito.when(memberService.getPagedAllMembers(pageable))
-                .thenReturn(new PageImpl<>(List.of(response), pageable, 1));
-
-        mockMvc.perform(get("/api/admin/members/paged")
-                        .param("page", "0")
-                        .param("size", "10"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].memberId").value(1L))
-                .andExpect(jsonPath("$.content[0].name").value("테스터"));
-    }
-
-    @Test
-    @DisplayName("회원 페이지 목록 조회 - gradeName 포함")
-    void getPagedMembersWithGrade() throws Exception {
-        MemberResponse response = MemberResponse.builder()
-                .memberId(2L)
-                .name("그레이드유저")
-                .email("grade@naver.com")
-                .gradeName(GradeName.ROYAL.toString())
-                .build();
-
-        PageRequest pageable = PageRequest.of(0, 10, Sort.by("lastLoginAt").descending());
-
-        Mockito.when(memberService.getPagedAllMembersByGradeName(eq(GradeName.ROYAL), eq(pageable)))
-                .thenReturn(new PageImpl<>(List.of(response), pageable, 1));
-
-        mockMvc.perform(get("/api/admin/members/paged")
-                        .param("page", "0")
-                        .param("size", "10")
-                        .param("grade", "ROYAL"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].memberId").value(2L))
-                .andExpect(jsonPath("$.content[0].gradeName").value("ROYAL"));
-    }
 
     @Test
     @DisplayName("비밀번호 검증 성공")
@@ -270,7 +229,7 @@ class MemberControllerTest {
         Mockito.when(memberService.checkPassword(1L, "$pw123456789"))
                 .thenReturn(true);
 
-        mockMvc.perform(post("/api/members/check-pw")
+        mockMvc.perform(post("/api/members/password-check")
                         .header("X-USER-ID", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
