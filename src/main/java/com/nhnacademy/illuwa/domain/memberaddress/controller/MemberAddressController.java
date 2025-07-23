@@ -65,7 +65,7 @@ public class MemberAddressController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/set-default/{addressId}")
+    @PutMapping("/{addressId}/default")
     public ResponseEntity<Void> setDefaultAddress(@RequestHeader("X-USER-ID") long memberId, @PathVariable long addressId){
         memberAddressService.setDefaultAddress(memberId, addressId);
         return ResponseEntity.ok().build();

@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +35,7 @@ import java.util.Map;
 @Transactional
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
+
     private final MemberRepository memberRepository;
     private final GradeService gradeService;
     private final MemberMapper memberMapper;
@@ -254,15 +254,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Map<Long, String> getNamesFromIdList(List<Long> memberIds) {
-        Map<Long, String> reviewers = new HashMap<>();
-
-        for(long memberId : memberIds){
-            String memberName = getMemberById(memberId).getName();
-            reviewers.put(memberId, memberName);
-        }
-
-        return reviewers;
+        return memberRepository.getNamesFromIdList(memberIds);
     }
 }

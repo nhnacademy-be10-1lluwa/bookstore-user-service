@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,6 +27,8 @@ public class SocialMemberService {
 
     private final PasswordEncoder passwordEncoder;
     private final MemberMapper memberMapper;
+    public static final LocalDate TEMPORARY_BIRTH = LocalDate.of(1000, 1, 1);
+
 
     public Optional<MemberResponse> findByPaycoId(String paycoId) {
         return memberRepository.findByPaycoId(paycoId)
@@ -74,25 +74,9 @@ public class SocialMemberService {
         memberRepository.save(member);
     }
 
-    private LocalDate parseBirthdayOrDefault(String birthdayMMdd) {
-        if (birthdayMMdd == null || birthdayMMdd.length() != 4) {
-            // MMdd 형식이 아닌 경우 기본 생일 반환 (예: 1990-01-01)
-            return LocalDate.of(1000, 1, 1);
-        }
-        try {
-            // "MMdd" 형식 파싱 → 임의 연도 붙이기
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMdd");
-            LocalDate parsed = LocalDate.parse(birthdayMMdd, formatter);
-            return parsed.withYear(1000); // 연도는 임의
-        } catch (DateTimeParseException e) {
-            return LocalDate.of(1000, 1, 1);
-        }
-    }
-
-    //public static final LocalDate TEMPORARY_BIRTH = LocalDate.of(1000, 1, 1);
 
     // MMdd 형식 아닌 경우 기본생일 반환 (TEMPORARY_BIRTH)
-/*    private LocalDate parseBirthdayOrDefault(String birthdayMMdd) {
+    private LocalDate parseBirthdayOrDefault(String birthdayMMdd) {
         if (birthdayMMdd == null || birthdayMMdd.length() != 4) {
             return TEMPORARY_BIRTH;
         }
@@ -104,6 +88,6 @@ public class SocialMemberService {
         } catch (Exception e) {
             return TEMPORARY_BIRTH;
         }
-    }*/
+    }
 
 }
