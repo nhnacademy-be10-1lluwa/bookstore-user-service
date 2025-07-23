@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@EqualsAndHashCode
 @Getter
 @Table(name = "members")
 @NoArgsConstructor
@@ -91,12 +90,6 @@ public class Member {
         public MemberBuilder birth(LocalDate birth) {
             this.birth = birth;
             return this;
-        }
-    }
-
-    public void changePaycoId(String paycoId) {
-        if (paycoId != null) {
-            this.paycoId = paycoId;
         }
     }
 

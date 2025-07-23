@@ -124,15 +124,6 @@ public class PointManager {
         return Optional.of(pointHistoryService.recordPointHistory(historyRequest));
     }
 
-    //정책 기반 포인트 계산 - 이벤트 종류는 보통 AMOUNT만 사용
-/*    private BigDecimal calculatedFromPolicy(PointPolicyResponse policy) {
-        //AMOUNT 타입만 있지만 추후 RATE 타입은 다르게 리턴 필요
-        if(policy.getValueType().equals(PointValueType.AMOUNT)){
-            return policy.getValue();
-        }
-    }*/
-
-
     //주문 이후 포인트 적립
     private BigDecimal calculateByOrder(PointAfterOrderRequest request) {
         Member member = memberRepository.findById(request.getMemberId())

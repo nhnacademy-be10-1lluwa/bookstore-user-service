@@ -2,18 +2,14 @@ package com.nhnacademy.illuwa.domain.point.pointhistory.dto;
 
 import com.nhnacademy.illuwa.domain.point.pointhistory.entity.enums.PointHistoryType;
 import com.nhnacademy.illuwa.domain.point.pointhistory.entity.enums.PointReason;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class PointHistoryRequest {
     private long memberId;
     private PointHistoryType type;

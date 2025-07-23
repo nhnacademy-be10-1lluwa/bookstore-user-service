@@ -3,7 +3,6 @@ package com.nhnacademy.illuwa.common.advice;
 import com.nhnacademy.illuwa.common.exception.ErrorResponse;
 import com.nhnacademy.illuwa.domain.point.exception.InvalidPointOperationException;
 import com.nhnacademy.illuwa.domain.point.pointpolicy.exception.DuplicatePointPolicyException;
-import com.nhnacademy.illuwa.domain.point.pointpolicy.exception.InactivePointPolicyException;
 import com.nhnacademy.illuwa.domain.point.pointpolicy.exception.PointPolicyNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.annotation.Order;
@@ -38,18 +37,6 @@ public class PointGlobalExceptionHandler {
                 request.getRequestURI()
         );
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(InactivePointPolicyException.class)
-    public ResponseEntity<ErrorResponse> handleInactivePolicyException(InactivePointPolicyException ex, HttpServletRequest request) {
-        ErrorResponse response = ErrorResponse.of(
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                "INACTIVE_POLICY",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidPointOperationException.class)

@@ -7,7 +7,4 @@ public class PointPolicyNotFoundException extends RuntimeException{
     public PointPolicyNotFoundException() {
         super("해당 포인트 정책을 찾을 수 없습니다." );
     }
-
-
-
 }

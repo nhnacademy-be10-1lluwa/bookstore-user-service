@@ -4,11 +4,11 @@ import com.nhnacademy.illuwa.domain.point.pointpolicy.entity.enums.PointValueTyp
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
 @Builder
 public class PointPolicyCreateRequest {
     @NotBlank(message = "포인트 정책 키 설정은 필수입니다.")

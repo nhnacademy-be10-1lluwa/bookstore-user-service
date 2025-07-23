@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@AllArgsConstructor
 public class MemberEventDto {
     private Long memberId;
     private String email;
