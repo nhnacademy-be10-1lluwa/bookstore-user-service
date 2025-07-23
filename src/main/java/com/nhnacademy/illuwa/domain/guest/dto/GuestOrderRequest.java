@@ -31,7 +31,7 @@ public class GuestOrderRequest {
     @NotBlank
     String email;
 
-    @Pattern(regexp = "^010-[1-9][0-9]{3,3}-[1-9][0-9]{3,3}$",
+    @Pattern(regexp = "^010-[1-9]\\d{3}-[1-9]\\d{3}$",
             message = "휴대폰 번호는 010으로 시작하는 11자리 숫자와 '-'로 구성되어야 합니다.")
     String contact;
 }

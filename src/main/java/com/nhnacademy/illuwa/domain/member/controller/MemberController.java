@@ -25,29 +25,19 @@ public class MemberController {
 
     // 회원 목록 조회
     @GetMapping("/api/admin/members")
-    public ResponseEntity<List<MemberResponse>> getMemberList() {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.getAllMembers());
-    }
-
-    // 회원 목록 조회 (등급별 조회 가능)
-    @GetMapping("/api/admin/members/paged")
-    public ResponseEntity<Page<MemberResponse>> getPagedMemberList(
+    public ResponseEntity<Page<MemberResponse>> getMemberList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(value = "grade", required = false) GradeName gradeName
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("lastLoginAt").descending());
-        Page<MemberResponse> memberPage;
 
-        if (gradeName != null) {
-            memberPage = memberService.getPagedAllMembersByGradeName(gradeName, pageable);
-        } else {
-            memberPage = memberService.getPagedAllMembers(pageable);
-        }
+        Page<MemberResponse> memberPage = (gradeName != null)
+                ? memberService.getPagedAllMembersByGradeName(gradeName, pageable)
+                : memberService.getPagedAllMembers(pageable);
 
         return ResponseEntity.ok(memberPage);
     }
-
 
     // 회원가입
     @PostMapping("/api/members")
@@ -78,7 +68,7 @@ public class MemberController {
     }
 
     // 회원 비밀번호 체크
-    @PostMapping("/api/members/check-pw")
+    @PostMapping("/api/members/password-check")
     public ResponseEntity<Boolean> checkPassword(@RequestHeader("X-USER-ID") long memberId, @RequestBody PasswordCheckRequest request) {
         boolean isEqual = memberService.checkPassword(memberId, request.getInputPassword());
         return ResponseEntity.ok(isEqual);
@@ -96,8 +86,8 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMembersByBirthMonth(month));
     }
 
-    @PostMapping(value = "/api/members/names")
-    public ResponseEntity<Map<Long, String>> getNamesFromIdList(@RequestBody List<Long> memberIds) {
-        return ResponseEntity.ok(memberService.getNamesFromIdList(memberIds));
+    @GetMapping(value = "/api/members/names")
+    public ResponseEntity<Map<Long, String>> getNamesFromIdList(@RequestParam("member-ids") List<Long> ids) {
+        return ResponseEntity.ok(memberService.getNamesFromIdList(ids));
     }
 }

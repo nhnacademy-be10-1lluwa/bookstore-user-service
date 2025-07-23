@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 public interface CustomMemberRepository{
     List<Member> findByGradeName(GradeName gradeName);
@@ -14,4 +15,5 @@ public interface CustomMemberRepository{
     boolean isNotActiveMember(long memberId);
     Page<Member> findMemberOrderByLastLoginAtOrderDesc(Pageable pageable);
     Page<Member> findMemberByGradeNameOrderByLastLoginAtOrderDesc(GradeName gradeName, Pageable pageable);
+    Map<Long, String> getNamesFromIdList(List<Long> memberIds);
 }

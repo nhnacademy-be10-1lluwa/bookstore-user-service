@@ -6,6 +6,7 @@ import com.nhnacademy.illuwa.domain.member.entity.Member;
 import com.nhnacademy.illuwa.domain.member.entity.QMember;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Role;
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,9 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -96,5 +100,22 @@ public class MemberRepositoryImpl implements CustomMemberRepository{
                 )
                 .fetchOne();
         return new PageImpl<>(content, pageable, total != null ? total : 0L);
+    }
+
+    @Override
+    public Map<Long, String> getNamesFromIdList(List<Long> memberIds) {
+        QMember member = QMember.member;
+
+        List<Tuple> tuples = queryFactory
+                .select(member.memberId, member.name)
+                .from(member)
+                .where(member.memberId.in(memberIds))
+                .fetch();
+
+        return tuples.stream()
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(member.memberId),
+                        tuple -> Objects.requireNonNull(tuple.get(member.name), "member.name is null!")
+                ));
     }
 }

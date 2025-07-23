@@ -42,7 +42,7 @@ class MemberGradeControllerTest {
 
         Mockito.when(memberGradeService.updateGrades(anyList())).thenReturn(2);
 
-        mockMvc.perform(post("/api/members/grades/update")
+        mockMvc.perform(post("/api/members/grades/recalculate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requests)))
                 .andExpect(status().isOk())
@@ -52,11 +52,11 @@ class MemberGradeControllerTest {
     @Test
     @DisplayName("등급별 포인트 지급 API 성공")
     void givePointToGrade_success() throws Exception {
-        mockMvc.perform(post("/api/members/grades/event-point")
-                        .param("grade", "GOLD")
+        mockMvc.perform(post("/api/members/grades/{gradeName}/points", "GOLD")
                         .param("point", "1500"))
                 .andExpect(status().isCreated());
 
         Mockito.verify(memberGradeService).givePointsByGrade(GradeName.GOLD, new BigDecimal("1500"));
     }
+
 }

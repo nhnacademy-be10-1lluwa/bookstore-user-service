@@ -143,7 +143,7 @@ class MemberAddressControllerTest {
 
         willDoNothing().given(memberAddressService).setDefaultAddress(memberId, addressId);
 
-        mockMvc.perform(post("/api/members/addresses/set-default/{addressId}", addressId)
+        mockMvc.perform(put("/api/members/addresses/{addressId}/default", addressId)
                         .header("X-USER-ID", 1L))
                 .andExpect(status().isOk());
     }
