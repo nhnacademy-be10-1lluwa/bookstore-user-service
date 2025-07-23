@@ -1,6 +1,5 @@
 package com.nhnacademy.illuwa.domain.point.pointhistory.entity.enums;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 public enum PointReason {
@@ -20,12 +19,5 @@ public enum PointReason {
 
     public Optional<String> getPolicyKey(){
         return Optional.ofNullable(policyKey);
-    }
-
-    public static PointReason from(String value) {
-        return Arrays.stream(values())
-                .filter(reason -> reason.name().equalsIgnoreCase(value.replace("-", "_")))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Invalid reason: " + value));
     }
 }

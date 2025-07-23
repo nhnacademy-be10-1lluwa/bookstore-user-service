@@ -74,9 +74,6 @@ public class PointPolicyServiceImpl implements PointPolicyService {
 
         if(!Objects.equals(newValue, pointPolicy.getValue()) || !Objects.equals(newType, pointPolicy.getValueType())){
             validatePointPolicyValue(newValue, newType);
-//            if(newType.equals(PointValueType.RATE)){
-//                newValue = newValue.divide(BigDecimal.valueOf(100), MathContext.DECIMAL64);
-//            }
             pointPolicy.changeValue(newValue);
             pointPolicy.changeValueType(request.getValueType());
         }
