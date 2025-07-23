@@ -46,7 +46,7 @@ public class Member {
     @Column(name = "contact", unique = true, nullable = false)
     private String contact;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "grade_id", nullable = false)
     private Grade grade;
 
