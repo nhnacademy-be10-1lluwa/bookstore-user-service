@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @Entity
-@EqualsAndHashCode
 public class MemberAddress {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

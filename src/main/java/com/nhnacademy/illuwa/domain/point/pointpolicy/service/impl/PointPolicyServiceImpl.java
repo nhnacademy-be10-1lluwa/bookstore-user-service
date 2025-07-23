@@ -55,9 +55,6 @@ public class PointPolicyServiceImpl implements PointPolicyService {
             }
         }
         validatePointPolicyValue(request.getValue(), request.getValueType());
-//        if(request.getValueType().equals(PointValueType.RATE)){
-//            request.setValue(request.getValue().divide(BigDecimal.valueOf(100), MathContext.DECIMAL64));
-//        }
         PointPolicy saved = pointPolicyRepository.save(pointPolicyMapper.toEntity(request));
         return pointPolicyMapper.toDto(saved);
     }

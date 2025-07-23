@@ -1,7 +1,6 @@
 package com.nhnacademy.illuwa.common.advice;
 
 import com.nhnacademy.illuwa.common.exception.ErrorResponse;
-import com.nhnacademy.illuwa.domain.memberaddress.exception.DuplicateMemberAddressException;
 import com.nhnacademy.illuwa.domain.memberaddress.exception.MemberAddressNotFoundException;
 import com.nhnacademy.illuwa.domain.memberaddress.exception.TooManyMemberAddressException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,18 +13,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Order(4)
 public class MemberAddressGlobalExceptionHandler {
-
-    @ExceptionHandler(DuplicateMemberAddressException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateAddress(DuplicateMemberAddressException ex, HttpServletRequest request) {
-        ErrorResponse response = ErrorResponse.of(
-                HttpStatus.CONFLICT.value(),
-                HttpStatus.CONFLICT.getReasonPhrase(),
-                "DUPLICATE_ADDRESS",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-    }
 
     @ExceptionHandler(MemberAddressNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleAddressNotFoundException(MemberAddressNotFoundException ex, HttpServletRequest request) {

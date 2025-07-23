@@ -63,8 +63,23 @@ class MemberGradeServiceTest {
 
         when(memberService.getMembersByGradeName(goldGrade)).thenReturn(List.of(member1, member2));
 
-        PointHistoryResponse response1 = new PointHistoryResponse(1L, PointHistoryType.EARN, PointReason.GRADE_EVENT, point, member1.getPoint().add(point), LocalDateTime.now());
-        PointHistoryResponse response2 = new PointHistoryResponse(2L, PointHistoryType.EARN, PointReason.GRADE_EVENT, point, member2.getPoint().add(point), LocalDateTime.now());
+        PointHistoryResponse response1 = PointHistoryResponse.builder()
+                .memberId(1L)
+                .type(PointHistoryType.EARN)
+                .reason(PointReason.GRADE_EVENT)
+                .amount(point)
+                .balance(member1.getPoint().add(point))
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        PointHistoryResponse response2 = PointHistoryResponse.builder()
+                .memberId(2L)
+                .type(PointHistoryType.EARN)
+                .reason(PointReason.GRADE_EVENT)
+                .amount(point)
+                .balance(member2.getPoint().add(point))
+                .createdAt(LocalDateTime.now())
+                .build();
 
         when(pointManager.processEventPoint(1L, PointReason.GRADE_EVENT, point))
                 .thenReturn(Optional.of(response1));
@@ -92,7 +107,14 @@ class MemberGradeServiceTest {
 
         when(memberService.getMembersByGradeName(basicGrade)).thenReturn(List.of(member1, member2));
 
-        PointHistoryResponse response1 = new PointHistoryResponse(1L, PointHistoryType.EARN, PointReason.GRADE_EVENT, point, member1.getPoint().add(point), LocalDateTime.now());
+        PointHistoryResponse response1 = PointHistoryResponse.builder()
+                .memberId(1L)
+                .type(PointHistoryType.EARN)
+                .reason(PointReason.GRADE_EVENT)
+                .amount(point)
+                .balance(member1.getPoint().add(point))
+                .createdAt(LocalDateTime.now())
+                .build();
 
         when(pointManager.processEventPoint(1L, PointReason.GRADE_EVENT, point))
                 .thenReturn(Optional.of(response1));

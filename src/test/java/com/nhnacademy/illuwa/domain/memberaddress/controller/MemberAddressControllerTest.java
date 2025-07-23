@@ -131,7 +131,7 @@ class MemberAddressControllerTest {
 
         mockMvc.perform(delete("/api/members/addresses/{addressId}", addressId)
                 .header("X-USER-ID", 1L))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
 

@@ -1,9 +1,9 @@
 package com.nhnacademy.illuwa.domain.member.dto;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @Builder
 public class PaycoMemberRequest {
     private String idNo;  //paycoId

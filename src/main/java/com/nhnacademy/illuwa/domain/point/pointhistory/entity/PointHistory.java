@@ -4,13 +4,13 @@ import com.nhnacademy.illuwa.domain.point.pointhistory.entity.enums.PointHistory
 import com.nhnacademy.illuwa.domain.point.pointhistory.entity.enums.PointReason;
 import jakarta.persistence.*;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
 @NoArgsConstructor
 @Entity
 @Table(name = "point_history")
