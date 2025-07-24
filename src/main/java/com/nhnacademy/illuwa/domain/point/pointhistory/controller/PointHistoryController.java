@@ -8,7 +8,6 @@ import com.nhnacademy.illuwa.domain.point.utils.PointManager;
 import com.nhnacademy.illuwa.domain.point.pointhistory.service.PointHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -45,9 +44,7 @@ public class PointHistoryController {
     }
 
     @Operation(summary = "회원 포인트 내역 페이징 조회", description = "회원의 포인트 내역을 페이징하여 조회합니다. type: 적립, 사용, 환불 또는 ALL")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "페이징 조회 성공")
-    })
+    @ApiResponse(responseCode = "200", description = "페이징 조회 성공")
     @GetMapping("/histories/paged")
     public ResponseEntity<Page<PointHistoryResponse>> getPagedMemberPointHistories(
             @RequestHeader("X-USER-ID") long memberId,
@@ -62,10 +59,8 @@ public class PointHistoryController {
 
     // 내부 통신 API
     @Operation(summary = "이벤트 포인트 지급", description = "이벤트 사유에 따라 포인트를 지급합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "포인트 지급 성공"),
-            @ApiResponse(responseCode = "204", description = "포인트 지급 조건 불충족")
-    })
+    @ApiResponse(responseCode = "201", description = "포인트 지급 성공")
+    @ApiResponse(responseCode = "204", description = "포인트 지급 조건 불충족")
     @PostMapping("/event")
     public ResponseEntity<PointHistoryResponse> earnEventPoint(@RequestHeader("X-USER-ID") long memberId,
                                                                @RequestParam("reason") PointReason reason) {

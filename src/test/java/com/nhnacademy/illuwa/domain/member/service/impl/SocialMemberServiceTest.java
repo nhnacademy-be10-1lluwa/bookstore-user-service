@@ -197,7 +197,9 @@ class SocialMemberServiceTest {
     void updatePaycoMember_fail_memberNotFound() {
         when(memberRepository.findById(anyLong())).thenReturn(Optional.empty());
 
+        PaycoMemberUpdateRequest request = PaycoMemberUpdateRequest.builder().build();
+
         assertThrows(MemberNotFoundException.class,
-                () -> socialMemberService.updatePaycoMember(1L, PaycoMemberUpdateRequest.builder().build()));
+                () -> socialMemberService.updatePaycoMember(1L, request));
     }
 }
