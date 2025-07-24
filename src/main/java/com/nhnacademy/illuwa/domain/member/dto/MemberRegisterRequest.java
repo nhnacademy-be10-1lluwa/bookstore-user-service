@@ -6,7 +6,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -32,6 +33,7 @@ public class MemberRegisterRequest {
 
     private String paycoId;
 
+    @Builder.Default
     private Role role = Role.USER;
 }
 

@@ -45,7 +45,7 @@ public class GradeInitializer implements ApplicationRunner {
                 Grade.builder()
                         .gradeName(GradeName.ROYAL)
                         .priority(2)
-                        .pointRate(BigDecimal.valueOf(0.025))
+                        .pointRate(BigDecimal.valueOf(0.03))
                         .minAmount(BigDecimal.valueOf(200_000))
                         .maxAmount(BigDecimal.valueOf(300_000))
                         .build(),
@@ -53,7 +53,7 @@ public class GradeInitializer implements ApplicationRunner {
                 Grade.builder()
                         .gradeName(GradeName.PLATINUM)
                         .priority(1)
-                        .pointRate(BigDecimal.valueOf(0.03))
+                        .pointRate(BigDecimal.valueOf(0.04))
                         .minAmount(BigDecimal.valueOf(300_000))
                         .maxAmount(null)
                         .build()

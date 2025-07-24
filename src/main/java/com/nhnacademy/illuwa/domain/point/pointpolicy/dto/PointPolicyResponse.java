@@ -6,7 +6,8 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
+@Setter
 @Builder
 public class PointPolicyResponse {
     private String policyKey;

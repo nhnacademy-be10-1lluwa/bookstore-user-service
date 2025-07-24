@@ -7,7 +7,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
 @Builder
 public class PointPolicyUpdateRequest {
     private PolicyStatus status;

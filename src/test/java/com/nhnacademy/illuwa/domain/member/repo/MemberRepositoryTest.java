@@ -15,8 +15,10 @@ import org.springframework.context.annotation.Import;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -58,7 +60,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    @DisplayName("회원 저장 성공 테스트")
+    @DisplayName("회원 저장 성공")
     void testSave() {
         Member member = createMember("카리나", "karina@naver.com", royalGrade, Role.USER, Status.ACTIVE);
         Member saved = memberRepository.save(member);
@@ -67,7 +69,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    @DisplayName("회원 정보 수정 성공 테스트")
+    @DisplayName("회원 정보 수정 성공")
     void testUpdate() {
         Member member = memberRepository.save(createMember("윈터", "winter@naver.com", basicGrade, Role.USER, Status.ACTIVE));
 
@@ -80,7 +82,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    @DisplayName("회원 삭제 성공 테스트")
+    @DisplayName("회원 삭제 성공")
     void testDelete() {
         Member member = memberRepository.save(createMember("닝닝", "ningning@naver.com", royalGrade, Role.USER, Status.ACTIVE));
         Long id = member.getMemberId();
@@ -92,7 +94,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    @DisplayName("특정 등급 회원 조회 테스트")
+    @DisplayName("특정 등급 회원 조회")
     void testFindByGrade() {
         int orgRoyalCount = memberRepository.findByGradeName(royalGrade.getGradeName()).size();
 
@@ -107,7 +109,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    @DisplayName("회원 포인트 조회 테스트")
+    @DisplayName("회원 포인트 조회")
     void testFindPoint() {
         Member member = memberRepository.save(createMember("지민", "jimin@naver.com", goldGrade, Role.USER, Status.ACTIVE));
         BigDecimal point = memberRepository.findPoint(member.getMemberId());
@@ -139,7 +141,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    @DisplayName("회원 마지막 로그인 내림차순 페이징 조회 테스트")
+    @DisplayName("회원 마지막 로그인 내림차순 페이징 조회")
     void testFindMemberOrderByLastLoginAtOrderDesc() {
         memberRepository.save(createMember("은하", "eunha@naver.com", goldGrade, Role.USER, Status.ACTIVE));
         memberRepository.save(createMember("하니", "hani@naver.com", goldGrade, Role.USER, Status.ACTIVE));
@@ -152,16 +154,35 @@ class MemberRepositoryTest {
     }
 
     @Test
-    @DisplayName("특정 등급 회원 마지막 로그인 내림차순 페이징 조회 테스트")
+    @DisplayName("특정 등급 회원 마지막 로그인 내림차순 페이징 조회")
     void testFindMemberByGradeNameOrderByLastLoginAtOrderDesc() {
         memberRepository.save(createMember("세정", "sejeong@naver.com", royalGrade, Role.USER, Status.ACTIVE));
         memberRepository.save(createMember("예린", "yerin@naver.com", royalGrade, Role.USER, Status.ACTIVE));
         memberRepository.save(createMember("유주", "yujoo@naver.com", platinumGrade, Role.USER, Status.ACTIVE));
-        memberRepository.save(createMember("관리자", "admin2@naver.com", royalGrade, Role.ADMIN, Status.ACTIVE)); // 관리자 포함해서 필터링 테스트
+        memberRepository.save(createMember("관리자", "admin2@naver.com", royalGrade, Role.ADMIN, Status.ACTIVE));
 
         var page = memberRepository.findMemberByGradeNameOrderByLastLoginAtOrderDesc(royalGrade.getGradeName(), org.springframework.data.domain.PageRequest.of(0, 10));
 
         assertTrue(page.getContent().stream().noneMatch(m -> m.getRole() == Role.ADMIN));
         assertTrue(page.getContent().stream().allMatch(m -> m.getGrade().getGradeName() == royalGrade.getGradeName()));
+    }
+
+
+    @Test
+    @DisplayName("memberIds 목록으로 회원 이름 Map 조회 성공")
+    void testGetNamesFromIdList() {
+        Member member1 = createMember("Alice", "alice@example.com", basicGrade, Role.USER, Status.ACTIVE);
+        Member member2 = createMember("Bob", "bob@example.com", goldGrade, Role.USER, Status.ACTIVE);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Long> memberIds = List.of(member1.getMemberId(), member2.getMemberId());
+
+        Map<Long, String> result = memberRepository.getNamesFromIdList(memberIds);
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(member1.getMemberId())).isEqualTo("Alice");
+        assertThat(result.get(member2.getMemberId())).isEqualTo("Bob");
     }
 }

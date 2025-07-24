@@ -1,14 +1,10 @@
 package com.nhnacademy.illuwa.domain.member.dto;
 
 import com.nhnacademy.illuwa.domain.member.entity.enums.Status;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class InactiveCheckResponse {
     private long memberId;
@@ -16,4 +12,3 @@ public class InactiveCheckResponse {
     private String email;
     private Status status;
 }
-
