@@ -10,7 +10,6 @@ import com.nhnacademy.illuwa.domain.member.service.impl.InactiveVerificationServ
 import com.nhnacademy.illuwa.domain.message.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +33,9 @@ public class InactiveMemberController {
     // 인증번호 전송 API
     @PostMapping
     @Operation(summary = "인증번호 전송", description = "입력한 연락처(전화번호 or 이메일)에 인증번호를 전송합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "인증번호 전송 성공"),
-            @ApiResponse(responseCode = "404", description = "휴면 회원을 찾을 수 없음"),
-            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    })
+    @ApiResponse(responseCode = "200", description = "인증번호 전송 성공")
+    @ApiResponse(responseCode = "404", description = "휴면 회원을 찾을 수 없음")
+    @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     public ResponseEntity<Boolean> sendVerificationCode(@RequestBody SendVerificationRequest request) {
         InactiveCheckResponse member = getMemberOrThrow(request.getContact());
 
@@ -53,12 +50,10 @@ public class InactiveMemberController {
     // 인증번호 검증 API
     @PostMapping("/verify")
     @Operation(summary = "인증번호 검증", description = "입력한 인증번호를 검증하고 계정을 복구합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "인증번호 검증 성공 및 계정 복구 완료"),
-            @ApiResponse(responseCode = "401", description = "인증번호 불일치로 검증 실패"),
-            @ApiResponse(responseCode = "404", description = "휴면 회원을 찾을 수 없음"),
-            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    })
+    @ApiResponse(responseCode = "200", description = "인증번호 검증 성공 및 계정 복구 완료")
+    @ApiResponse(responseCode = "401", description = "인증번호 불일치로 검증 실패")
+    @ApiResponse(responseCode = "404", description = "휴면 회원을 찾을 수 없음")
+    @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     public ResponseEntity<Boolean> receiveVerificationCode(@RequestBody VerifyCodeRequest request) {
         InactiveCheckResponse member = getMemberOrThrow(request.getContact());
         String email = member.getEmail();

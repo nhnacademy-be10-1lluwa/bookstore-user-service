@@ -167,23 +167,10 @@ class MemberRepositoryTest {
         assertTrue(page.getContent().stream().allMatch(m -> m.getGrade().getGradeName() == royalGrade.getGradeName()));
     }
 
-    @Test
-    @DisplayName("해당 ID의 회원 이름 리스트 Map으로 조회")
-    void testGetNamesFromIdList() {
-        memberRepository.save(createMember("세정", "sejeong@naver.com", royalGrade, Role.USER, Status.ACTIVE));
-        memberRepository.save(createMember("예린", "yerin@naver.com", royalGrade, Role.USER, Status.ACTIVE));
-        memberRepository.save(createMember("유주", "yujoo@naver.com", platinumGrade, Role.USER, Status.ACTIVE));
-        memberRepository.save(createMember("관리자", "admin2@naver.com", royalGrade, Role.ADMIN, Status.ACTIVE));
-
-        var page = memberRepository.findMemberByGradeNameOrderByLastLoginAtOrderDesc(royalGrade.getGradeName(), org.springframework.data.domain.PageRequest.of(0, 10));
-
-        assertTrue(page.getContent().stream().noneMatch(m -> m.getRole() == Role.ADMIN));
-        assertTrue(page.getContent().stream().allMatch(m -> m.getGrade().getGradeName() == royalGrade.getGradeName()));
-    }
 
     @Test
     @DisplayName("memberIds 목록으로 회원 이름 Map 조회 성공")
-    void getNamesFromIdList_returnsNameMap() {
+    void testGetNamesFromIdList() {
         Member member1 = createMember("Alice", "alice@example.com", basicGrade, Role.USER, Status.ACTIVE);
         Member member2 = createMember("Bob", "bob@example.com", goldGrade, Role.USER, Status.ACTIVE);
 
