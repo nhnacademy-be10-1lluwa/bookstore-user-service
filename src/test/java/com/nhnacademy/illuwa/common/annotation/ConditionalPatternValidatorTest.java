@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.annotation.Annotation;
 
-public class ConditionalPatternValidatorTest {
+class ConditionalPatternValidatorTest {
 
     ConditionalPatternValidator validator;
 
@@ -14,11 +14,10 @@ public class ConditionalPatternValidatorTest {
     void setUp() {
         validator = new ConditionalPatternValidator();
 
-        // 임시로 ConditionalPattern 애노테이션 인스턴스를 익명 클래스 형태로 생성
         ConditionalPattern annotation = new ConditionalPattern() {
             @Override
             public String regexp() {
-                return "\\d{3}-\\d{4}";  // 예: 123-4567 형식
+                return "\\d{3}-\\d{4}";
             }
 
             @Override

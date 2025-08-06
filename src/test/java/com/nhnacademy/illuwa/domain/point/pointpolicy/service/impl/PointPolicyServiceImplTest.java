@@ -10,7 +10,6 @@ import com.nhnacademy.illuwa.domain.point.pointpolicy.entity.enums.PolicyStatus;
 import com.nhnacademy.illuwa.domain.point.pointpolicy.exception.DuplicatePointPolicyException;
 import com.nhnacademy.illuwa.domain.point.pointpolicy.exception.PointPolicyNotFoundException;
 import com.nhnacademy.illuwa.domain.point.pointpolicy.repo.PointPolicyRepository;
-import com.nhnacademy.illuwa.domain.point.pointpolicy.service.impl.PointPolicyServiceImpl;
 import com.nhnacademy.illuwa.domain.point.pointpolicy.utils.PointPolicyMapper;
 import com.nhnacademy.illuwa.domain.point.pointpolicy.utils.PointPolicyMapperImpl;
 import org.junit.jupiter.api.Assertions;
