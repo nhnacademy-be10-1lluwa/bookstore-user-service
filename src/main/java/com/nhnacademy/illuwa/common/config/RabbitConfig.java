@@ -7,6 +7,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class RabbitConfig {
@@ -25,7 +26,8 @@ public class RabbitConfig {
      * Jackson 라이브러리 사용
      * 자바 객체 -> JSON -> 자바 객체 변환을 담당하는 메시지 변환기(MessageConverter) 빈 등록
      */
-    @Bean
+    @Bean(name = "jackson2JsonMessageConverter")
+    @Primary
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
