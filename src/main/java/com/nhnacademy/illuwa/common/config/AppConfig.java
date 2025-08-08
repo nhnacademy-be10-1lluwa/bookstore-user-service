@@ -15,13 +15,14 @@ public class AppConfig {
         return new RestTemplate();
     }
 
+    /*
     @Bean
     public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory connectionFactory){
         RedisTemplate<String, String> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         return template;
 
-    }
+    }*/ // 기존 redisTemplate -> RedisConfig로 이동
 
     @Bean
     public PasswordEncoder passwordEncoder() {
