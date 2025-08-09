@@ -207,9 +207,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
+
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <generatedSourcesDirectory>
+                        ${project.build.directory}/generated-sources/querydsl
+                    </generatedSourcesDirectory>
                     <annotationProcessorPaths>
                         <!-- 롬복 우선순위 최상위 -->
                         <path>
