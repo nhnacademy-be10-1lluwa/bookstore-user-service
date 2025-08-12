@@ -69,14 +69,14 @@ public class PointHistoryController {
                 .orElse(ResponseEntity.noContent().build());
     }
 
-    @Operation(summary = "주문 포인트 적립", description = "주문 완료 후 적립 포인트를 등록합니다.")
+/*    @Operation(summary = "주문 포인트 적립", description = "주문 완료 후 적립 포인트를 등록합니다.")
     @ApiResponse(responseCode = "201", description = "주문 포인트 적립 성공")
     @PostMapping("/order/earn")
     public ResponseEntity<PointHistoryResponse> earnPointAfterOrder(@RequestBody PointAfterOrderRequest request) {
         return pointManager.processOrderPoint(request)
                 .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response))
                 .orElse(ResponseEntity.noContent().build());
-    }
+    }*/
 
     @Operation(summary = "주문 시 포인트 사용", description = "주문 시 사용한 포인트를 차감합니다.")
     @ApiResponse(responseCode = "201", description = "포인트 사용 처리 완료")

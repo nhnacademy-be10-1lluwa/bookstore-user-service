@@ -8,6 +8,7 @@ import com.nhnacademy.illuwa.domain.point.pointhistory.entity.enums.PointHistory
 import com.nhnacademy.illuwa.domain.point.pointhistory.entity.enums.PointReason;
 import com.nhnacademy.illuwa.domain.point.utils.PointManager;
 import com.nhnacademy.illuwa.domain.point.pointhistory.service.PointHistoryService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +115,7 @@ class PointHistoryControllerTest {
                 .andExpect(jsonPath("$.createdAt").exists());
     }
 
+    @Disabled
     @Test
     @DisplayName("주문 후 포인트 적립")
     void testEarnPointAfterOrder() throws Exception {
