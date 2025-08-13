@@ -1,4 +1,4 @@
-package com.nhnacademy.illuwa.domain.member.dto;
+package com.nhnacademy.illuwa.domain.point.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PointUsedEvent {
+public class PointSavedEvent {
     private Long memberId;
-    private BigDecimal usedPoint;
+    private BigDecimal price;
 }
 
