@@ -1,7 +1,10 @@
 package com.nhnacademy.illuwa.domain.member.controller;
 
+import com.mysema.commons.lang.Assert;
 import com.nhnacademy.illuwa.domain.grade.entity.enums.GradeName;
+import com.nhnacademy.illuwa.domain.grade.service.IdemService;
 import com.nhnacademy.illuwa.domain.member.dto.*;
+import com.nhnacademy.illuwa.domain.member.service.MemberService;
 import com.nhnacademy.illuwa.domain.member.service.impl.MemberGradeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,6 +23,7 @@ import java.util.List;
 @Tag(name = "회원 등급 API", description = "회원 등급 재조정 및 등급별 포인트 지급 기능")
 public class MemberGradeController {
     private final MemberGradeService memberGradeService;
+    private final IdemService idemService;
 
     /**
      * 전체 회원 등급 재조정
@@ -29,9 +33,11 @@ public class MemberGradeController {
     @ApiResponse(responseCode = "400", description = "입력 데이터 오류")
     @ApiResponse(responseCode = "500", description = "서버 오류")
     @PostMapping("/recalculate")
-    public ResponseEntity<Integer> updateAllMemberGrade(@RequestBody List<MemberGradeUpdateRequest> requests) {
-        int updatedCount = memberGradeService.updateGrades(requests);
-        return ResponseEntity.ok(updatedCount);
+    public ResponseEntity<Integer> updateAllMemberGrade(@RequestHeader("Idempotency-Key") String idempotencyKey,
+                                                        @RequestBody List<MemberGradeUpdateRequest> requests) {
+        Assert.hasText(idempotencyKey, "Idempotency-Key missing");
+        return ResponseEntity.ok(
+                idemService.run(idempotencyKey, () -> memberGradeService.updateGrades(requests)));
     }
 
     /**

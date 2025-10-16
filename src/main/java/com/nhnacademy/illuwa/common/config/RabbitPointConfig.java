@@ -14,8 +14,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitPointConfig {
     public static final String POINT_EXCHANGE = "point.exchange";
-    public static final String POINT_QUEUE = "point.used.queue";
-    public static final String POINT_ROUTING_KEY = "point.used";
+    public static final String USED_QUEUE = "point.used.queue";
+    public static final String SAVED_QUEUE = "point.saved.queue";
+    public static final String ROUTING_KEY_USED = "point.used";
+    public static final String ROUTING_KEY_SAVED = "point.saved";
 
     @Bean
     public TopicExchange pointExchange() {
@@ -24,12 +26,26 @@ public class RabbitPointConfig {
 
     @Bean
     public Queue pointUsedQueue() {
-        return new Queue(POINT_QUEUE);
+        return new Queue(USED_QUEUE);
     }
 
     @Bean
-    public Binding pointBinding() {
-        return BindingBuilder.bind(pointUsedQueue()).to(pointExchange()).with(POINT_ROUTING_KEY);
+    public Queue pointSavedQueue() {
+        return new Queue(SAVED_QUEUE);
+    }
+
+    @Bean
+    public Binding pointUsedBinding() {
+        return BindingBuilder.bind(pointUsedQueue())
+                .to(pointExchange())
+                .with(ROUTING_KEY_USED);
+    }
+
+    @Bean
+    public Binding pointSavedBinding() {
+        return BindingBuilder.bind(pointSavedQueue())
+                .to(pointExchange())
+                .with(ROUTING_KEY_SAVED);
     }
 
     @Bean(name = "pointJacksonConverter")
